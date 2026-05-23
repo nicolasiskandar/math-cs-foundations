@@ -1,0 +1,132 @@
+\documentclass[11pt]{article}
+
+% ---------- Packages ----------
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{listings}
+\usepackage{courier}
+
+% ---------- Hyperref ----------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+% ---------- Header/Footer ----------
+\pagestyle{fancy}
+\fancyhf{}
+
+\lhead{MIT 6.1200J}
+\chead{Problem Set 1}
+\rhead{Nicolas Iskandar}
+
+\cfoot{\thepage\ /\ \pageref{LastPage}}
+
+% ---------- Custom Commands ----------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+
+\newcommand{\answer}{
+    \vspace{0.5em}
+    \noindent\textbf{Answer.}
+}
+
+% ---------- Code Style ----------
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    columns=fullflexible,
+    keepspaces=true
+}
+
+% ---------- Title ----------
+\title{
+    \vspace{-2em}
+    MIT 6.1200J \\
+    Problem Set 1
+}
+\author{Nicolas Iskandar}
+\date{}
+
+% ==================================================
+\begin{document}
+
+\maketitle
+
+\section*{Problem 2}
+
+\textbf{(a)} Use a truth table to verify that the propositional formula $(P \land \neg Q)\lor(P \land Q) \equiv P$ is equivalent to P.
+
+\answer
+
+\[
+\begin{array}{|c|c|c|c|c|c|}
+\hline
+P & Q & \neg Q & P \land \neg Q & P \land Q & (P \land \neg Q)\lor(P \land Q) \\
+\hline
+T & T & F & F & T & T \\
+T & F & T & T & F & T \\
+F & T & F & F & F & F \\
+F & F & T & F & F & F \\
+\hline
+\end{array}
+\]
+
+\[
+(P \land \neg Q)\lor(P \land Q) \equiv P
+\]
+
+\textbf{(b)} Prove that $A = (A - B) \cup (A \cap B)$
+for all sets A, B, by showing $x \in A \iff x \in (A - B) \cup (A \cap B)$ for all elements x. How does this relate to part (a)?
+
+\answer
+
+Let \(x\) be arbitrary. Then,
+\[
+x \in (A - B) \cup (A \cap B)
+\]
+\[
+\iff x \in (A - B) \ \lor\ x \in (A \cap B)
+\]
+\[
+\iff (x \in A \land x \notin B)\ \lor\ (x \in A \land x \in B)
+\]
+\[
+\iff x \in A \land (\neg(x \in B) \lor x \in B)
+\]
+\[
+\iff x \in A \land \text{True}
+\]
+\[
+\iff x \in A
+\]
+
+Hence,
+\[
+x \in (A - B) \cup (A \cap B) \iff x \in A
+\]
+
+Therefore,
+\[
+A = (A - B) \cup (A \cap B)
+\]
+
+\textbf{Relation to part (a):} This identity is an instance of the propositional equivalence
+\[
+(P \land \neg Q)\ \lor\ (P \land Q) \equiv P
+\]
+where \(P\) corresponds to \(x \in A\) and \(Q\) corresponds to \(x \in B\).
+
+\end{document}
