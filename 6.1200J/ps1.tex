@@ -67,7 +67,9 @@
 
 \section*{Problem 2}
 
-\textbf{(a)} Use a truth table to verify that the propositional formula $(P \land \neg Q)\lor(P \land Q) \equiv P$ is equivalent to P.
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item Use a truth table to verify that the propositional formula $(P \land \neg Q)\lor(P \land Q) \equiv P$ is equivalent to P.
 
 \answer
 
@@ -88,7 +90,7 @@ F & F & T & F & F & F \\
 (P \land \neg Q)\lor(P \land Q) \equiv P
 \]
 
-\textbf{(b)} Prove that $A = (A - B) \cup (A \cap B)$
+\item Prove that $A = (A - B) \cup (A \cap B)$
 for all sets A, B, by showing $x \in A \iff x \in (A - B) \cup (A \cap B)$ for all elements x. How does this relate to part (a)?
 
 \answer
@@ -128,5 +130,116 @@ A = (A - B) \cup (A \cap B)
 (P \land \neg Q)\ \lor\ (P \land Q) \equiv P
 \]
 where \(P\) corresponds to \(x \in A\) and \(Q\) corresponds to \(x \in B\).
+
+\end{enumerate}
+
+\section*{Problem 3}
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item The predicate $\text{sixish}(n)$ is defined as ``n is a natural number whose first digit is 6.''
+
+\answer
+\[
+\text{sixish}(n) := \exists k. \Big( 6 \cdot 10^k \leq n \wedge n < 7 \cdot 10^k \Big)
+\]
+
+\item ``There are exactly two natural numbers $n$ such that $Q(n)$ is true.''
+
+\answer
+\[
+\exists x \; \exists y. \Big( x \neq y \wedge Q(x) \wedge Q(y) \wedge \forall z. \big( Q(z) \implies (z = x \vee z = y) \big) \Big)
+\]
+
+\item Goldbach's Conjecture: ``Every even integer greater than 2 can be written as the sum of two primes.''
+
+\answer
+\[
+\forall n. \Big( \big( n > 2 \wedge \exists k.\, n = 2k \big) \implies \exists p \; \exists q. \big( \text{isPrime}(p) \wedge \text{isPrime}(q) \wedge p + q = n \big) \Big)
+\]
+
+\item ``Every prime larger than 100 is sixish.''
+
+\answer
+\[
+\forall n. \Big( \big( \text{isPrime}(n) \wedge n > 100 \big) \implies \text{sixish}(n) \Big)
+\]
+
+\item Is the predicate $R(n) := \exists b.\, n = 2b + 5$ equivalent to $\text{isOdd}(n)$?
+
+\answer
+
+No, they are not equivalent. We show $R(n) \not\iff \text{isOdd}(n)$ by counterexample.
+
+\textbf{Counterexample:} Take $n = 1$.
+\begin{itemize}
+    \item $\text{isOdd}(1)$ is \textbf{true}: set $m = 0$, then $2(0) + 1 = 1$. \checkmark
+    \item $R(1)$ is \textbf{false}: $R(1)$ requires $\exists b \in \mathbb{N}$ such that $2b + 5 = 1$,
+    i.e., $2b = -4$. Since $b \in \mathbb{N}$, no such $b$ exists.
+\end{itemize}
+
+Therefore the predicates are \textbf{not equivalent}.
+\end{enumerate}
+
+\newpage
+
+\section*{Problem 4}
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item We prove the following statement by induction on $n$.
+
+\textbf{Inductive Hypothesis} $P(n)$: For any $n$ numbers $x_1, x_2, \ldots, x_n \in \mathbb{R}$, if $Q(x_1 \cdot x_2 \cdots x_n)$ is true, then at least one of $Q(x_1), Q(x_2), \ldots, Q(x_n)$ is true.
+
+\textbf{Base Case} ($n = 1$): Suppose $Q(x_1)$ is true. Then trivially, $Q(x_1)$ is true. So $P(1)$ holds.
+
+\textbf{Inductive Step}: Assume $P(n)$ holds for some $n \geq 1$ (inductive hypothesis). We want to show $P(n+1)$: that for any $x_1, \ldots, x_{n+1} \in \mathbb{R}$, if $Q(x_1 \cdot x_2 \cdots x_{n+1})$ is true, then at least one of $Q(x_1), \ldots, Q(x_{n+1})$ is true.
+
+\textbf{Assumption}: Suppose $Q(x_1 \cdot x_2 \cdots x_{n+1})$ is true.
+
+\textbf{Goal}: Show at least one of $Q(x_1), \ldots, Q(x_{n+1})$ is true.
+
+Let $y = x_1 \cdot x_2 \cdots x_n$, so that
+\[
+    x_1 \cdot x_2 \cdots x_{n+1} = y \cdot x_{n+1}.
+\]
+Since $Q(y \cdot x_{n+1})$ is true, the given property of $Q$ tells us that at least one of $Q(y)$ or $Q(x_{n+1})$ is true. We consider two cases:
+
+\begin{itemize}
+    \item \textbf{Case 1}: $Q(x_{n+1})$ is true. Then we are done.
+    \item \textbf{Case 2}: $Q(y) = Q(x_1 \cdot x_2 \cdots x_n)$ is true. By the inductive hypothesis $P(n)$, at least one of $Q(x_1), Q(x_2), \ldots, Q(x_n)$ is true.
+\end{itemize}
+
+In either case, at least one of $Q(x_1), \ldots, Q(x_{n+1})$ is true. This completes the inductive step.
+
+By induction, $P(n)$ holds for all integers $n \geq 1$. $\blacksquare$
+
+\item We choose $Q(x) :=$ ``$x$ is irrational.''
+
+With this choice, part (a) states: if $x_1 \cdot x_2 \cdots x_n$ is irrational, then at least one of $x_1, \ldots, x_n$ is irrational, which is exactly Theorem 1.
+
+However, to apply part (a), we must first verify that $Q$ satisfies the required property from part (a). This gives us the following lemma:
+
+\textbf{Lemma}: For any $x, y \in \mathbb{R}$, if $x \cdot y$ is irrational, then at least one of $x$ or $y$ is irrational.
+
+\item \textbf{Proof of Lemma} (by contradiction):
+
+Suppose for contradiction that $x \cdot y$ is irrational, but neither $x$ nor $y$ is irrational. Then both $x$ and $y$ are rational, so we may write
+\[
+    x = \frac{a}{b}, \qquad y = \frac{c}{d},
+\]
+for some integers $a, b, c, d$ with $b \neq 0$ and $d \neq 0$. Then
+\[
+    x \cdot y = \frac{a}{b} \cdot \frac{c}{d} = \frac{ac}{bd}.
+\]
+Since $a, b, c, d$ are integers, $ac$ and $bd$ are integers, and $bd \neq 0$. Therefore $x \cdot y = \frac{ac}{bd}$ is rational, so a contradiction, since we assumed $x \cdot y$ is irrational. $\blacksquare$
+
+\newpage
+
+\textbf{Proof of Theorem 1}:
+
+Let $Q(x) :=$ ``$x$ is irrational.'' The Lemma establishes that $Q$ satisfies the hypothesis of part (a): for any $x, y \in \mathbb{R}$, if $Q(x \cdot y)$ is true, then at least one of $Q(x)$ or $Q(y)$ is true. Therefore, by part (a), for any $n \geq 1$ and any $x_1, \ldots, x_n \in \mathbb{R}$, if $Q(x_1 \cdot x_2 \cdots x_n)$ is true (i.e., the product is irrational), then at least one of $Q(x_1), \ldots, Q(x_n)$ is true (i.e., at least one of the numbers is irrational). This proves Theorem 1. $\blacksquare$
+
+\end{enumerate}
 
 \end{document}
