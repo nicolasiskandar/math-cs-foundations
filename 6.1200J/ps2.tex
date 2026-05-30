@@ -1,0 +1,223 @@
+\documentclass[11pt]{article}
+
+% ---------- Packages ----------
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{listings}
+\usepackage{courier}
+
+% ---------- Hyperref ----------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+% ---------- Header/Footer ----------
+\pagestyle{fancy}
+\fancyhf{}
+
+\lhead{MIT 6.1200J}
+\chead{Problem Set 1}
+\rhead{Nicolas Iskandar}
+
+\cfoot{\thepage\ /\ \pageref{LastPage}}
+
+% ---------- Custom Commands ----------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+
+\newcommand{\answer}{
+    \vspace{0.5em}
+    \noindent\textbf{Answer.}
+}
+
+% ---------- Code Style ----------
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    columns=fullflexible,
+    keepspaces=true
+}
+
+% ---------- Title ----------
+\title{
+    \vspace{-2em}
+    MIT 6.1200J \\
+    Problem Set 1
+}
+\author{Nicolas Iskandar}
+\date{}
+
+% ==================================================
+\begin{document}
+
+\maketitle
+
+\section*{Problem 1}
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item \textbf{Theorem}: ``Every natural number is tall or wide, but not both.''
+
+\answer
+
+We must show that for every natural number $n$, $n$ is tall or wide, but not both.
+Let $n$ be an arbitrary natural number. We proceed by cases.
+
+\textbf{Case 1}: $n$ is tall.\\
+We must show $n$ is not wide. [TODO: using the definition of tall, prove $n$ is not wide.]
+
+\textbf{Case 2}: $n$ is not tall.\\
+We must show $n$ is wide and not both. [TODO: using the definition of tall, prove $n$
+is wide.] Since $n$ is wide and not tall, $n$ is not both tall and wide.
+
+In both cases, $n$ is tall or wide, but not both. Since $n$ was arbitrary, every natural
+number is tall or wide, but not both. $\blacksquare$
+
+\item \textbf{Theorem}: ``There exists a happy natural number between 10 and 1000 that
+has no happy proper divisors.''
+
+\answer
+
+We prove this existentially by choosing $n = 25$ as the witness.
+
+We must verify three things:
+\begin{enumerate}[label=(\roman*)]
+    \item $25$ is between $10$ and $1000$: This is clear since $10 < 25 < 1000$. \checkmark
+    \item $25$ is happy. [TODO: using the definition of happy, verify that $25$ is happy.]
+    \item $25$ has no happy proper divisors. The proper divisors of $25$ are $1$ and $5$.
+    [TODO: using the definition of happy, verify that neither $1$ nor $5$ is happy.]
+\end{enumerate}
+
+Therefore, $n = 25$ is a happy natural number between $10$ and $1000$ with no happy
+proper divisors, which proves the theorem. $\blacksquare$
+
+\item \textbf{Theorem}: ``There are no devious natural numbers.''
+
+\answer
+
+We prove the equivalent statement: for every natural number $n$, $n$ is not devious.
+
+\textbf{Predicate}: Let $P(n)$ be the statement ``$n$ is not devious.''
+
+We proceed by induction on $n$, with base cases $n = 0$ and $n = 1$.
+
+\textbf{Base Case} ($n = 0$): We must show $P(0)$, i.e., that $0$ is not devious.
+[TODO: using the definition of devious, prove $0$ is not devious.]
+
+\textbf{Base Case} ($n = 1$): We must show $P(1)$, i.e., that $1$ is not devious.
+[TODO: using the definition of devious, prove $1$ is not devious.]
+
+\textbf{Inductive Step}: Let $n \geq 1$ be an arbitrary natural number. Assume $P(n)$
+holds, i.e., that $n$ is not devious. We must show $P(n+1)$, i.e., that $n+1$ is not
+devious.
+
+\textit{Assumption}: $n$ is not devious.
+
+\textit{Goal}: Show that $n + 1$ is not devious.
+
+[TODO: using the definition of devious and the inductive hypothesis that $n$ is not
+devious, prove $n+1$ is not devious.]
+
+By induction, $P(n)$ holds for all $n \in \mathbb{N}$. Therefore, there are no devious
+natural numbers. $\blacksquare$
+
+\end{enumerate}
+
+\section*{Problem 2}
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item Brynmor's mistake is in the inductive step. When substituting the inductive
+hypothesis into $x_{i+1} = 6x_i - 8x_{i-1}$, he plugs in lower bounds for both $x_i$
+and $x_{i-1}$. However, since $x_{i-1}$ appears with a \textbf{negative} coefficient
+$(-8)$, replacing $x_{i-1}$ with its lower bound $2^{i-1}$ makes the expression
+\textit{smaller}, not larger. That is, from $x_{i-1} \geq 2^{i-1}$ one can only
+conclude $-8x_{i-1} \leq -8 \cdot 2^{i-1}$, so the inequality goes the wrong way:
+\[
+    x_{i+1} = 6x_i - 8x_{i-1} \geq 6 \cdot 2^i - 8x_{i-1}
+\]
+is valid, but substituting the lower bound of $x_{i-1}$ on the right gives an upper
+bound, not a lower bound. Hence the step
+\[
+    x_{i+1} \geq 6 \cdot 2^i - 8 \cdot 2^{i-1}
+\]
+is \textbf{not justified}.
+
+\item Erik's mistake is in the base case and the circular reasoning at the end. His
+inductive hypothesis is $R(i) := ``x_i \geq 3x_{i-1}$,'' defined only for $i \geq 2$.
+At the end, he concludes that since $x_1 > 0$ and $x_i \geq 3x_{i-1}$ for all
+$i \geq 2$, we get $x_i > 0$ for all $i$. But this final step implicitly assumes
+$x_{i-1} > 0$ in order to conclude $x_i \geq 3x_{i-1} > 0$, which is exactly what
+he is trying to prove. That is, the conclusion $x_i > 0$ requires knowing
+$x_{i-1} > 0$, making the argument \textbf{circular}. He never establishes by a
+separate argument that positivity propagates; he simply assumes it.
+
+\item Zach's mistake is in the inductive step when $i = 1$. He claims to prove
+$S(i+1)$ using $S(i)$ and $S(i-1)$, but when $i = 1$, this requires $S(0)$, i.e.,
+$x_0 = 4^0 = 1$. However, the sequence is only defined starting from $x_1$; $x_0$
+does not exist. So the inductive step \textbf{fails for $i = 1$} because it invokes
+an undefined term. Indeed, the claim $S(i) := ``x_i = 4^i$'' is false for $i = 2$
+since $x_2 = 13 \neq 16 = 4^2$, confirming the proof is broken.
+
+\item We prove that $x_i > 0$ for all $i \geq 1$.
+
+Following Erik's approach, we use the stronger inductive hypothesis
+\[
+    P(i) := ``x_i \geq 3x_{i-1} \text{ and } x_{i-1} > 0\text{''}
+\]
+for $i \geq 2$, and handle $x_1 > 0$ separately. Equivalently, we prove by strong
+induction that $x_i > 0$ for all $i \geq 1$ and $x_i \geq 3x_{i-1}$ for all
+$i \geq 2$.
+
+More precisely, let $P(i) := ``x_i \geq 3x_{i-1}$'' for $i \geq 2$, and we will
+carry the positivity of all previous terms alongside.
+
+\textbf{Claim}: For all $i \geq 1$, $x_i > 0$. Moreover, for all $i \geq 2$,
+$x_i \geq 3x_{i-1}$.
+
+\textbf{Proof} by strong induction.
+
+\textbf{Base Cases}:
+\begin{itemize}
+    \item $x_1 = 4 > 0$. \checkmark
+    \item $x_2 = 13 > 0$, and $x_2 = 13 \geq 12 = 3 \cdot 4 = 3x_1$. \checkmark
+\end{itemize}
+
+\textbf{Inductive Step}: Let $i \geq 2$. Assume that for all $1 \leq k \leq i$,
+$x_k > 0$, and for all $2 \leq k \leq i$, $x_k \geq 3x_{k-1}$. We wish to show that
+$x_{i+1} > 0$ and $x_{i+1} \geq 3x_i$.
+
+Consider:
+\[
+    x_{i+1} = 6x_i - 8x_{i-1}.
+\]
+By the inductive hypothesis, $x_i \geq 3x_{i-1}$, so $x_{i-1} \leq \frac{x_i}{3}$,
+and thus $8x_{i-1} \leq \frac{8}{3}x_i$. Therefore:
+\[
+    x_{i+1} = 6x_i - 8x_{i-1} \geq 6x_i - \frac{8}{3}x_i = \frac{10}{3}x_i.
+\]
+Since $x_i > 0$ by the inductive hypothesis, we have:
+\[
+    x_{i+1} \geq \frac{10}{3}x_i > 3x_i > 0.
+\]
+This establishes both $x_{i+1} \geq 3x_i$ and $x_{i+1} > 0$, completing the
+inductive step.
+
+By strong induction, $x_i > 0$ for all $i \geq 1$. $\blacksquare$
+
+\end{enumerate}
+
+\end{document}
