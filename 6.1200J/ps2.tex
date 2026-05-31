@@ -27,7 +27,7 @@
 \fancyhf{}
 
 \lhead{MIT 6.1200J}
-\chead{Problem Set 1}
+\chead{Problem Set 2}
 \rhead{Nicolas Iskandar}
 
 \cfoot{\thepage\ /\ \pageref{LastPage}}
@@ -55,7 +55,7 @@
 \title{
     \vspace{-2em}
     MIT 6.1200J \\
-    Problem Set 1
+    Problem Set 2
 }
 \author{Nicolas Iskandar}
 \date{}
@@ -219,5 +219,177 @@ inductive step.
 By strong induction, $x_i > 0$ for all $i \geq 1$. $\blacksquare$
 
 \end{enumerate}
+
+\section*{Problem 3}
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item We compute the sequence of transitions from starting state $(5, 22, 0)$:
+
+\[
+\begin{array}{|c|c|c|c|}
+\hline
+r & s & a & \text{Rule applied} \\
+\hline
+5  & 22 & 0   & s \text{ even: } (2r,\, s/2,\, a) \\
+10 & 11 & 0   & s \text{ odd: } (2r,\, (s-1)/2,\, a+r) \\
+20 & 5  & 10  & s \text{ odd: } (2r,\, (s-1)/2,\, a+r) \\
+40 & 2  & 30  & s \text{ even: } (2r,\, s/2,\, a) \\
+80 & 1  & 30  & s \text{ odd: } (2r,\, (s-1)/2,\, a+r) \\
+160& 0  & 110 & s = 0, \text{ no transition (final state)} \\
+\hline
+\end{array}
+\]
+
+The final state is $(160, 0, 110)$, and indeed $a_f = 110 = 5 \cdot 22$. \checkmark
+
+\item We prove that $P(r, s, a) := ``rs + a = xy$'' is an invariant of the state machine.
+
+\textbf{Base case}: The start state is $(x, y, 0)$. We verify:
+\[
+    r \cdot s + a = x \cdot y + 0 = xy. \checkmark
+\]
+
+\textbf{Inductive step}: Suppose $(r, s, a)$ is a reachable state satisfying $P$,
+i.e., $rs + a = xy$, and $s > 0$ so a transition is possible. We consider two cases.
+
+\textbf{Case 1}: $s$ is even. The next state is $(2r,\, s/2,\, a)$. We verify $P$:
+\[
+    (2r)\cdot\frac{s}{2} + a = rs + a = xy. \checkmark
+\]
+
+\textbf{Case 2}: $s$ is odd. The next state is $(2r,\, (s-1)/2,\, a+r)$.
+We verify $P$:
+\[
+    (2r)\cdot\frac{s-1}{2} + (a + r) = r(s-1) + a + r = rs - r + a + r = rs + a = xy.
+    \checkmark
+\]
+
+In both cases, $P$ holds for the next state. Therefore $P$ is an invariant. $\blacksquare$
+
+\item A final state is one from which no transition is defined. By the problem
+statement, transitions are defined precisely when $s > 0$. Therefore, the final states
+are all triples of the form
+\[
+    (r, 0, a) \quad \text{for any } r, a \in \mathbb{N}.
+\]
+
+\item Let $(r_f, s_f, a_f)$ be any reachable final state. By part (c), $s_f = 0$.
+By part (b), since $P$ is an invariant and the start state satisfies $P$, every
+reachable state satisfies $P$. In particular:
+\[
+    r_f \cdot s_f + a_f = xy.
+\]
+Substituting $s_f = 0$:
+\[
+    r_f \cdot 0 + a_f = xy \implies a_f = xy.
+\]
+Therefore, in any reachable final state, $a_f = xy$. $\blacksquare$
+
+\item We prove that $\text{bitcount}(s)$ is a strictly decreasing derived variable,
+i.e., that every transition strictly decreases $\text{bitcount}(s)$.
+
+Consider any transition from state $(r, s, a)$ with $s > 0$.
+
+\textbf{Case 1}: $s$ is even. The new value of $s$ is $s/2$. Since $s > 0$, we have
+$s \geq 2$, so $s/2 \geq 1$. Now:
+\[
+    \text{bitcount}(s/2) = \left\lceil \log_2\!\left(\frac{s}{2} + 1\right) \right\rceil
+    < \left\lceil \log_2(s + 1) \right\rceil = \text{bitcount}(s),
+\]
+where the inequality holds because $\frac{s}{2} + 1 \leq s + 1$ for $s \geq 2$, so
+$\log_2(\frac{s}{2}+1) < \log_2(s+1)$. More directly: dividing $s$ by $2$ removes
+exactly the least significant bit of its binary representation, strictly reducing the
+number of bits by at least 1.
+
+\textbf{Case 2}: $s$ is odd. The new value of $s$ is $(s-1)/2$. Since $s \geq 1$
+is odd, we have $s - 1 \geq 0$ is even, so $(s-1)/2 \in \mathbb{N}$. We verify that
+the bit count strictly decreases:
+\[
+\begin{aligned}
+\text{bitcount}\!\left(\frac{s-1}{2}\right)
+&= \left\lceil \log_2\!\left(\frac{s-1}{2}+1\right) \right\rceil \\
+&= \left\lceil \log_2\!\left(\frac{s+1}{2}\right) \right\rceil \\
+&= \left\lceil \log_2(s+1)-1 \right\rceil \\
+&= \left\lceil \log_2(s+1) \right\rceil - 1 \\
+&= \text{bitcount}(s)-1.
+\end{aligned}
+\]
+So $\text{bitcount}(s)$ decreases by exactly 1. \checkmark \\
+Again, subtracting 1 from an odd number clears the last bit and then dividing by 2
+shifts right, so the bit count strictly decreases.
+
+In both cases, $\text{bitcount}(s)$ strictly decreases with every transition.
+Since $\text{bitcount}(s) \in \mathbb{N}$ (it is a nonneg integer), a strictly
+decreasing sequence of nonneg integers cannot continue forever. Therefore the algorithm
+always terminates. $\blacksquare$
+
+\item From part (e), $\text{bitcount}(s)$ decreases by exactly 1 at every step.
+Starting from $(x, y, 0)$, the initial value of $s$ is $y$, so the derived variable
+starts at $\text{bitcount}(y)$ and decreases by 1 at each step until it reaches $0$,
+at which point $s = 0$ and the algorithm halts. Therefore the algorithm terminates
+after exactly
+\[
+    \text{bitcount}(y) = \lceil \log_2(y+1) \rceil
+\]
+steps. $\blacksquare$
+
+\end{enumerate}
+
+\section*{Problem 4}
+
+\textbf{Theorem.} \textit{If fewer than $n$ students among those in an $n \times n$
+arrangement are initially enlightened, and additional students reach enlightenment only
+by being taught by two or more neighbors, then there will be at least one student who
+never reaches enlightenment.}
+
+\textbf{Proof.}
+
+We use a monotonically non-decreasing derived variable argument. Consider the
+\textbf{perimeter} of the enlightened region, defined as the total number of edges
+shared between an enlightened cell and an unenlightened cell (or the boundary of the
+grid). More precisely, let
+\[
+    L(t) := \text{the number of edges on the boundary of the set of enlightened
+    students on day } t.
+\]
+
+\textbf{Key Claim}: $L(t)$ is non-increasing over time, i.e., $L(t+1) \leq L(t)$
+for every day $t$.
+
+\textbf{Proof of Key Claim}: Consider a single student who becomes newly enlightened
+on day $t+1$. This student must have had at least 2 enlightened neighbors on day $t$.
+We analyze how the perimeter changes when this student becomes enlightened. Suppose
+the newly enlightened student has $k \geq 2$ enlightened neighbors. Then:
+\begin{itemize}
+    \item The $k$ edges shared with enlightened neighbors are \textit{removed} from
+    the perimeter (they no longer separate an enlightened cell from an unenlightened
+    one).
+    \item The $4 - k$ edges shared with unenlightened neighbors (or the boundary) are
+    \textit{added} to the perimeter.
+\end{itemize}
+So the net change in perimeter from this one student is $(4 - k) - k = 4 - 2k$.
+Since $k \geq 2$, we have $4 - 2k \leq 0$. Therefore each newly enlightened student
+does not increase the perimeter, and so $L(t+1) \leq L(t)$. $\square$
+
+\textbf{Bounding the initial perimeter}: Each enlightened student is a unit square,
+contributing at most 4 edges to the perimeter. Therefore, if there are fewer than $n$
+initially enlightened students:
+\[
+    L(0) \leq 4 \cdot (\text{number of initially enlightened students}) < 4n.
+\]
+
+\textbf{Bounding the final perimeter}: If \textit{all} $n^2$ students were
+enlightened, the enlightened region would be the entire $n \times n$ grid, whose
+perimeter is exactly $4n$:
+\[
+    L(\text{all enlightened}) = 4n.
+\]
+
+\textbf{Conclusion}: Since $L(t)$ is non-increasing and $L(0) < 4n$, we have
+$L(t) < 4n$ for all $t$. But if every student were enlightened, the perimeter would
+equal $4n$. Since the perimeter can never reach $4n$, the set of enlightened students
+can never be the entire $n \times n$ grid. Therefore, at least one student never
+reaches enlightenment. $\blacksquare$
 
 \end{document}
