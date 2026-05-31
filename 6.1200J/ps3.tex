@@ -1,0 +1,359 @@
+\documentclass[11pt]{article}
+
+% ---------- Packages ----------
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{listings}
+\usepackage{courier}
+
+% ---------- Hyperref ----------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+% ---------- Header/Footer ----------
+\pagestyle{fancy}
+\fancyhf{}
+
+\lhead{MIT 6.1200J}
+\chead{Problem Set 3}
+\rhead{Nicolas Iskandar}
+
+\cfoot{\thepage\ /\ \pageref{LastPage}}
+
+% ---------- Custom Commands ----------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+
+\newcommand{\answer}{
+    \vspace{0.5em}
+    \noindent\textbf{Answer.}
+}
+
+% ---------- Code Style ----------
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    columns=fullflexible,
+    keepspaces=true
+}
+
+% ---------- Title ----------
+\title{
+    \vspace{-2em}
+    MIT 6.1200J \\
+    Problem Set 3
+}
+\author{Nicolas Iskandar}
+\date{}
+
+% ==================================================
+\begin{document}
+
+\maketitle
+
+\section*{Problem 1}
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item \textbf{States}: The set of all permutations of $\{0, 1, \ldots, n-1\}$.
+
+\textbf{Start state}: The initial permutation $(x_0, x_1, \ldots, x_{n-1})$.
+
+\textbf{Transitions}: From a permutation $(a_0, \ldots, a_{n-1})$, there is a
+transition to
+\[
+(a_0, \ldots, a_{i-1}, a_j, a_{j-1}, \ldots, a_{i+1}, a_i,
+a_{j+1}, \ldots, a_{n-1})
+\]
+for every inverted pair $(i,j)$ with $i<j$ and $a_i>a_j$
+(i.e., only good reversals are allowed).
+
+\item \textbf{Final states}: A state has no outgoing transitions when no good
+reversal is possible, i.e., when there are no inverted pairs. A permutation has no
+inverted pairs if and only if it is sorted in increasing order. Therefore, the unique
+final state is the sorted permutation $(0, 1, 2, \ldots, n-1)$.
+
+\textbf{Partial correctness}: If the machine terminates, it must be in a final
+state. Since the only final state is $(0, 1, \ldots, n-1)$, the list must be
+sorted. $\blacksquare$
+
+\item We define the following derived variable. Interpret the permutation
+$(a_0, a_1, \ldots, a_{n-1})$ as the digits of a base-$n$ number:
+\[
+    V(a_0, \ldots, a_{n-1}) := \sum_{k=0}^{n-1} a_k \cdot n^{n-1-k}.
+\]
+We claim $V$ is a strictly decreasing derived variable with nonneg integer values.
+
+\textbf{Property (i) --- nonneg integer values}: Since each $a_k \in \{0, \ldots,
+n-1\}$ and $n^{n-1-k} \in \mathbb{N}$, we have $V \in \mathbb{N}$. \checkmark
+
+\textbf{Property (ii) --- strictly decreasing}: Suppose we perform a good reversal
+on the inverted pair $(i, j)$, where $i < j$ and $a_i > a_j$. The new permutation
+$(a_0', \ldots, a_{n-1}')$ satisfies:
+\begin{itemize}
+    \item $a_k' = a_k$ for $k < i$ and $k > j$ (unchanged outside the reversed
+    segment),
+    \item the segment $(a_i', \ldots, a_j')$ is the reverse of $(a_i, \ldots, a_j)$,
+    so in particular $a_i' = a_j$ and $a_j' = a_i$.
+\end{itemize}
+% Since only positions $i$ through $j$ change, and each weight $n^{n-1-k}$ is
+% divisible by $n^{n-1-j}$ for all $k \leq j$, the difference $V' - V$ is an
+% integer multiple of $n^{n-1-j}$. $.
+
+Since $a_k' = a_k$ for $k < i$ and $k > j$, only positions $i$ through $j$
+contribute to $V' - V$:
+\[
+    V' - V = \sum_{k=i}^{j}(a_k' - a_k)\cdot n^{n-1-k}.
+\]
+Each coefficient $a_k' - a_k$ is an integer, and each weight $n^{n-1-k}$ for
+$k \leq j$ satisfies $n - 1 - k \geq n - 1 - j$, so $n^{n-1-j} \mid n^{n-1-k}$.
+Therefore every term is divisible by $n^{n-1-j}$, and so $V' - V$ is an integer
+multiple of $n^{n-1-j}$. It therefore suffices to show $V' - V < 0$: since $V' - V$
+is an integer multiple of $n^{n-1-j}$, a negative value must be at most $-n^{n-1-j}$,
+and $n^{n-1-j} \geq 1$ gives us $V' - V \leq -n^{n-1-j} \leq -1$.
+
+To show $V' - V < 0$, factor out $n^{n-1-j}$ from the difference:
+\[
+    \frac{V' - V}{n^{n-1-j}} = \sum_{k=i}^{j}(a_k' - a_k)\cdot n^{j-k}.
+\]
+This is the difference between two base-$n$ numbers formed from the same
+multiset of digits. In the new number, the most significant position $k = i$
+has digit $a_i' = a_j$, while in the old it had digit $a_i > a_j$. Therefore
+the most significant digit has strictly decreased, which means the new number
+is strictly smaller than the old. Hence $V' - V < 0$, and therefore:
+\[
+    V' - V \leq -n^{n-1-j} \leq -1 < 0.
+\]
+So $V$ strictly decreases with every good reversal. \checkmark
+
+\item \textbf{Total correctness}: We combine parts (b) and (c).
+
+\textbf{Termination}: By part (c), $V$ is a derived variable that takes only
+nonneg integer values and strictly decreases with every transition. Since a
+nonneg integer cannot decrease forever, every execution must eventually
+terminate.
+
+\textbf{Partial correctness}: By part (b), if the machine terminates, it must
+be in a final state, and the unique final state is the sorted permutation
+$(0, 1, \ldots, n-1)$.
+
+Combining these two facts, every execution eventually terminates, and upon
+termination the list is fully sorted. $\blacksquare$
+
+\end{enumerate}
+
+\section*{Problem 2}
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item We use the perturbation method. Let
+\[
+    S = \sum_{n=1}^{\infty} \frac{F_n}{c^n}.
+\]
+Divide both sides by $c$:
+\[
+    \frac{S}{c} = \sum_{n=1}^{\infty} \frac{F_n}{c^{n+1}} = \sum_{n=2}^{\infty}
+    \frac{F_{n-1}}{c^n}.
+\]
+Similarly,
+\[
+    \frac{S}{c^2} = \sum_{n=1}^{\infty} \frac{F_n}{c^{n+2}} = \sum_{n=3}^{\infty}
+    \frac{F_{n-2}}{c^n}.
+\]
+Now compute $S - \frac{S}{c} - \frac{S}{c^2}$:
+\[
+    S - \frac{S}{c} - \frac{S}{c^2} = \sum_{n=1}^{\infty} \frac{F_n}{c^n} -
+    \sum_{n=2}^{\infty} \frac{F_{n-1}}{c^n} - \sum_{n=3}^{\infty}
+    \frac{F_{n-2}}{c^n}.
+\]
+Separating the first two terms:
+\[
+    = \frac{F_1}{c} + \frac{F_2 - F_1}{c^2} + \sum_{n=3}^{\infty}
+    \frac{F_n - F_{n-1} - F_{n-2}}{c^n}.
+\]
+By the Fibonacci recurrence, $F_n - F_{n-1} - F_{n-2} = 0$ for all $n \geq 3$.
+Also $F_1 = 1$ and $F_2 = 1$, so:
+\[
+    S\left(1 - \frac{1}{c} - \frac{1}{c^2}\right) = \frac{1}{c} + \frac{0}{c^2} =
+    \frac{1}{c}.
+\]
+Therefore:
+\[
+    S = \frac{1/c}{1 - 1/c - 1/c^2} = \frac{1/c \cdot c^2}{c^2 - c - 1} =
+    \frac{c}{c^2 - c - 1}.
+\]
+Substituting $c = 10^5$:
+\[
+    \boxed{S = \frac{10^5}{10^{10} - 10^5 - 1} = \frac{100000}{9999899999}.}
+\]
+
+\item Using WolframAlpha to compute $S = \frac{100000}{9999899999}$ to 50 decimal
+places:
+\[
+    S \approx 0.{\bf 00001}\ 00001\ 00002\ 00003\ 00005\ 00008\ 00013\ 00021\ 00034\
+    00055\ldots
+\]
+The pattern is clear: the digits after the decimal point, read in blocks of 5, give
+exactly the Fibonacci numbers $F_1, F_2, F_3, \ldots = 1, 1, 2, 3, 5, 8, 13, 21,
+34, 55, \ldots$
+
+This makes sense: by definition $S = \sum_{n=1}^{\infty} F_n / c^n$, so each
+Fibonacci number occupies its own block of 5 decimal digits (as long as $F_n < c =
+10^5$, i.e., before carrying occurs).
+
+\end{enumerate}
+
+\section*{Problem 3}
+
+Let $f(x) = \dfrac{x}{(5+x)^3}$.
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item The integral method requires $f$ to be eventually non-negative, continuous,
+and decreasing. While $f(x) > 0$ and is eventually decreasing, the issue is at
+$x = 0$: $f(0) = 0$. More critically, $f$ is not monotonically decreasing starting
+from $x = 0$. We verify: $f'(x) = \frac{(5+x)^3 - 3x(5+x)^2}{(5+x)^6} =
+\frac{5-2x}{(5+x)^4}$, which is positive for $x < 5/2$ and negative for $x > 5/2$.
+So $f$ is \textit{increasing} on $[0, 5/2]$, meaning the integral method cannot be
+applied directly to $S_0$.
+
+\item We need $f$ to be decreasing on $[i, \infty)$, which requires $i > 5/2$.
+Since $i$ must be an integer, the smallest such index is $\boxed{i = 3}$.
+
+\item We apply the integral method to $S_3 = \sum_{x=3}^{\infty} f(x)$. Since $f$
+is decreasing on $[3, \infty)$:
+\[
+    \int_3^{\infty} f(x)\,dx \leq S_3 \leq f(3) + \int_3^{\infty} f(x)\,dx.
+\]
+We compute the integral. Using the substitution $u = 5 + x$:
+\[
+    \int_3^{\infty} \frac{x}{(5+x)^3}\,dx = \int_8^{\infty} \frac{u-5}{u^3}\,du =
+    \int_8^{\infty} \left(\frac{1}{u^2} - \frac{5}{u^3}\right)du =
+    \left[-\frac{1}{u} + \frac{5}{2u^2}\right]_8^{\infty} = \frac{1}{8} -
+    \frac{5}{128} = \frac{11}{128}.
+\]
+Also, $f(3) = \frac{3}{8^3} = \frac{3}{512}$. So:
+\[
+    \frac{11}{128} \leq S_3 \leq \frac{11}{128} + \frac{3}{512} =
+    \frac{44}{512} + \frac{3}{512} = \frac{47}{512}.
+\]
+Now $S_0 = f(0) + f(1) + f(2) + S_3$. We compute:
+\[
+    f(0) = 0, \quad f(1) = \frac{1}{216}, \quad f(2) = \frac{2}{343}.
+\]
+Let $C = f(0) + f(1) + f(2) = \frac{1}{216} + \frac{2}{343}$. Then:
+\[
+    \frac{11}{128} + C \leq S_0 \leq \frac{47}{512} + C.
+\]
+The accuracy achieved is $\frac{47}{512} - \frac{11}{128} = \frac{47}{512} -
+\frac{44}{512} = \frac{3}{512} \approx 0.00586$.
+
+\item We want accuracy $\frac{1}{200}$, i.e., $f(j) \leq \frac{1}{200}$. Since the
+width of the interval from the integral method is $f(j)$ (the upper and lower bounds
+differ by exactly $f(j)$), we need the smallest integer $j \geq 3$ such that
+$f(j) \leq \frac{1}{200}$.
+
+We check:
+\[
+    f(j) = \frac{j}{(5+j)^3} \leq \frac{1}{200}.
+\]
+Testing $j = 7$: $f(7) = \frac{7}{12^3} = \frac{7}{1728} < \frac{1}{200}$ since
+$7 \cdot 200 = 1400 < 1728$. \checkmark
+
+Testing $j = 6$: $f(6) = \frac{6}{11^3} = \frac{6}{1331}$. $\frac{6}{1331} \leq
+\frac{1}{200}$? We need $6 \cdot 200 \leq 1331$, i.e., $1200 \leq 1331$. \checkmark
+
+Testing $j = 5$: $f(5) = \frac{5}{10^3} = \frac{5}{1000} = \frac{1}{200}$. We need
+$\frac{1}{200} \leq \frac{1}{200}$. \checkmark
+
+Testing $j = 4$: $f(4) = \frac{4}{9^3} = \frac{4}{729}$. Is $\frac{4}{729} \leq
+\frac{1}{200}$? We need $4 \cdot 200 \leq 729$, i.e., $800 \leq 729$. \texttimes
+
+So the smallest such $j$ is $\boxed{j = 5}$.
+
+Now we apply the integral method to $S_5$:
+\[
+    \int_5^{\infty} \frac{x}{(5+x)^3}\,dx = \int_{10}^{\infty}
+    \frac{u-5}{u^3}\,du = \left[-\frac{1}{u} + \frac{5}{2u^2}\right]_{10}^{\infty}
+    = \frac{1}{10} - \frac{5}{200} = \frac{1}{10} - \frac{1}{40} = \frac{3}{40}.
+\]
+So:
+\[
+    \frac{3}{40} \leq S_5 \leq \frac{3}{40} + f(5) = \frac{3}{40} + \frac{1}{200} =
+    \frac{15}{200} + \frac{1}{200} = \frac{16}{200} = \frac{2}{25}.
+\]
+Now $S_0 = f(0) + f(1) + f(2) + f(3) + f(4) + S_5$. Computing:
+\[
+    f(0)=0,\quad f(1)=\frac{1}{216},\quad f(2)=\frac{2}{343},\quad
+    f(3)=\frac{3}{512},\quad f(4)=\frac{4}{729}.
+\]
+Let $C' = \frac{1}{216} + \frac{2}{343} + \frac{3}{512} + \frac{4}{729}$. Then:
+\[
+    u = \frac{3}{40} + C' \leq S_0 \leq \frac{2}{25} + C' = v,
+\]
+with $|v - u| = \frac{1}{200}$. \checkmark
+
+\end{enumerate}
+
+\newpage
+
+\section*{Problem 4}
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item We write:
+\[
+    \sum_{i=0}^{n} \frac{5^i - 7^i}{13^i} = \sum_{i=0}^{n} \left(\frac{5}{13}
+    \right)^i - \sum_{i=0}^{n}\left(\frac{7}{13}\right)^i.
+\]
+Using the geometric series formula $\sum_{i=0}^{n} r^i = \frac{1 - r^{n+1}}{1-r}$:
+\[
+    = \frac{1 - (5/13)^{n+1}}{1 - 5/13} - \frac{1-(7/13)^{n+1}}{1-7/13} =
+    \frac{13}{8}\left(1 - \frac{5^{n+1}}{13^{n+1}}\right) - \frac{13}{6}\left(1 -
+    \frac{7^{n+1}}{13^{n+1}}\right).
+\]
+Therefore:
+\[
+    \boxed{\sum_{i=0}^{n} \frac{5^i - 7^i}{13^i} = \frac{13}{8} - \frac{13}{6} +
+    \frac{13}{6} \cdot \frac{7^{n+1}}{13^{n+1}} - \frac{13}{8} \cdot
+    \frac{5^{n+1}}{13^{n+1}} = -\frac{13}{24} + \frac{7^{n+1}}{6 \cdot 13^n} -
+    \frac{5^{n+1}}{8 \cdot 13^n}.}
+\]
+
+\item We evaluate the double sum by switching the order of summation:
+\[
+    \sum_{i=1}^{n}\sum_{j=1}^{k}(3j - i).
+\]
+We split and evaluate each part separately:
+\[
+    \sum_{i=1}^{n}\sum_{j=1}^{k}(3j-i) = \sum_{i=1}^{n}\left(3\sum_{j=1}^{k}j -
+    \sum_{j=1}^{k}i\right) = \sum_{i=1}^{n}\left(\frac{3k(k+1)}{2} - ki\right).
+\]
+Now summing over $i$:
+\[
+    = n \cdot \frac{3k(k+1)}{2} - k\sum_{i=1}^{n}i = \frac{3nk(k+1)}{2} -
+    k\cdot\frac{n(n+1)}{2}.
+\]
+Therefore:
+\[
+    \boxed{\sum_{i=1}^{n}\sum_{j=1}^{k}(3j-i) = \frac{nk}{2}\Big(3(k+1) -
+    (n+1)\Big) = \frac{nk(3k - n + 2)}{2}.}
+\]
+
+\end{enumerate}
+
+\end{document}
