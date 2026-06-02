@@ -1,0 +1,351 @@
+\documentclass[11pt]{article}
+
+% ---------- Packages ----------
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{listings}
+\usepackage{courier}
+
+% ---------- Hyperref ----------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+% ---------- Header/Footer ----------
+\pagestyle{fancy}
+\fancyhf{}
+
+\lhead{MIT 6.1200J}
+\chead{Problem Set 4}
+\rhead{Nicolas Iskandar}
+
+\cfoot{\thepage\ /\ \pageref{LastPage}}
+
+% ---------- Custom Commands ----------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+
+\newcommand{\answer}{
+    \vspace{0.5em}
+    \noindent\textbf{Answer.}
+}
+
+% ---------- Code Style ----------
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    columns=fullflexible,
+    keepspaces=true
+}
+
+% ---------- Title ----------
+\title{
+    \vspace{-2em}
+    MIT 6.1200J \\
+    Problem Set 4
+}
+\author{Nicolas Iskandar}
+\date{}
+
+% ==================================================
+\begin{document}
+
+\maketitle
+
+\section*{Problem 1: Asymptotic Relationships}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item \textbf{Table of asymptotic relationships (no justification required):}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|l|l|l|}
+\hline
+$f(n)$ & $g(n)$ & Relationship \\
+\hline
+$6^n$ & $n^{1200}$ & $f \in \omega(g)$ \\
+$(\log n)^6$ & $\sqrt[1200]{n}$ & $f \in o(g)$ \\
+$\log_6(n^{1200})$ & $(\log_{1200} n)^6$ & $f \in o(g)$ \\
+$\log(n!)$ & $n \log n$ & $f \sim g$ \\
+$2^{\lceil \log_2 n \rceil}$ & $3^{\lceil \log_3 n \rceil}$ & $f \in \Theta(g)$ \\
+$2^{\lceil \log_2 n \rceil} - n + 1$ & $3^{\lceil \log_3 n \rceil} - n + 1$ & None \\
+$n$ & $n^{\cos \log n}$ & $f \in \Omega(g)$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Brief notes on selected rows:}
+\begin{itemize}
+  \item $\log_6(n^{1200}) = \frac{1200}{\ln 6}\ln n = \Theta(\log n)$, while $(\log_{1200} n)^6 = \Theta((\log n)^6)$. Since $\log n \in o((\log n)^6)$, we get $f \in o(g)$.
+  \item $\log(n!) \sim n\log n$ by Stirling's approximation.
+  \item For $2^{\lceil\log_2 n\rceil}$: since $\log_2 n \le \lceil\log_2 n\rceil < \log_2 n + 1$, we get $n \le 2^{\lceil\log_2 n\rceil} < 2n$, so $2^{\lceil\log_2 n\rceil} = \Theta(n)$. Similarly $3^{\lceil\log_3 n\rceil} = \Theta(n)$, so both are $\Theta(n)$ and the ratio is bounded: $f \in \Theta(g)$.
+  \item For the fifth row minus $n+1$: both $2^{\lceil\log_2 n\rceil} - n + 1$ and $3^{\lceil\log_3 n\rceil} - n + 1$ are $O(n)$ but can oscillate between $\Theta(1)$ and $\Theta(n)$, so no clean relationship holds.
+\end{itemize}
+
+\item \textbf{Justified pairs:}
+
+\textbf{Pair 1:} $f(n) = 2^{((\log n)^2)}$, $g(n) = 2^{(\lceil\log n\rceil^2)}$ \\
+\textbf{Relationship:} $f \in O(g)$
+
+\textbf{Justification:}\\
+By the definition of the ceiling function, we know that for any positive integer $n \ge 1$, $\log n \le \lceil \log n \rceil$. Assuming the base of the logarithm is $2$ (as specified in the problem instructions), $\log n \ge 0$ for $n \ge 1$. This allows us to square both sides while preserving the inequality:
+\[ 
+(\log n)^2 \le (\lceil \log n \rceil)^2 
+\]
+Because the exponential function $2^x$ is monotonically increasing, we can exponentiate both sides:
+\[ 
+2^{(\log n)^2} \le 2^{(\lceil \log n \rceil)^2} 
+\]
+This proves that $f(n) \le g(n)$ for all $n \ge 1$. Therefore, $f(n)$ is bounded above by $g(n)$, establishing that $f \in O(g)$.
+
+To confirm this is the most specific relationship, we must verify why it is not $o(g)$ or $\Theta(g)$:
+\begin{itemize}
+    \item \textbf{Why not $o(g)$?} If $n$ is an exact power of 2 (i.e., $n = 2^k$ for some integer $k$), then $\log_2 n = k$. The ceiling function has no effect, meaning $f(n) = g(n)$. Since $f(n) / g(n) = 1$ for infinitely many values of $n$, $f(n)$ cannot be strictly asymptotically smaller than $g(n)$.
+    \item \textbf{Why not $\Theta(g)$?} If we consider $n$ just below a power of 2, the ceiling function jumps up to the next integer, creating a growing difference between $(\log n)^2$ and $(\lceil \log n \rceil)^2$. Because this gap in the exponent grows unboundedly as $n$ increases, $g(n)$ is not bounded above by $c \cdot f(n)$ for any constant $c$.
+\end{itemize}
+Thus, $O(g)$ is the strongest, most specific relationship.
+\medskip
+
+
+\textbf{Pair 2:} $f(n) = 4^n$, $g(n) = \frac{(2n)!}{(n!)^2}$
+\textbf{Relationship:} $f \in \omega(g)$
+
+\textbf{Justification:}\\
+Notice that $g(n)$ is the expanded formula for the central binomial coefficient, $\binom{2n}{n}$. To analyze its asymptotic growth and compare it to $f(n)$, we can apply Stirling's approximation, $n! \sim \sqrt{2\pi n} \left(\frac{n}{e}\right)^n$:
+\[
+g(n) = \frac{(2n)!}{(n!)^2} \sim \frac{\sqrt{4\pi n} \left(\frac{2n}{e}\right)^{2n}}{\left(\sqrt{2\pi n} \left(\frac{n}{e}\right)^n\right)^2}
+\]
+First, we simplify the denominator:
+\[
+\left(\sqrt{2\pi n} \left(\frac{n}{e}\right)^n\right)^2 = 2\pi n \left(\frac{n}{e}\right)^{2n} = 2\pi n \cdot \frac{n^{2n}}{e^{2n}}
+\]
+Now substituting this back into the approximation for $g(n)$:
+\[
+g(n) \sim \frac{2\sqrt{\pi n} \cdot \frac{2^{2n} n^{2n}}{e^{2n}}}{2\pi n \cdot \frac{n^{2n}}{e^{2n}}}
+\]
+Canceling out the common terms ($n^{2n}$ and $e^{2n}$) yields:
+\[
+g(n) \sim \frac{2 \cdot 4^n \sqrt{\pi n}}{2\pi n} = \frac{4^n}{\sqrt{\pi n}}
+\]
+Now, to compare $f(n)$ and $g(n)$, we evaluate the limit of their ratio as $n \to \infty$:
+\[
+\lim_{n \to \infty} \frac{f(n)}{g(n)} = \lim_{n \to \infty} \frac{4^n}{\left(\frac{4^n}{\sqrt{\pi n}}\right)} = \lim_{n \to \infty} \sqrt{\pi n} = \infty
+\]
+Because the limit of the ratio $\frac{f(n)}{g(n)}$ diverges to infinity, it demonstrates that $f(n)$ grows strictly faster asymptotically than $g(n)$. By definition, this establishes the Little-omega relationship: $f \in \omega(g)$.
+
+\end{enumerate}
+
+%% ============================================================
+\section*{Problem 2: OEIS}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item Compute $x_3, x_4, x_5, x_6$ using $x_n = 5x_{n-2} + 2x_{n-3}$:
+\begin{align*}
+  x_3 &= 5x_1 + 2x_0 = 5(1) + 2(0) = 5,\\
+  x_4 &= 5x_2 + 2x_1 = 5(2) + 2(1) = 12,\\
+  x_5 &= 5x_3 + 2x_2 = 5(5) + 2(2) = 29,\\
+  x_6 &= 5x_4 + 2x_3 = 5(12) + 2(5) = 70.
+\end{align*}
+
+\item Searching OEIS for $0, 1, 2, 5, 12, 29, 70$ leads to \textbf{OEIS A000129}, which matches this sequence.
+
+\item From the OEIS entry, a closed form is:
+\[
+  x_n = \frac{(1+\sqrt{2})^n - (1-\sqrt{2})^n}{2 \sqrt{2}}.
+\]
+
+\item \textbf{Proof by Strong Induction:}
+
+Let $\alpha = 1+\sqrt{2}$ and $\beta = 1-\sqrt{2}$. We want to prove that the closed-form formula:
+\[
+  x_n = \frac{\alpha^n - \beta^n}{2\sqrt{2}}
+\]
+holds for all integers $n \ge 0$.
+
+\textbf{Base Cases:} Since our recurrence relation $x_n = 5x_{n-2} + 2x_{n-3}$ relies on the three previous terms, we must verify the formula for our first three terms ($n=0, 1,$ and $2$):
+\begin{align*}
+  n=0: \quad & \frac{(1+\sqrt{2})^0 - (1-\sqrt{2})^0}{2\sqrt{2}} = \frac{1 - 1}{2\sqrt{2}} = 0 = x_0. \quad \checkmark \\
+  n=1: \quad & \frac{(1+\sqrt{2})^1 - (1-\sqrt{2})^1}{2\sqrt{2}} = \frac{1+\sqrt{2} - 1 + \sqrt{2}}{2\sqrt{2}} = \frac{2\sqrt{2}}{2\sqrt{2}} = 1 = x_1. \quad \checkmark \\
+  n=2: \quad & \frac{(1+\sqrt{2})^2 - (1-\sqrt{2})^2}{2\sqrt{2}} = \frac{(3+2\sqrt{2}) - (3-2\sqrt{2})}{2\sqrt{2}} = \frac{4\sqrt{2}}{2\sqrt{2}} = 2 = x_2. \quad \checkmark
+\end{align*}
+
+\textbf{Inductive Hypothesis:} Assume that the formula holds for all integers $m$ such that $0 \le m \le k$ for some integer $k \ge 2$. 
+
+\textbf{Inductive Step:} We want to show that the formula holds for $n = k+1$.
+Using the given recurrence relation and our inductive hypothesis:
+\begin{align*}
+  x_{k+1} &= 5x_{k-1} + 2x_{k-2} \\
+          &= 5 \left( \frac{\alpha^{k-1} - \beta^{k-1}}{2\sqrt{2}} \right) + 2 \left( \frac{\alpha^{k-2} - \beta^{k-2}}{2\sqrt{2}} \right) \\
+          &= \frac{1}{2\sqrt{2}} \left[ \left( 5\alpha^{k-1} + 2\alpha^{k-2} \right) - \left( 5\beta^{k-1} + 2\beta^{k-2} \right) \right] \\
+          &= \frac{1}{2\sqrt{2}} \left[ \alpha^{k-2}(5\alpha + 2) - \beta^{k-2}(5\beta + 2) \right]
+\end{align*}
+
+Now, we evaluate $5\alpha + 2$ and compare it to $\alpha^3$:
+\begin{align*}
+  5\alpha + 2 &= 5(1+\sqrt{2}) + 2 = 7 + 5\sqrt{2} \\
+  \alpha^3 &= (1+\sqrt{2})^3 = 1^3 + 3(1)^2(\sqrt{2}) + 3(1)(\sqrt{2})^2 + (\sqrt{2})^3 = 1 + 3\sqrt{2} + 6 + 2\sqrt{2} = 7 + 5\sqrt{2}
+\end{align*}
+Thus, $5\alpha + 2 = \alpha^3$. By identical algebraic expansion for the conjugate, $5\beta + 2 = \beta^3$.
+
+Substituting these cubic identities back into our equation for $x_{k+1}$:
+\begin{align*}
+  x_{k+1} &= \frac{1}{2\sqrt{2}} \left[ \alpha^{k-2}(\alpha^3) - \beta^{k-2}(\beta^3) \right] \\
+          &= \frac{\alpha^{k+1} - \beta^{k+1}}{2\sqrt{2}}
+\end{align*}
+This matches our target formula for $n = k+1$. By the principle of strong induction, the formula holds for all integers $n \ge 0$. \hfill $\blacksquare$
+
+\end{enumerate}
+
+%% ============================================================
+\section*{Problem 3: Bounded Asymptotics}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item Prove that $f \in O(g)$ \\
+\textbf{Premise:} $f$ is bounded from above, and $g$ is bounded away from zero. Both functions map $\mathbb{N} \to \mathbb{R}^+$.
+
+\textbf{Proof:}\\
+Because $f$ is bounded from above, there exists some real number $M$ such that $f(n) \le M$ for all $n \in \mathbb{N}$. Since the codomain of $f$ is $\mathbb{R}^+$, we know $f(n) > 0$, which means $M > 0$.
+Because $g$ is bounded away from zero, there exists some real number $B > 0$ such that $g(n) \ge B$ for all $n \in \mathbb{N}$.
+By the formal definition of Big-O, we need to show that there exist constants $c > 0$ and $n_0 \ge 1$ such that $f(n) \le c \cdot g(n)$ for all $n \ge n_0$.
+Let $c = \frac{M}{B}$. Since $M > 0$ and $B > 0$, the constant $c$ is strictly greater than zero.
+Because $g(n) \ge B$, we can multiply both sides by $c$ to get:
+\[
+c \cdot g(n) \ge c \cdot B = \left(\frac{M}{B}\right) B = M
+\]
+We already established that $f(n) \le M$. Therefore, by transitivity:
+\[
+f(n) \le M \le c \cdot g(n)
+\]
+This inequality holds for all $n \in \mathbb{N}$ (so we can choose $n_0 = 1$). Thus, $f \in O(g)$. \hfill $\blacksquare$
+
+\item Is it necessarily true that $f \in O(g)$? \\
+\textbf{Answer:} No, it is not necessarily true.
+
+\textbf{Justification:}\\
+We can prove this by providing a counterexample. The problem defines ``bounded from below'' as simply $g(n) \ge B$ for some real number $B$. It does \textit{not} specify that $B > 0$ (unlike ``bounded away from zero'').
+
+\begin{itemize}
+    \item Let $f(n) = 1$. This maps to $\mathbb{R}^+$ and is bounded from above (e.g., by $M=1$).
+    \item Let $g(n) = \frac{1}{n}$. This maps to $\mathbb{R}^+$ and is bounded from below (e.g., by $B=0$), but it approaches zero as $n$ grows.
+\end{itemize}
+
+If $f \in O(g)$ were true, there would exist constants $c > 0$ and $n_0$ such that for all $n \ge n_0$:
+\[
+1 \le c \cdot \left(\frac{1}{n}\right) \implies n \le c
+\]
+This inequality is impossible to satisfy for all $n \ge n_0$ because $c$ is a fixed constant, but $n$ grows infinitely large. Therefore, $f \notin O(g)$.
+
+\item Strictly Decreasing and Increasing Functions
+
+\textbf{Part 1: Is it necessarily true that $f \in O(g)$?}\\
+\textbf{Answer:} Yes.
+
+\textbf{Justification:}
+\begin{itemize}
+    \item Because $f$ is strictly decreasing and maps $\mathbb{N} \to \mathbb{R}^+$, its largest value is its first term. Thus, $f(n) \le f(1)$ for all $n \ge 1$. This means $f$ is bounded from above by $M = f(1)$.
+    \item Because $g$ is strictly increasing and maps $\mathbb{N} \to \mathbb{R}^+$, its smallest value is its first term. Thus, $g(n) \ge g(1)$ for all $n \ge 1$. Since $g$ maps to strictly positive real numbers, $g(1) > 0$. Therefore, $g$ is bounded away from zero by $B = g(1)$.
+    \item Because $f$ is bounded from above and $g$ is bounded away from zero, we can apply the exact proof from \textbf{Part (a)} to conclude that $f \in O(g)$ must be true.
+\end{itemize}
+
+\vspace{0.5cm}
+
+\textbf{Part 2: Is it necessarily true that $f \in o(g)$?}\\
+\textbf{Answer:} No.
+
+\textbf{Justification:}\\
+For Little-o to hold, the limit $\lim_{n \to \infty} \frac{f(n)}{g(n)}$ must equal $0$. We can provide a counterexample where $f$ strictly decreases to a positive constant and $g$ strictly increases to a positive constant:
+\begin{itemize}
+    \item Let $f(n) = 1 + \frac{1}{n}$. (Strictly decreasing, maps to $\mathbb{R}^+$).
+    \item Let $g(n) = 2 - \frac{1}{n}$. (Strictly increasing, maps to $\mathbb{R}^+$).
+\end{itemize}
+
+Taking the limit of their ratio as $n$ approaches infinity:
+\[
+\lim_{n \to \infty} \frac{1 + \frac{1}{n}}{2 - \frac{1}{n}} = \frac{1}{2}
+\]
+Because the limit is $\frac{1}{2}$ and not $0$, $f$ does not grow strictly slower than $g$. Therefore, $f \notin o(g)$.
+
+\end{enumerate}
+
+%% ============================================================
+\section*{Problem 4: Karatsuba's Algorithm}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item Compute $T(2)$, $T(3)$, $T(4)$ using $T(n) = 3T(\lceil n/2 \rceil) + 10n$, $T(0)=0$, $T(1)=1$:
+\begin{align*}
+  T(2) &= 3T(\lceil 2/2 \rceil) + 10(2) = 3T(1) + 20 = 3(1)+20 = 23,\\
+  T(3) &= 3T(\lceil 3/2 \rceil) + 10(3) = 3T(2) + 30 = 3(23)+30 = 69+30 = 99,\\
+  T(4) &= 3T(\lceil 4/2 \rceil) + 10(4) = 3T(2) + 40 = 3(23)+40 = 69+40 = 109.
+\end{align*}
+
+\item \textbf{Plug and Chug for $n = 2^k$:}
+
+Let $n = 2^k$. Then $\lceil n/2 \rceil = 2^{k-1}$, so the recurrence becomes $T(2^k) = 3T(2^{k-1}) + 10\cdot 2^k$.
+
+Let $S(k) = T(2^k)$. Then $S(k) = 3S(k-1) + 10\cdot 2^k$ with $S(0) = T(1) = 1$.
+
+\textbf{Unrolling:}
+\begin{align*}
+  S(k) &= 3S(k-1) + 10\cdot 2^k\\
+       &= 3\bigl(3S(k-2) + 10\cdot 2^{k-1}\bigr) + 10\cdot 2^k = 3^2 S(k-2) + 3\cdot 10\cdot 2^{k-1} + 10\cdot 2^k\\
+       &= 3^2 S(k-2) + 10\cdot 2^k\!\left(\frac{3}{2} + 1\right)\\
+       &= 3^j S(k-j) + 10\cdot 2^k \sum_{i=0}^{j-1}\left(\frac{3}{2}\right)^i.
+\end{align*}
+Setting $j = k$:
+\[
+  S(k) = 3^k S(0) + 10\cdot 2^k \sum_{i=0}^{k-1}\left(\frac{3}{2}\right)^i = 3^k + 10\cdot 2^k\cdot\frac{(3/2)^k - 1}{3/2 - 1} = 3^k + 10\cdot 2^k\cdot\frac{(3/2)^k-1}{1/2}.
+\]
+\[
+  = 3^k + 20\cdot 2^k\cdot\left(\frac{3^k}{2^k} - 1\right) = 3^k + 20\cdot 3^k - 20\cdot 2^k = 21\cdot 3^k - 20\cdot 2^k.
+\]
+Since $n = 2^k$, we have $k = \log_2 n$, $3^k = 3^{\log_2 n} = n^{\log_2 3}$, and $2^k = n$. So:
+\[
+  \boxed{T(n) = 21\,n^{\log_2 3} - 20n, \quad n \text{ a power of } 2.}
+\]
+
+\textbf{Verification:}
+\begin{align*}
+  T(1):&\quad 21\cdot 1 - 20\cdot 1 = 1.\checkmark\\
+  T(2):&\quad 21\cdot 3^1 - 20\cdot 2 = 63 - 40 = 23.\checkmark\\
+  T(4):&\quad 21\cdot 3^2 - 20\cdot 4 = 189 - 80 = 109.\checkmark
+\end{align*}
+
+\item \textbf{Master Theorem application.}
+
+The recurrence is $T(n) = 3T(\lceil n/2\rceil) + 10n$ for $n \ge 2$.
+
+This fits the Master Theorem with $a = 3$, $b = 2$, $f(n) = 10n$.
+
+Compute $n^{\log_b a} = n^{\log_2 3} \approx n^{1.585}$.
+
+Compare $f(n) = 10n$ with $n^{\log_2 3}$: since $\log_2 3 > 1$, we have $n \in o(n^{\log_2 3})$, i.e., $f(n) \in O(n^{\log_2 3 - \epsilon})$ for $\epsilon = \log_2 3 - 1 > 0$.
+
+This satisfies Case 1 of the Master Theorem ($f(n) \in O(n^{\log_b a - \epsilon})$ for some $\epsilon > 0$).
+
+\textbf{Conclusion:}
+\[
+  T(n) \in \Theta(n^{\log_2 3}).
+\]
+
+\textit{Proof using Master Theorem:} We have $a=3 \ge 1$, $b=2 > 1$, $f(n) = 10n = \Theta(n^1)$. Since $\log_2 3 \approx 1.585 > 1$, we have $f(n) = O(n^{\log_2 3 - \epsilon})$ for $\epsilon = \log_2 3 - 1 > 0$. By Case 1 of the Master Theorem, $T(n) \in \Theta(n^{\log_2 3})$. $\blacksquare$
+
+\item \textbf{Is Karatsuba an asymptotic improvement?}
+
+Yes. The straightforward algorithm runs in $\Theta(n^2)$, while Karatsuba runs in $\Theta(n^{\log_2 3})$. Since $\log_2 3 \approx 1.585 < 2$, we have $n^{\log_2 3} \in o(n^2)$, so Karatsuba is \textbf{asymptotically faster} than the straightforward algorithm.
+
+\end{enumerate}
+
+\end{document}
