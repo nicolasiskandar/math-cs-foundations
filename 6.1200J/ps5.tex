@@ -1,0 +1,224 @@
+\documentclass[11pt]{article}
+
+% ---------- Packages ----------
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{listings}
+\usepackage{courier}
+
+% ---------- Hyperref ----------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+% ---------- Header/Footer ----------
+\pagestyle{fancy}
+\fancyhf{}
+
+\lhead{MIT 6.1200J}
+\chead{Problem Set 5}
+\rhead{Nicolas Iskandar}
+
+\cfoot{\thepage\ /\ \pageref{LastPage}}
+
+% ---------- Custom Commands ----------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+
+\newcommand{\answer}{
+    \vspace{0.5em}
+    \noindent\textbf{Answer.}
+}
+
+% ---------- Code Style ----------
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    columns=fullflexible,
+    keepspaces=true
+}
+
+% ---------- Title ----------
+\title{
+    \vspace{-2em}
+    MIT 6.1200J \\
+    Problem Set 5
+}
+\author{Nicolas Iskandar}
+\date{}
+
+% ==================================================
+\begin{document}
+
+\maketitle
+
+\section*{Problem 1: Fibonacci Divisibility}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item \textbf{Claim:} For every $n \geq 0$, $F_{n+a} \equiv F_n \cdot F_{a+1} \pmod{F_a}$.
+
+\textbf{Proof} by strong induction on $n$.
+
+\textbf{Base cases.}
+\begin{itemize}
+    \item $n = 0$: $F_{0+a} = F_a \equiv 0 = F_0 \cdot F_{a+1} \pmod{F_a}$. \checkmark
+    \item $n = 1$: $F_{1+a} = F_{a+1} \equiv F_{a+1} = F_1 \cdot F_{a+1} \pmod{F_a}$. \checkmark
+\end{itemize}
+
+\textbf{Inductive step.} Let $n \geq 2$ and assume the statement holds for $n-1$ and $n-2$. Then:
+\[
+F_{n+a} = F_{(n-1)+a} + F_{(n-2)+a}
+\equiv F_{n-1} \cdot F_{a+1} + F_{n-2} \cdot F_{a+1}
+= (F_{n-1} + F_{n-2}) \cdot F_{a+1}
+= F_n \cdot F_{a+1} \pmod{F_a}.
+\]
+This completes the induction. $\blacksquare$
+
+\item \textbf{Claim:} $F_a \mid F_b$ whenever $b \in \mathbb{N}$ is a multiple of $a$.
+
+Write $b = ma$ for some $m \in \mathbb{N}$. We induct on $m$.
+
+\textbf{Base case} ($m = 0$): $F_0 = 0$ and $F_a \mid 0$. \checkmark
+
+\textbf{Inductive step.} Assume $F_a \mid F_{ma}$; we show $F_a \mid F_{(m+1)a}$.
+
+Applying part~(a) with $n = ma$:
+\[
+F_{ma + a} \equiv F_{ma} \cdot F_{a+1} \pmod{F_a}.
+\]
+By the inductive hypothesis $F_a \mid F_{ma}$, so $F_{ma} \equiv 0 \pmod{F_a}$. Therefore:
+\[
+F_{(m+1)a} \equiv 0 \cdot F_{a+1} = 0 \pmod{F_a},
+\]
+i.e., $F_a \mid F_{(m+1)a}$. $\blacksquare$
+
+\end{enumerate}
+
+\section*{Problem 2: Computing Modular Inverses}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item \textbf{Using the Pulverizer.} We run the extended Euclidean algorithm on $43$ and $15$:
+
+\[
+\begin{array}{rcrcr}
+43 &=& 2\cdot 15 &+& 13 \\
+15 &=& 1\cdot 13 &+& 2  \\
+13 &=& 6\cdot 2  &+& 1  \\
+2  &=& 2\cdot 1  &+& 0
+\end{array}
+\]
+
+Back-substituting to express $1$ as a linear combination of $43$ and $15$:
+\begin{align*}
+1 &= 13 - 6\cdot 2 \\
+  &= 13 - 6(15 - 1\cdot 13) = 7\cdot 13 - 6\cdot 15 \\
+  &= 7(43 - 2\cdot 15) - 6\cdot 15 = 7\cdot 43 - 20\cdot 15.
+\end{align*}
+
+Thus $-20 \cdot 15 \equiv 1 \pmod{43}$. Converting to $[0, 43)$: $-20 \equiv 23 \pmod{43}$.
+
+\textbf{Verification:} $15 \cdot 23 = 345 = 8 \cdot 43 + 1 \equiv 1\pmod{43}$. \checkmark
+
+The inverse of $15 \pmod{43}$ is $\boxed{23}$.
+
+\item \textbf{Using Fermat's Little Theorem.} Since $43$ is prime and $\gcd(15,43)=1$, Fermat's Little Theorem gives $15^{42}\equiv 1\pmod{43}$, so $15^{-1}\equiv 15^{41}\pmod{43}$.
+
+We compute $15^{41}$ by repeated squaring:
+\begin{align*}
+15^1 &\equiv 15 \pmod{43}\\
+15^2 &\equiv 225 = 5\cdot 43 + 10 \equiv 10 \pmod{43}\\
+15^4 &\equiv 10^2 = 100 = 2\cdot 43 + 14 \equiv 14 \pmod{43}\\
+15^8 &\equiv 14^2 = 196 = 4\cdot 43 + 24 \equiv 24 \pmod{43}\\
+15^{16}&\equiv 24^2 = 576 = 13\cdot 43 + 17 \equiv 17 \pmod{43}\\
+15^{32}&\equiv 17^2 = 289 = 6\cdot 43 + 31 \equiv 31 \pmod{43}
+\end{align*}
+
+Since $41 = 32 + 8 + 1$:
+\[
+15^{41} \equiv 31 \cdot 24 \cdot 15 \pmod{43}.
+\]
+\[
+31\cdot 24 = 744 = 17\cdot 43 + 13 \equiv 13\pmod{43},\qquad
+13\cdot 15 = 195 = 4\cdot 43 + 23 \equiv 23\pmod{43}.
+\]
+
+The inverse of $15 \pmod{43}$ is $\boxed{23}$.
+
+\end{enumerate}
+
+\section*{Problem 3: Primality Testing}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item \textbf{Claim:} If the Fermat test returns \textsc{Composite}, then $n$ is indeed composite.
+
+\textbf{Proof.} If the test returns \textsc{Composite}, then $a^{n-1}\not\equiv 1\pmod{n}$ for the chosen $a$. We prove the contrapositive: if $n$ is prime, then $a^{n-1}\equiv 1\pmod{n}$ for all $1\le a\le n-1$.
+
+If $n$ is prime and $1\le a\le n-1$, then $\gcd(a,n)=1$. By Fermat's Little Theorem, $a^{n-1}\equiv 1\pmod{n}$. Therefore, if $a^{n-1}\not\equiv 1\pmod{n}$, then $n$ cannot be prime, i.e., $n$ is composite. $\blacksquare$
+
+\item \textbf{Claim:} If $p$ is prime and $x^2\equiv 1\pmod{p}$, then $x\equiv \pm 1\pmod{p}$.
+
+\textbf{Proof.} From $x^2\equiv 1\pmod{p}$ we get $p\mid x^2 - 1 = (x-1)(x+1)$. Since $p$ is prime, Lemma~9.4.2 (if a prime divides a product, it divides one of the factors) implies $p\mid (x-1)$ or $p\mid(x+1)$. Hence $x\equiv 1\pmod{p}$ or $x\equiv -1\pmod{p}$. $\blacksquare$
+
+\item \textbf{Claim:} If the Miller--Rabin test returns \textsc{Composite}, then $n$ is indeed composite.
+
+\textbf{Proof.} We prove the contrapositive: \emph{if $n$ is prime, the algorithm never returns \textsc{Composite}}.
+
+Assume $n$ is prime and $1\le a\le n-1$. Since $n$ is prime, $\gcd(a,n)=1$, so by Fermat's Little Theorem $a^{n-1}\equiv 1\pmod{n}$, i.e., $x_e\equiv 1\pmod{n}$. This means the first condition for returning \textsc{Composite} ($x_e\not\equiv 1$) is \emph{never} triggered.
+
+For the second condition: suppose for some $i$ that $x_{i+1}\equiv 1\pmod{n}$. Then $x_i^2 = x_{i+1}\equiv 1\pmod{n}$. Since $n$ is prime, part~(b) guarantees that the only square roots of $1$ mod $n$ are $\pm 1$, so $x_i\equiv\pm 1\pmod{n}$. Thus the pair $(x_i, x_{i+1})$ with $x_{i+1}\equiv 1$ but $x_i\not\equiv\pm 1$ \emph{never occurs}.
+
+Hence, if $n$ is prime, the algorithm always returns \textsc{I don't know}. Contrapositive: if the algorithm returns \textsc{Composite}, then $n$ is composite. $\blacksquare$
+
+\end{enumerate}
+
+\section*{Problem 4: Pulverizer State Machine}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item We verify that \textbf{(Pres1)}, \textbf{(Pres2)}, and \textbf{(Pres3)} are each preserved across one transition.
+
+Consider a state $(x, y, s, t, u, v)$ satisfying all three predicates, with $y > 0$. Let $q = x \operatorname{div} y$ and $r = x \operatorname{rem} y$, so $x = qy + r$. The successor state is $(x', y', s', t', u', v') = (y,\, r,\, u,\, v,\, s-qu,\, t-qv)$.
+
+\textbf{(Pres1):}
+\[
+\gcd(x', y') = \gcd(y, r) = \gcd(y, x - qy) = \gcd(x, y) = \gcd(a, b). \checkmark
+\]
+
+\textbf{(Pres2):}
+\[
+s'a + t'b = ua + vb = y = x'. \checkmark
+\]
+(The last two equalities use (Pres3) and the definition of $x'$ in the old state.)
+
+\textbf{(Pres3):}
+\[
+u'a + v'b = (s - qu)a + (t - qv)b = (sa + tb) - q(ua + vb) = x - qy = r = y'. \checkmark
+\]
+(Using (Pres2) and (Pres3) in the old state.)
+
+Since all three predicates are preserved across every transition, they form a preserved invariant. $\blacksquare$
+
+\item \textbf{Correctness upon termination.} At termination the machine halts because $y = 0$ (transitions only fire when $y > 0$). At this point:
+\begin{itemize}
+    \item By \textbf{(Pres1)}: $\gcd(x, 0) = x = \gcd(a, b)$.
+    \item By \textbf{(Pres2)}: $sa + tb = x = \gcd(a, b)$.
+\end{itemize}
+Hence the output coefficients $s, t$ satisfy B\'{e}zout's identity $\gcd(a,b) = sa + tb$, so the machine computes a correct answer. $\blacksquare$
+
+\item The $x$-and-$y$ components of the Pulverizer state evolve by exactly the same rule $(x, y) \to (y,\; x \bmod y)$ as the Euclidean algorithm, so the machine performs precisely the same sequence of divisions and terminates after exactly the same number of transitions. $\blacksquare$
+
+\end{enumerate}
+
+\end{document}
