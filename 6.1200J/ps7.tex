@@ -1,0 +1,241 @@
+\documentclass[11pt]{article}
+
+% ---------- Packages ----------
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{listings}
+\usepackage{courier}
+
+% ---------- Hyperref ----------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+% ---------- Header/Footer ----------
+\pagestyle{fancy}
+\fancyhf{}
+
+\lhead{MIT 6.1200J}
+\chead{Problem Set 7}
+\rhead{Nicolas Iskandar}
+
+\cfoot{\thepage\ /\ \pageref{LastPage}}
+
+% ---------- Custom Commands ----------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+
+\newcommand{\answer}{
+    \vspace{0.5em}
+    \noindent\textbf{Answer.}
+}
+
+% ---------- Code Style ----------
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    columns=fullflexible,
+    keepspaces=true
+}
+
+% ---------- Title ----------
+\title{
+    \vspace{-2em}
+    MIT 6.1200J \\
+    Problem Set 7
+}
+\author{Nicolas Iskandar}
+\date{}
+
+% ==================================================
+\begin{document}
+
+\maketitle
+
+\section*{Problem 1: Tree's Degrees}
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+    \item \textbf{Proof by induction on $n$:} 
+    
+    \textbf{Base Case:} Let $n = 2$. The only tree with 2 vertices is a single edge connecting two nodes. Both nodes have a degree of 1, so the number of leaves is $L = 2$. The number of nodes with degree $\ge 3$ is $k = 0$. We check the inequality: $L \ge k + 2 \implies 2 \ge 0 + 2$, which holds true.
+
+    \textbf{Inductive Step:} Assume that any tree with $n-1$ vertices ($n \ge 3$) and $k'$ vertices of degree $\ge 3$ has at least $k' + 2$ leaves.
+    Let $T$ be a tree with $n$ vertices. Since $n \ge 3$, $T$ has at least one leaf $v$. Let $u$ be the unique neighbor of $v$. 
+    Form a new tree $T'$ by deleting $v$ and the edge $(u,v)$. $T'$ has $n-1$ vertices. Let $L'$ be the number of leaves in $T'$, and $k'$ be the number of vertices in $T'$ with degree $\ge 3$. By the inductive hypothesis, $L' \ge k' + 2$.
+    
+    We consider the degree of $u$ in $T$, denoted $d_T(u)$:
+    \begin{itemize}
+        \item \textbf{Case 1: $d_T(u) > 3$}. When moving from $T$ to $T'$, $u$'s degree drops by 1, but remains $\ge 3$. So, $k = k'$. The deleted node $v$ was a leaf in $T$, and $u$ does not become a leaf in $T'$. Thus, $L = L' + 1$. We have $L = L' + 1 \ge k' + 3 = k + 3 > k + 2$.
+        \item \textbf{Case 2: $d_T(u) = 3$}. When moving from $T$ to $T'$, $u$'s degree drops to 2. Thus, $k' = k - 1$. Node $v$ was a leaf in $T$, and $u$ is not a leaf in $T'$. Thus, $L = L' + 1$. We have $L = L' + 1 \ge (k - 1) + 2 + 1 = k + 2$.
+        \item \textbf{Case 3: $d_T(u) = 2$}. When moving from $T$ to $T'$, $u$'s degree drops to 1, making it a leaf in $T'$. Here, $k = k'$. Node $v$ was a leaf in $T$, but $u$ becomes a leaf in $T'$, meaning the net number of leaves does not change: $L = L'$. We have $L = L' \ge k' + 2 = k + 2$.
+    \end{itemize}
+    In all cases, $T$ has at least $k + 2$ leaves, completing the induction.
+
+    \item \textbf{Proof using the Handshake Lemma:}
+    
+    Let $n_i$ be the number of vertices of degree $i$ in $T$. Thus, $n = \sum_{i \ge 1} n_i$. The number of leaves is $L = n_1$. The number of vertices of degree $\ge 3$ is $k = \sum_{i \ge 3} n_i$.
+    A tree with $n$ vertices has exactly $n - 1$ edges. By the Handshake Lemma, the sum of all degrees is twice the number of edges:
+    $$\sum_{v \in V} \text{deg}(v) = 2|E| \implies \sum_{i \ge 1} i \cdot n_i = 2(n - 1)$$
+    Expand both sides (using $n = n_1 + n_2 + n_3 + \dots$):
+    $$n_1 + 2n_2 + 3n_3 + 4n_4 + \dots = 2(n_1 + n_2 + n_3 + n_4 + \dots) - 2$$
+    Subtracting the right summation from the left gives:
+    $$-n_1 + n_3 + 2n_4 + 3n_5 + \dots = -2$$
+    Rearranging to solve for $n_1$ (the number of leaves $L$):
+    $$L = n_1 = 2 + n_3 + 2n_4 + 3n_5 + \dots$$
+    Notice that $n_3 + 2n_4 + 3n_5 + \dots \ge n_3 + n_4 + n_5 + \dots = k$. 
+    Therefore, $L \ge 2 + k$.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+\section*{Problem 2: Froli-King}
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+    \item Let's model the chessboard as an undirected graph $G = (V, E)$, where $V$ consists of the 64 squares on the board, and edges represent valid King moves between them. The problem states there are 420 possible directed moves, meaning there are 210 undirected edges ($|E| = 210$).
+    
+    A Frolicsome sequence of exactly 210 steps that starts and ends on the same cell and uses no edge twice (nor its reverse) corresponds precisely to an \textbf{Eulerian tour} of the graph $G$.
+    
+    A connected graph contains an Eulerian tour if and only if \textit{every} vertex has an even degree. Let's examine the degrees of the vertices (squares) on the chessboard:
+    \begin{itemize}
+        \item The 4 corner squares each have exactly 3 valid King moves (degree 3).
+    \end{itemize}
+    Because $G$ contains vertices with odd degrees (specifically, the 4 corners, and additionally the 24 non-corner edge squares which have degree 5), it is impossible for an Eulerian tour to exist. Thus, a 210-step Frolicsome sequence cannot exist.
+
+    \item To create an Eulerian graph, we must eliminate all vertices of odd degree by removing edges between them.
+    Let's count the number of odd-degree vertices on an $8\times8$ board:
+    \begin{itemize}
+        \item 4 corners have degree 3.
+        \item 24 non-corner edge squares have degree 5.
+    \end{itemize}
+    This gives exactly $4 + 24 = 28$ vertices with odd degrees. (All 36 interior squares have degree 8, which is even).
+    
+    In a graph, every removed edge can change the parity of at most 2 vertices. Therefore, to fix 28 odd-degree vertices, we must remove a minimum of $28 / 2 = 14$ edges. 
+    By carefully selecting 14 disjoint edges connecting these 28 odd-degree vertices, we can decrease their degrees by 1, making all vertices even. The graph remains connected. 
+    
+    With all vertices now having even degrees, an Eulerian tour exists in this modified subgraph. The new sequence will have exactly $210 - 14 = 196$ steps.
+\end{enumerate}
+
+\newpage
+
+\section*{Problem 3: DAGs}
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+    \item The largest chain is a path of maximum length from a source to a sink. One such chain is: \textbf{1 $\to$ 2 $\to$ 3 $\to$ 6 $\to$ 9 $\to$ 10 $\to$ 12} (size 7).
+    
+    \item The largest antichain consists of a set of tasks where none depends on another. One such maximum antichain is: \textbf{\{1, 4, 5, 7, 8, 11\}} (size 6).
+    To prove there isn't a larger antichain, we apply Dilworth's Theorem. We can partition the entire DAG into 6 chains (e.g., $C_1: 1 \to 2 \to 3 \to 6 \to 9 \to 10 \to 12$, and single-node chains $C_2: 7$, $C_3: 8$, $C_4: 4$, $C_5: 5$, $C_6: 11$). Because the graph can be covered by exactly 6 chains, the maximum size of an antichain cannot exceed 6.
+    
+    \item A single processor executes one task per second. Since there are 12 tasks in total, it would take \textbf{12 seconds}.
+    
+    \item With unlimited processors, the time required is bounded strictly by the longest chain (the critical path). From part (a), the longest chain has 7 tasks. Therefore, it would take \textbf{7 seconds}.
+    
+    \item The smallest number of processors $p$ is \textbf{3}. 
+    
+    \textbf{Schedule for $p=3$:}
+    \begin{itemize}
+        \item Time 1: \{1, 7, 8\}
+        \item Time 2: \{2, 4, 5\}
+        \item Time 3: \{3, 11\}
+        \item Time 4: \{6\}
+        \item Time 5: \{9\}
+        \item Time 6: \{10\}
+        \item Time 7: \{12\}
+    \end{itemize}
+    \textbf{Proof that $p \le 2$ fails:} To finish in the optimal 7 seconds, the 7-node critical path ($1,2,3,6,9,10,12$) must be executed continuously without delay at times $t=1, 2, 3, 4, 5, 6, 7$ respectively. This strict timeline demands that task 3 must start precisely at $t=3$. For task 3 to be ready by $t=3$, all its prerequisites (nodes 1, 2, 7, 8) must finish within the first 2 seconds. That is 4 tasks in 2 seconds, which completely maxes out a 2-processor system. 
+    However, task 6 must start at $t=4$, meaning its prerequisites (nodes 4, 5) must finish by $t=3$. At $t=3$, the 2 processors are forced to execute task 3 and one of \{4, 5\}, leaving the other incomplete. This delays task 6 and stretches the total time beyond 7 seconds. Thus, 2 processors are insufficient.
+    
+    \item A valid topological ordering: \textbf{1, 7, 8, 4, 5, 11, 2, 3, 6, 9, 10, 12}.
+\end{enumerate}
+
+\newpage
+
+\section*{Problem 4: Pokémon Constraints}
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+    \item The constraint that no two Pokémon share a type means Ash cannot pick both Dragon-types (A, D), both Normal-types (B, E), or any pair of the Grass-types (C, F, G). We represent this as 2-clauses:
+    $$\phi_2 := (\overline{A} \lor \overline{D}) \land (\overline{B} \lor \overline{E}) \land (\overline{C} \lor \overline{F}) \land (\overline{C} \lor \overline{G}) \land (\overline{F} \lor \overline{G})$$
+    
+    \item The implication graph $H = (V, I)$ encodes each 2-clause $(u \lor v)$ as two directed edges $\overline{u} \to v$ and $\overline{v} \to u$.
+    From $\phi_1 \land \phi_2$, we extract the following out-neighbors for each vertex:
+    \begin{itemize}
+        \item $A \to \{\overline{D}\}$
+        \item $B \to \{\overline{C}, \overline{E}\}$
+        \item $C \to \{\overline{B}, \overline{F}, \overline{G}\}$
+        \item $D \to \{\overline{A}, \overline{E}\}$
+        \item $E \to \{D, \overline{B}\}$
+        \item $F \to \{\overline{C}, \overline{G}\}$
+        \item $G \to \{\overline{C}, \overline{F}\}$
+        \item $\overline{A} \to \{E\}$
+        \item $\overline{B} \to \{C\}$
+        \item $\overline{C} \to \{B\}$
+        \item $\overline{D} \to \{\overline{E}\}$
+        \item $\overline{E} \to \{A, E\}$
+        \item $\overline{F} \to \emptyset$
+        \item $\overline{G} \to \emptyset$
+    \end{itemize}
+
+    \item \textbf{Proof by induction on path length $k$:}
+    \begin{itemize}
+        \item \textbf{Base Case ($k=1$):} A path of length 1 is a single edge $(u, v)$ in $H$. By construction, $(u, v)$ exists if and only if $\overline{u} \lor v$ is a clause in $\phi$ (or derivable). The clause $\overline{u} \lor v$ is logically equivalent to $u \Rightarrow v$. Since $\phi$ is assumed to be true, all its clauses are true, hence $u \Rightarrow v$ is true.
+        \item \textbf{Inductive Step:} Assume that for any path of length $k-1$ from $u$ to $w$, $u \Rightarrow w$ is true. Consider a path of length $k$ from $u$ to $v$. This path consists of a path of length $k-1$ from $u$ to some intermediate vertex $w$, and a single edge $(w, v)$. 
+        By the inductive hypothesis, $u \Rightarrow w$. By the base case, the edge $(w, v)$ means $w \Rightarrow v$. Because logical implication is transitive, $u \Rightarrow w$ and $w \Rightarrow v$ gives $u \Rightarrow v$.
+    \end{itemize}
+
+    \item Let's trace the Strongly Connected Components (SCCs):
+    \begin{itemize}
+        \item $S_1 = \{B, \overline{C}\}$ (from $B \to \overline{C}$ and $\overline{C} \to B$)
+        \item $S_2 = \{\overline{B}, C\}$ (from $\overline{B} \to C$ and $C \to \overline{B}$)
+        \item $S_3 = \{E, D, \overline{A}\}$ (from $E \to D \to \overline{A} \to E$)
+        \item $S_4 = \{\overline{E}, A, \overline{D}\}$ (from $\overline{E} \to A \to \overline{D} \to \overline{E}$)
+        \item $S_5 = \{F\}$
+        \item $S_6 = \{G\}$
+        \item $S_7 = \{\overline{F}\}$
+        \item $S_8 = \{\overline{G}\}$
+    \end{itemize}
+    \textbf{Condensation Graph Out-Neighbors:}
+    \begin{itemize}
+        \item $S_1 \to S_4$
+        \item $S_4 \to S_3$
+        \item $S_3 \to S_2$
+        \item $S_2 \to S_7, S_8$
+        \item $S_5 \to S_1, S_8$
+        \item $S_6 \to S_1, S_7$
+        \item $S_7 \to \emptyset$
+        \item $S_8 \to \emptyset$
+    \end{itemize}
+
+    \item By topologically sorting the SCCs of $H$, we order them such that all edges go strictly left-to-right. Based on the dependencies in (d), one valid topological ordering is: 
+    $$S_5, S_6, S_1, S_4, S_3, S_2, S_7, S_8$$
+    Replacing SCC names with their literal contents:
+    $$\{F\}, \{G\}, \{B, \overline{C}\}, \{\overline{E}, A, \overline{D}\}, \{E, D, \overline{A}\}, \{\overline{B}, C\}, \{\overline{F}\}, \{\overline{G}\}$$
+    
+    The set $T$ consists of literals $u$ where $[\overline{u}]$ appears \textit{before} $[u]$ in this topological order. 
+    By comparing the position of every literal against its negation, we find that:
+    \begin{itemize}
+        \item $\overline{A}$ follows $A \implies \overline{A} \in T$
+        \item $\overline{B}$ follows $B \implies \overline{B} \in T$
+        \item $C$ follows $\overline{C} \implies C \in T$
+        \item $D$ follows $\overline{D} \implies D \in T$
+        \item $E$ follows $\overline{E} \implies E \in T$
+        \item $\overline{F}$ follows $F \implies \overline{F} \in T$
+        \item $\overline{G}$ follows $G \implies \overline{G} \in T$
+    \end{itemize}
+    Thus, the set $T$ (our assigned truth values) is:
+    $$T = \{\overline{A}, \overline{B}, C, D, E, \overline{F}, \overline{G}\}$$
+    The positive literals identify Ash's finalized team: \textbf{Chikorita, Dratini, and Eevee}.
+\end{enumerate}
+
+\end{document}
