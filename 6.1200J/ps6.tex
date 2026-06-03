@@ -1,0 +1,265 @@
+\documentclass[11pt]{article}
+
+% ---------- Packages ----------
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{listings}
+\usepackage{courier}
+
+% ---------- Hyperref ----------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+% ---------- Header/Footer ----------
+\pagestyle{fancy}
+\fancyhf{}
+
+\lhead{MIT 6.1200J}
+\chead{Problem Set 6}
+\rhead{Nicolas Iskandar}
+
+\cfoot{\thepage\ /\ \pageref{LastPage}}
+
+% ---------- Custom Commands ----------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+
+\newcommand{\answer}{
+    \vspace{0.5em}
+    \noindent\textbf{Answer.}
+}
+
+% ---------- Code Style ----------
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    columns=fullflexible,
+    keepspaces=true
+}
+
+% ---------- Title ----------
+\title{
+    \vspace{-2em}
+    MIT 6.1200J \\
+    Problem Set 6
+}
+\author{Nicolas Iskandar}
+\date{}
+
+% ==================================================
+\begin{document}
+
+\maketitle
+
+\section*{Problem 1: Failed Induction}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+    \item We can construct a graph $G$ that satisfies the condition but is not 6-colorable by utilizing a complete graph on 7 vertices, $K_7$. The graph $K_7$ requires 7 colors to be properly colored, so any graph containing $K_7$ as a component cannot be 6-colored.
+    
+    The graph $K_7$ has 7 vertices and $\binom{7}{2} = 21$ edges. To satisfy the condition that the total number of edges is at most $3n - 6$, we can add isolated vertices (which add to $n$ but do not add any edges) until the inequality holds.
+    
+    We need the total edges (21) to be less than or equal to the maximum allowed edges:
+    $$21 \le 3n - 6$$
+    $$27 \le 3n$$
+    $$n \ge 9$$
+    
+    Let $n = 9$. We define our graph $G$ to consist of one $K_7$ component and 2 isolated vertices. 
+    \begin{itemize}
+        \item Total vertices: $n = 7 + 2 = 9$.
+        \item Total edges: $m = 21 + 0 = 21$.
+        \item Maximum allowed edges for $n=9$: $3(9) - 6 = 27 - 6 = 21$.
+    \end{itemize}
+    Since $21 \le 21$, this graph satisfies the premise of having at most $3n - 6$ edges. However, because it contains $K_7$ as a subgraph, it requires 7 colors. Thus, the claim is false.
+
+    \item The induction argument breaks down because the property of having ``at most $3n - 6$ edges'' is not closed under taking subgraphs (specifically, vertex deletion). 
+    
+    In a standard induction proof for graph coloring, we find a vertex $v$ of small degree (which must exist because the average degree is strictly less than 6), remove it to create a smaller graph $G' = G - v$, apply the induction hypothesis to 6-color $G'$, and then add $v$ back.
+    
+    For the induction hypothesis to apply to $G'$ (which has $n-1$ vertices), $G'$ must satisfy the same edge bound:
+    $$|E(G')| \le 3(n-1) - 6 = 3n - 9$$
+    
+    However, removing a vertex $v$ only removes $\deg(v)$ edges. If we remove a vertex with a degree of 2 or less (like one of the isolated vertices with degree 0 in our part (a) counterexample), we do not remove enough edges to maintain the density bound. For our $n=9$ graph, removing an isolated vertex yields a graph $G'$ with 8 vertices and 21 edges. The bound requires $G'$ to have at most $3(8) - 6 = 18$ edges. Since $21 \not\le 18$, $G'$ does not satisfy the premise of the claim, and the induction hypothesis cannot be applied.
+\end{enumerate}
+
+\section*{Problem 2: High Chromatic Number Without Triangles}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+\item To prove that $\chi(G) \le 4$, we must demonstrate that there exists a valid 4-coloring for the graph $G$. Let our available colors be $\{1, 2, 3, 4\}$.First, we observe the structure of the graph:
+\begin{itemize}
+    \item The outer vertices $u_0, \dots, u_4$ form a 5-cycle ($C_5$).
+    \item The inner vertices $v_i$ are each connected to $w$ and two outer vertices ($v_i$ connects to $u_{i-1}$ and $u_{i+1}$, modulo 5).
+    \item The center vertex $w$ connects to all $v_i$.
+\end{itemize}
+
+We can define a valid coloring $c: V \to \{1,2,3,4\}$ as follows:
+\begin{itemize}
+    \item \textbf{Outer cycle:} Color the $C_5$ with 3 colors: 
+    $$c(u_0)=1, \quad c(u_1)=2, \quad c(u_2)=1, \quad c(u_3)=2, \quad c(u_4)=3$$
+    This is a valid coloring because no adjacent vertices in the cycle share a color.
+    \item \textbf{Inner vertices:} Assign each inner vertex the same color as its corresponding outer vertex: $c(v_i) = c(u_i)$ for all $i$. 
+    Let's verify this causes no conflicts. A vertex $v_i$ is connected to $u_{i-1}$ and $u_{i+1}$. Because $c(v_i) = c(u_i)$, a conflict would only occur if $c(u_i) = c(u_{i-1})$ or $c(u_i) = c(u_{i+1})$. However, since the outer cycle is properly colored, $u_i$ never shares a color with its neighbors $u_{i-1}$ or $u_{i+1}$. Therefore, $v_i$ does not share a color with its neighbors. 
+    \item \textbf{Center:} The vertex $w$ connects to all inner vertices $v_i$. Since the inner vertices only utilize colors $\{1, 2, 3\}$, we can assign $w$ the remaining color: $c(w) = 4$.
+\end{itemize}
+Since we have successfully colored all vertices of $G$ using exactly 4 colors without any two adjacent vertices sharing the same color, it must be that $\chi(G) \le 4$.
+
+\item The outer vertices $u_0, u_1, u_2, u_3, u_4$ form a 5-cycle ($C_5$). It is a known fact that a 5-cycle is not 2-colorable (as it is an odd cycle), meaning it strictly requires 3 colors. 
+
+In any valid 3-coloring of a 5-cycle, because the maximum independent set of $C_5$ is 2, no single color can be used more than twice. To color 5 vertices with 3 colors, the frequencies of the colors used must be exactly 2, 2, and 1. 
+
+By utilizing the symmetry of the graph (rotating it), we can orient the $C_5$ such that the vertex assigned the unique color is placed at the bottom position ($u_3$). Let's designate this unique color as Green.
+
+This leaves the remaining 4 vertices $(u_4, u_0, u_1, u_2)$ forming a path that must be colored using only the remaining 2 colors (Blue and Pink). To validly color a path with 2 colors, the colors must strictly alternate. This gives us exactly two possibilities for the path $(u_4, u_0, u_1, u_2)$:
+\begin{enumerate}
+    \item Pink $\to$ Blue $\to$ Pink $\to$ Blue
+    \item Blue $\to$ Pink $\to$ Blue $\to$ Pink
+\end{enumerate}
+These two possibilities are mathematically identical and map directly to one another simply by relabeling (swapping) the names of "Blue" and "Pink". Therefore, up to rotation and relabeling, there is only one valid 3-coloring of the outer 5-cycle, which perfectly matches the partial coloring provided in the diagram.
+
+\item Assume for the sake of contradiction that $G$ is 3-colorable ($\chi(G) = 3$). 
+
+By part (b), we can fix the partial 3-coloring of the outer cycle exactly as shown in the diagram without any loss of generality:
+$$c(u_0) = \text{Blue}, \quad c(u_1) = \text{Pink}, \quad c(u_2) = \text{Blue}, \quad c(u_3) = \text{Green}, \quad c(u_4) = \text{Pink}$$
+
+Now, we must attempt to color the inner vertices $\{v_0, v_1, v_2, v_3, v_4\}$ and the center $w$ using only these same 3 colors. Let's look at the forced constraints on specific inner vertices based on their outer neighbors:
+\begin{itemize}
+    \item Vertex $v_2$ is adjacent to $u_1$ (Pink) and $u_3$ (Green). To avoid conflicts, $v_2$ \textbf{must} be colored Blue.
+    \item Vertex $v_3$ is adjacent to $u_2$ (Blue) and $u_4$ (Pink). To avoid conflicts, $v_3$ \textbf{must} be colored Green.
+    \item Vertex $v_4$ is adjacent to $u_0$ (Blue) and $u_3$ (Green). To avoid conflicts, $v_4$ \textbf{must} be colored Pink.
+\end{itemize}
+
+Finally, consider the center vertex $w$. By the graph's definition, $w$ is adjacent to all inner vertices, which includes $v_2, v_3,$ and $v_4$. 
+Based on our forced colorings above, $w$ is adjacent to a Blue vertex ($v_2$), a Green vertex ($v_3$), and a Pink vertex ($v_4$). 
+
+For $w$ to be validly colored, it must receive a color different from all of its neighbors. However, all 3 available colors are already present in its immediate neighborhood. There is no 4th color available, making it impossible to color $w$. 
+
+This contradiction proves our initial assumption false. Therefore, the graph cannot be 3-colored, and we conclude that $\chi(G) > 3$.
+\end{enumerate}
+
+\section*{Problem 3: Find A Pet}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+    \item We run the Gale-Shapley Matching Algorithm with the critters (A, B, C, D) acting as the suitors proposing to the ponies (H, I, S, Z).
+    
+    \begin{itemize}
+        \item \textbf{Day 1:} All critters propose to their first choices. A, B, C, and D all propose to H. H's preference is D > C > B > A. H reserves D and rejects A, B, and C.
+        \item \textbf{Day 2:} The rejected critters (A, B, C) propose to their second choices. A proposes to S. B proposes to I. C proposes to I. S reserves A (only proposal). I receives B and C. I's preference is A > C > B > D. I reserves C and rejects B.
+        \item \textbf{Day 3:} The newly rejected critter (B) proposes to its third choice, S. S currently has A reserved. S's preference is C > B > D > A. S prefers B over A, so S reserves B and rejects A.
+        \item \textbf{Day 4:} The newly rejected critter (A) proposes to its third choice, Z. Z currently has no reservations, so Z reserves A.
+        \item \textbf{Day 5:} There are no rejected critters left. The algorithm terminates.
+    \end{itemize}
+
+    \begin{center}
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{|c||c|c|c|c|c|c|c|}
+    \hline
+     & Day 1 & Day 2 & Day 3 & Day 4 & Day 5 & Day 6 & Day 7 \\
+    \hline\hline
+    H & A, B, C, $\boxed{\text{D}}$ & $\boxed{\text{D}}$ & $\boxed{\text{D}}$ & $\boxed{\text{D}}$ & & & \\
+    \hline
+    I & $\emptyset$ & B, $\boxed{\text{C}}$ & $\boxed{\text{C}}$ & $\boxed{\text{C}}$ & & & \\
+    \hline
+    S & $\emptyset$ & $\boxed{\text{A}}$ & A, $\boxed{\text{B}}$ & $\boxed{\text{B}}$ & & & \\
+    \hline
+    Z & $\emptyset$ & $\emptyset$ & $\emptyset$ & $\boxed{\text{A}}$ & & & \\
+    \hline
+    \end{tabular}
+    \end{center}
+
+    \item We run the Matching Algorithm again, this time with the ponies (H, I, S, Z) acting as the suitors proposing to the critters (A, B, C, D).
+    
+    \begin{itemize}
+        \item \textbf{Day 1:} All ponies propose to their first choices. H proposes to D. I proposes to A. S proposes to C. Z proposes to D. A reserves I. C reserves S. D receives proposals from H and Z. D's preference is H > Z > S > I. D reserves H and rejects Z.
+        \item \textbf{Day 2:} The rejected pony (Z) proposes to her second choice, B. B currently has no reservations, so B reserves Z.
+        \item \textbf{Day 3:} There are no rejected ponies left. The algorithm terminates.
+    \end{itemize}
+
+    \begin{center}
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{|c||c|c|c|}
+    \hline
+     & Day 1 & Day 2 & Day 3 \\
+    \hline\hline
+    A & $\boxed{\text{I}}$ & $\boxed{\text{I}}$ & \\
+    \hline
+    B & $\emptyset$ & $\boxed{\text{Z}}$ & \\
+    \hline
+    C & $\boxed{\text{S}}$ & $\boxed{\text{S}}$ & \\
+    \hline
+    D & $\boxed{\text{H}}$, Z & $\boxed{\text{H}}$ & \\
+    \hline
+    \end{tabular}
+    \end{center}
+
+    \item To prove that any matching pairing H with C is unstable, we must show that such a matching will always contain a rogue couple. 
+    
+    Assume for the sake of contradiction that there exists a stable matching $M$ where Hitch (H) is paired with Cassandra (C).
+    
+    \begin{itemize}
+        \item According to H's preference list (D > C > B > A), H strictly prefers D over his current match, C.
+        \item According to D's preference list (H > Z > S > I), H is D's absolute first choice. Therefore, D strictly prefers H over whoever D is currently paired with in $M$ (since D cannot be paired with H if H is paired with C).
+    \end{itemize}
+    
+    Because H and D strictly prefer each other over their respective partners in the matching $M$, the pair (H, D) forms a rogue couple. By definition, a matching containing a rogue couple is unstable. This contradicts our initial assumption. 
+    
+    Thus, any matching that pairs H with C must be unstable.
+\end{enumerate}
+
+\section*{Problem 4: Stable Merriment}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+    \item We are given that a Trainer is considered \textit{merry} if they are matched with one of their top $\lceil n/2 \rceil$ choices.
+    
+    In the Gale-Shapley Stable Matching Algorithm (with Pokémon proposing), a Trainer's held proposal only improves (or remains the same) as the algorithm progresses. Therefore, if a Trainer finishes the algorithm without being merry, it means they ended up with a Pokémon strictly worse than their top $\lceil n/2 \rceil$ choices. Consequently, they must have \textbf{never} received a proposal from any of their top $\lceil n/2 \rceil$ Pokémon (otherwise, they would have held onto it or traded up for better, ending up merry).
+    
+    This implies that all proposals a non-merry Trainer receives must come from the remaining $n - \lceil n/2 \rceil = \lfloor n/2 \rfloor$ Pokémon on their list. 
+    
+    The maximum number of proposals a single non-merry Trainer could possibly receive is $\lfloor n/2 \rfloor$. Since every Trainer ultimately accepts exactly 1 final proposal, the maximum number of rejections a single Trainer can make is $\lfloor n/2 \rfloor - 1$.
+    
+    The total number of rejections $S$ is the sum of rejections made by all $n$ Trainers. Thus:
+    $$S \le n(\lfloor n/2 \rfloor - 1)$$
+    
+    We can verify this upper bound against $n^2/2$ for both even and odd $n$:
+    \begin{itemize}
+        \item \textbf{Case 1 ($n$ is even):} Let $n = 2k$. Then $\lfloor n/2 \rfloor = k = n/2$. 
+        $$S \le n\left(\frac{n}{2} - 1\right) = \frac{n^2}{2} - n$$
+        Since $n \ge 1$ for any valid matching problem, we clearly have $\frac{n^2}{2} - n < \frac{n^2}{2}$.
+        
+        \item \textbf{Case 2 ($n$ is odd):} Let $n = 2k + 1$. Then $\lfloor n/2 \rfloor = k = \frac{n-1}{2}$.
+        $$S \le n\left(\frac{n-1}{2} - 1\right) = n\left(\frac{n-3}{2}\right) = \frac{n^2}{2} - \frac{3n}{2}$$
+        Again, since $n \ge 1$, we have $\frac{n^2}{2} - \frac{3n}{2} < \frac{n^2}{2}$.
+    \end{itemize}
+    In both cases, we conclude that if there are no merry Trainers, then $S < n^2/2$.
+
+    \item Assume for the sake of contradiction that \textbf{neither} any Pokémon \textbf{nor} any Trainer is merry.
+    
+    Because there are no merry Trainers, we established in part (a) that $S < n^2/2$.
+    
+    Now, consider the Pokémon. If no Pokémon is merry, every Pokémon ends up matched with a Trainer who is strictly worse than their top $\lceil n/2 \rceil$ choices. 
+    
+    Because Pokémon propose strictly in descending order of their preferences, for a Pokémon to end up with a match worse than their top $\lceil n/2 \rceil$, they must have proposed to \textbf{every single one} of their top $\lceil n/2 \rceil$ choices and been rejected by all of them.
+    
+    This means each of the $n$ Pokémon experiences at least $\lceil n/2 \rceil$ rejections. The total number of rejections $S$ must be at least the sum of all rejections experienced by the Pokémon, giving the lower bound:
+    $$S \ge n \lceil n/2 \rceil$$
+    
+    Let's evaluate this lower bound for $S$:
+    \begin{itemize}
+        \item \textbf{If $n$ is even ($n=2k$):} $\lceil n/2 \rceil = n/2$, so $S \ge n(n/2) = n^2/2$.
+        \item \textbf{If $n$ is odd ($n=2k+1$):} $\lceil n/2 \rceil = \frac{n+1}{2}$, so $S \ge n\left(\frac{n+1}{2}\right) = \frac{n^2}{2} + \frac{n}{2} > n^2/2$.
+    \end{itemize}
+    
+    In all cases, the assumption that there are no merry Pokémon forces $S \ge n^2/2$.
+    
+    This creates a direct contradiction: $S$ cannot be strictly less than $n^2/2$ while simultaneously being greater than or equal to $n^2/2$. Our initial assumption must be false. Therefore, at least one Pokémon or Trainer must be merry.
+\end{enumerate}
+
+\end{document}
