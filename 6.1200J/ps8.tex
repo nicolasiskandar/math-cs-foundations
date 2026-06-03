@@ -1,0 +1,214 @@
+\documentclass[11pt]{article}
+
+% ---------- Packages ----------
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{listings}
+\usepackage{courier}
+
+% ---------- Hyperref ----------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+% ---------- Header/Footer ----------
+\pagestyle{fancy}
+\fancyhf{}
+
+\lhead{MIT 6.1200J}
+\chead{Problem Set 8}
+\rhead{Nicolas Iskandar}
+
+\cfoot{\thepage\ /\ \pageref{LastPage}}
+
+% ---------- Custom Commands ----------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+
+\newcommand{\answer}{
+    \vspace{0.5em}
+    \noindent\textbf{Answer.}
+}
+
+% ---------- Code Style ----------
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    columns=fullflexible,
+    keepspaces=true
+}
+
+% ---------- Title ----------
+\title{
+    \vspace{-2em}
+    MIT 6.1200J \\
+    Problem Set 8
+}
+\author{Nicolas Iskandar}
+\date{}
+
+% ==================================================
+\begin{document}
+
+\maketitle
+
+\section*{Problem 1: Strong Connectivity}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+    \item We must prove that $R$ is an equivalence relation. To do this, we need to show that $R$ is reflexive, symmetric, and transitive.
+    
+    \begin{itemize}
+        \item \textbf{Reflexive:} For any vertex $u \in V$, there is a walk of length $0$ from $u$ to $u$. Therefore, a directed walk from $u$ to $u$ exists, meaning $uRu$ holds. 
+        \item \textbf{Symmetric:} Suppose $uRv$ is true. By definition, there exists a directed walk from $u$ to $v$ and a directed walk from $v$ to $u$. This logically implies there is a directed walk from $v$ to $u$ and a directed walk from $u$ to $v$, which is the exact definition of $vRu$. Thus, $uRv \implies vRu$.
+        \item \textbf{Transitive:} Suppose $uRv$ and $vRw$ are both true. This means there are directed walks $u \to v$ and $v \to u$, as well as directed walks $v \to w$ and $w \to v$. By concatenating the walk from $u \to v$ with the walk from $v \to w$, we obtain a valid directed walk from $u \to w$. Similarly, concatenating the walk from $w \to v$ with $v \to u$ yields a directed walk from $w \to u$. Because there is a walk from $u \to w$ and $w \to u$, we have $uRw$.
+    \end{itemize}
+    Since $R$ satisfies all three properties, it is an equivalence relation.
+
+    \item The equivalence classes of $R$ are exactly the \textbf{strongly connected components (SCCs)} of the graph $G$. By definition, a strongly connected component is a maximal set of vertices such that for every pair of vertices $u, v$ in the set, there is a directed path from $u$ to $v$ and $v$ to $u$.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+\section*{Problem 2: Bijections via Inverses}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+    \item To prove that $f$ is injective, we must show that if $f(a_1) = f(a_2)$ for any $a_1, a_2 \in A$, then $a_1 = a_2$. 
+    
+    Suppose $f(a_1) = f(a_2)$. Applying the function $g$ to both sides, we get:
+    $g(f(a_1)) = g(f(a_2))$
+    By our assumption, $g(f(a)) = a$ for all $a \in A$. Applying this to both sides yields:
+    $a_1 = a_2$
+    Thus, $f$ maps distinct inputs to distinct outputs, making it injective.
+
+    \item To prove that $f$ is surjective, we must show that for every $b \in B$, there exists some $a \in A$ such that $f(a) = b$. 
+    
+    Let $b$ be an arbitrary element in $B$. Define $a = g(b)$. Because $g: B \to A$ is a total function, $a$ is guaranteed to be an element of $A$. 
+    Now, apply $f$ to this $a$:
+    $$f(a) = f(g(b))$$
+    By our assumption, $f(g(b)) = b$ for every $b \in B$. Therefore:
+    $$f(a) = b$$
+    Since we found an $a \in A$ for our arbitrary $b \in B$, $f$ is surjective.
+
+    \item A bijection is defined as a function that is both injective and surjective. Since we proved in (a) that $f$ is injective and in (b) that $f$ is surjective, we can conclude that $f$ is a bijection.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+\section*{Problem 3: Increasing Correspondence}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+    \item We are given $A = \{(a,b,c) \in \mathbb{N}^3 \mid a \le b \le c \text{ AND } a+b+c=1000\}$ and $B = \{(x,y,z) \in \mathbb{N}^3 \mid x+2y+3z=1000\}$. We must show that $f((a,b,c)) := (c-b, b-a, a)$ is a well-defined function from $A$ to $B$. 
+    
+    To do this, we must verify two things for any $(a,b,c) \in A$:
+    \begin{enumerate}
+        \item \textbf{The output is in $\mathbb{N}^3$:} Since $(a,b,c) \in A$, we know $a \le b \le c$ and $a,b,c \in \mathbb{N}$. Therefore, $c-b \ge 0$, $b-a \ge 0$, and $a \ge 0$. Thus, $(c-b, b-a, a)$ is an ordered triple of natural numbers.
+        \item \textbf{The output satisfies the condition for set $B$:} Let $(x,y,z) = (c-b, b-a, a)$. We evaluate the expression $x + 2y + 3z$:
+        $$x + 2y + 3z = (c-b) + 2(b-a) + 3(a)$$
+        $$x + 2y + 3z = c - b + 2b - 2a + 3a = a + b + c$$
+        Since $(a,b,c) \in A$, we know $a+b+c=1000$. Thus, $x+2y+3z = 1000$, meaning the output belongs to $B$. This proves $f$ is well-defined.
+    \end{enumerate}
+
+    \item We want to find a total function $g: B \to A$ that reverses $f$. Looking at $f(a,b,c) = (x,y,z) = (c-b, b-a, a)$, we can solve for $a, b, c$:
+    \begin{itemize}
+        \item $z = a \implies a = z$
+        \item $y = b - a \implies b = y + a = y + z$
+        \item $x = c - b \implies c = x + b = x + y + z$
+    \end{itemize}
+    Thus, we define $g((x,y,z)) := (z, y+z, x+y+z)$. 
+
+    Now we prove it is well-defined from $B$ to $A$:
+    \begin{enumerate}
+        \item \textbf{Output is in $\mathbb{N}^3$ and weakly increasing:} Since $x, y, z \in \mathbb{N}$, it is clear that $z \ge 0$, $y+z \ge 0$, and $x+y+z \ge 0$. Furthermore, since $x$ and $y$ are non-negative, $z \le y+z \le x+y+z$, fulfilling the weakly increasing requirement for set $A$.
+        \item \textbf{Output sums to 1000:} We sum the coordinates: $z + (y+z) + (x+y+z) = x + 2y + 3z$. Since $(x,y,z) \in B$, $x + 2y + 3z = 1000$. Thus, the output is in $A$.
+    \end{enumerate}
+
+    Finally, we verify it is an inverse by checking the identities:
+    \begin{itemize}
+        \item $g(f((a,b,c))) = g(c-b, b-a, a) = (a, (b-a)+a, (c-b)+(b-a)+a) = (a, b, c)$.
+        \item $f(g((x,y,z))) = f(z, y+z, x+y+z) = ((x+y+z)-(y+z), (y+z)-z, z) = (x, y, z)$.
+    \end{itemize}
+
+    \item Because $f$ has a valid two-sided inverse $g$ mapping between $B$ and $A$, we can invoke the result from Problem 2 to conclude that $f$ is a bijection.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+\section*{Problem 4: Counting Graphs}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+    \item For the list $(1, 2, \dots, n)$ to be a valid topological order, every directed edge $(i, j)$ in the graph must flow from left to right in the sequence; this means we must have $i < j$.
+    
+    The number of possible edges that satisfy $i < j$ in a set of $n$ vertices is simply the number of ways to choose 2 distinct vertices from $n$, which is $\binom{n}{2}$. 
+    
+    Because a DAG can be formed by taking \textit{any} subset of these valid forward-pointing edges, and each of the $\binom{n}{2}$ edges can independently either be included or excluded from the graph, the total number of valid DAGs is:
+    $$2^{\binom{n}{2}}$$
+
+    \item A length-3 path consists of a sequence of 4 distinct vertices $(v_1, v_2, v_3, v_4)$. 
+    First, we find the number of edges in $G$. By the Handshake Lemma, $\sum \text{deg}(v) = 2|E|$. Since all $n$ nodes have degree 4, $4n = 2|E|$, so $|E| = 2n$.
+
+    Let's build the path by first selecting its ``middle'' directed step $v_2 \to v_3$. There are $2n$ undirected edges, meaning there are $4n$ directed edges we can choose for this middle step.
+    
+    Now, we must choose $v_1$ (which connects to $v_2$) and $v_4$ (which connects to $v_3$):
+    \begin{itemize}
+        \item $v_2$ has a degree of 4. One of its incident edges goes to $v_3$. This leaves 3 choices for the edge connecting to $v_1$.
+        \item $v_3$ has a degree of 4. One of its incident edges goes to $v_2$. This leaves 3 choices for the edge connecting to $v_4$.
+    \end{itemize}
+
+    We must ensure the path does not loop back on itself. By definition, a path cannot revisit nodes, so $v_1 \neq v_3$ and $v_4 \neq v_2$ (handled by distinct edges). Furthermore, $v_1 \neq v_4$ because we are explicitly told the graph has no length-3 cycles (triangles). If $v_1 = v_4$, then $(v_1, v_2, v_3)$ would form a triangle, which is forbidden.
+    
+    Thus, every independent choice of edges yields a valid, unique path. 
+    $$\text{Total length-3 paths} = (4n) \times 3 \times 3 = 36n$$
+\end{enumerate}
+
+\vspace{0.5cm}
+
+\section*{Problem 5: Counting}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+    \item There are 5 vowels and 21 consonants in the alphabet. The problem hints that every vowel appears to the left of a consonant. Because the last letter cannot be a vowel, every vowel must be immediately followed by a consonant.
+
+    We can think of this as placing the 21 consonants in a line, which can be arranged in $21!$ ways. This creates exactly 21 valid slots for the vowels (the slot directly in front of each consonant). We need to select 5 of these 21 slots to place our 5 vowels, which can be done in $\binom{21}{5}$ ways. Finally, the 5 vowels can be permuted among themselves in $5!$ ways.
+    
+    Total ways:
+    $$\binom{21}{5} \times 21! \times 5!$$
+
+    \item We want at least two consonants immediately following each vowel. Imagine placing the 5 vowels in a line, creating 6 ``gaps'' between/around them:
+    $$\_ \text{V} \_ \text{V} \_ \text{V} \_ \text{V} \_ \text{V} \_$$
+    Let $x_1, \dots, x_6$ be the number of consonants in each gap. The constraints are:
+    $x_1 \ge 0$
+    $x_2 \ge 2, \dots, x_6 \ge 2$ (Because every vowel, including the last one, must be followed by at least two consonants). 
+    The sum of all consonants is $\sum x_i = 21$.
+    
+    To find the number of ways to distribute the 21 consonants into these gaps, we subtract the minimum requirements ($0 + 2 + 2 + 2 + 2 + 2 = 10$) from 21. We now have exactly 11 ``excess'' consonants to distribute freely among the 6 gaps. Using the stars and bars formula $\binom{n + k - 1}{k - 1}$, we get $\binom{11 + 6 - 1}{6 - 1} = \binom{16}{5}$ gap configurations. 
+    
+    For each valid layout, we permute the 21 unique consonants ($21!$) and the 5 unique vowels ($5!$). 
+    
+    Total ways:
+    $$\binom{16}{5} \times 21! \times 5!$$
+
+    \item To pair up $2n$ students, imagine lining them up in some arbitrary order. The first student can be paired with any of the remaining $2n-1$ students. Once paired, they step aside. The next unpaired student can be paired with any of the remaining $2n-3$ students. This continues down to 1.
+    
+    This yields the double factorial $(2n-1)!!$. We can rewrite this using standard factorials by multiplying the numerator and denominator by the even terms $(2n \cdot (2n-2) \dots 2) = 2^n \cdot n!$.
+    
+    Total ways:
+    $$\frac{(2n)!}{n!2^n}$$
+
+    \item Two $n$-digit sequences are the same type if they are permutations of each other, meaning we only care about the \textit{frequency} of each digit (0 through 9), not the order. 
+    
+    This is a classic stars and bars problem: we are choosing $n$ total digits from a set of 10 possible options (the digits 0-9), with replacement. 
+    
+    Using the combinations with repetition formula $\binom{n + k - 1}{k - 1}$, where $n$ is the number of selections and $k = 10$ is the number of categories:
+    
+    Total types:
+    $$\binom{n + 9}{9}$$
+\end{enumerate}
+
+\end{document}
