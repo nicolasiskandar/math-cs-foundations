@@ -1,0 +1,241 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+
+\title{Stat 110 Strategic Practice 7 \& Homework 7: Solutions}
+\author{Prof.\ Joe Blitzstein (Department of Statistics, Harvard University)}
+\date{Fall 2011}
+
+\begin{document}
+\maketitle
+
+\section*{Strategic Practice 7 Solutions}
+
+\subsection*{1. Joint, Conditional, and Marginal Distributions}
+
+\textbf{Problem 1.} $(X,Y,Z)$ is uniform on the unit ball $B = \{(x,y,z): x^2+y^2+z^2\le 1\}$.
+
+\textbf{(a)} Uniform on a region means probability is proportional to volume. The ball has volume $\frac{4}{3}\pi$, so the joint PDF is
+$$
+f(x,y,z) = \frac{3}{4\pi}, \quad x^2+y^2+z^2\le 1,
+$$
+and $0$ otherwise.
+
+\textbf{(b)} To get the joint PDF of $(X,Y)$, integrate out $z$. For a fixed $(x,y)$ with $x^2+y^2\le1$, $z$ ranges over $[-\sqrt{1-x^2-y^2},\,\sqrt{1-x^2-y^2}]$:
+$$
+f_{X,Y}(x,y) = \int_{-\sqrt{1-x^2-y^2}}^{\sqrt{1-x^2-y^2}}\frac{3}{4\pi}\,dz = \frac{3}{2\pi}\sqrt{1-x^2-y^2},
+$$
+for $x^2+y^2\le1$, and $0$ otherwise.
+
+\textbf{(c)} The marginal PDF of $X$ is obtained by integrating $f_{X,Y}(x,y)$ over $y$. For $-1\le x\le 1$,
+$$
+f_X(x) = \frac{3}{2\pi}\int_{-\sqrt{1-x^2}}^{\sqrt{1-x^2}}\sqrt{1-x^2-y^2}\,dy.
+$$
+
+\bigskip
+\textbf{Problem 2.} Let $W = |X-Y|$ where $X,Y\overset{iid}{\sim}\text{Unif}(0,1)$. By 2-D LOTUS,
+$$
+E(W) = \int_0^1\int_0^1|x-y|\,dx\,dy.
+$$
+By symmetry the contribution from the region $x>y$ equals that from $x<y$, so
+$$
+E(W) = 2\int_0^1\int_0^y(y-x)\,dx\,dy = 2\int_0^1\frac{y^2}{2}\,dy = \int_0^1 y^2\,dy = \frac{1}{3}.
+$$
+For $E(W^2)$, write $W^2=(X-Y)^2 = X^2+Y^2-2XY$. Since $X,Y$ are independent,
+$$
+E(W^2) = 2E(X^2) - 2(E(X))^2 = 2\text{Var}(X) = 2\cdot\frac{1}{12} = \frac{1}{6}.
+$$
+Thus $\text{Var}(W) = \frac{1}{6}-\frac{1}{9} = \frac{1}{18}$, and the standard deviation of $|X-Y|$ is $\frac{1}{\sqrt{18}} = \frac{1}{3\sqrt{2}}$.
+
+\bigskip
+\textbf{Problem 3.} Let $U_1,U_2,U_3\overset{iid}{\sim}\text{Unif}(0,1)$, $L=\min(U_1,U_2,U_3)$, $M=\max(U_1,U_2,U_3)$.
+
+\textbf{(a)} All three $U_j\le m$ if and only if $M\le m$, so
+$$
+F_M(m) = m^3, \quad f_M(m) = 3m^2, \quad m\in[0,1].
+$$
+For the joint distribution: all three $U_j$ lie in $[l,m]$ if and only if $L\ge l$ and $M\le m$, which occurs with probability $(m-l)^3$ for $0\le l\le m\le1$. Since $\{M\le m\} = \{L\le l,M\le m\}\cup\{L>l,M\le m\}$ (disjoint), the joint CDF is
+$$
+F_{L,M}(l,m) = P(L\le l, M\le m) = m^3 - (m-l)^3, \quad 0\le l\le m\le 1.
+$$
+Differentiating first in $l$ then in $m$ (or vice versa),
+$$
+f_{L,M}(l,m) = 6(m-l), \quad 0\le l\le m\le1.
+$$
+Check: $\int_0^m 6(m-l)\,dl = 3m^2 = f_M(m)$, consistent.
+
+\textbf{(b)} The marginal PDF of $L$ comes from $P(L>l)=(1-l)^3$, giving $f_L(l)=3(1-l)^2$ for $l\in[0,1]$. The conditional PDF of $M$ given $L=l$ is
+$$
+f_{M|L}(m\mid l) = \frac{f_{L,M}(l,m)}{f_L(l)} = \frac{6(m-l)}{3(1-l)^2} = \frac{2(m-l)}{(1-l)^2}, \quad l\le m\le1.
+$$
+
+\bigskip
+\textbf{Problem 4.} $n\ge2$ players each independently pick Rock, Scissors, or Paper with equal probability $1/3$. Let $X,Y,Z$ count the numbers picking each.
+
+\textbf{(a)} This is a Multinomial experiment. The joint PMF for nonneg integers $a,b,c$ with $a+b+c=n$ is
+$$
+P(X=a,Y=b,Z=c) = \frac{n!}{a!\,b!\,c!}\left(\frac{1}{3}\right)^n.
+$$
+
+\textbf{(b)} The game is decisive when exactly one of $X,Y,Z$ equals zero (exactly two choices appear). By symmetry this probability is $3$ times the probability that $X=0$ and $Y,Z\ge1$. If $X=0$ and $Y=k$ then $Z=n-k$:
+$$
+P(\text{decisive}) = 3\sum_{k=1}^{n-1}\frac{n!}{0!\,k!\,(n-k)!}\left(\frac{1}{3}\right)^n = 3\cdot\frac{1}{3^n}\sum_{k=1}^{n-1}\binom{n}{k} = \frac{3(2^n-2)}{3^n} = \frac{2^n-2}{3^{n-1}}.
+$$
+
+\textbf{(c)} For $n=5$: $\frac{2^5-2}{3^4} = \frac{30}{81}\approx0.37$. As $n\to\infty$, $(2/3)^{n-1}\cdot(2-2^{1-n})\to0$. This makes intuitive sense: with many players it becomes virtually certain that all three choices are represented, making the game indecisive.
+
+\bigskip
+\textbf{Problem 5.} Each egg independently falls into one of three categories: survives ($ps$), hatches but dies ($p(1-s)$), or doesn't hatch ($1-p$). Since the eggs are independent, the triple $(X,Y,Z)$ where $Z=n-N$ (eggs that don't hatch) has a Multinomial distribution:
+$$
+P(X=i,Y=j,Z=k) = \frac{n!}{i!\,j!\,k!}(ps)^i(p(1-s))^j(1-p)^k,
+$$
+for nonneg $i,j,k$ with $i+j+k=n$. The marginal of $X$ is $X\sim\text{Bin}(n,ps)$ (each egg independently survives with probability $ps$).
+
+$X$ and $Y$ are not independent. For instance, if $X=n$ then necessarily $Y=0$ (all eggs hatched and all chicks survived), yet $P(Y=0)<1$ unconditionally. So knowing $X=n$ forces $Y=0$, which means $X$ and $Y$ carry information about each other.
+
+\bigskip
+\section*{Homework 7 Solutions}
+
+\subsection*{1. Stick Breaking and the Round Table}
+
+\textbf{(a)} Scale so the stick has length $1$, and let $X,Y\overset{iid}{\sim}\text{Unif}(0,1)$ be the two break points. A triangle can be formed from three lengths if and only if each piece is shorter than $1/2$.
+
+If $X<Y$, the three pieces have lengths $X$, $Y-X$, $1-Y$, and a triangle can be formed iff $X<1/2$, $Y-X<1/2$, and $Y>1/2$. Similarly for $X>Y$ by symmetry. Since $(X,Y)$ is uniform on the unit square, probabilities equal areas. Each of the two symmetric regions (one for $X<Y$, one for $X>Y$) satisfying the triangle condition is a right triangle with legs $1/2$, giving area $1/8$ each. So
+$$
+P(\text{triangle can be formed}) = \frac{1}{8}+\frac{1}{8} = \frac{1}{4}.
+$$
+
+\textbf{(b)} Three legs at uniform random positions on a circle of circumference $1$ are equivalent to the two arcs created by breaking a stick at two uniform random points (by mapping the circle to a line segment). The table falls if all three legs fit within some semicircle, i.e., one of the three arcs between consecutive legs exceeds $1/2$. By the correspondence with part (a), $P(\text{table falls}) = 3/4$, so
+$$
+P(\text{table stands}) = \frac{1}{4}.
+$$
+
+\subsection*{2. Uniform Triangle}
+
+The triangle with vertices $(0,0)$, $(0,1)$, $(1,0)$ has area $1/2$, so the joint PDF is $f_{X,Y}(x,y)=2$ for $x\ge0$, $y\ge0$, $x+y\le1$, and $0$ otherwise. Integrating out $y$ over $[0,1-x]$,
+$$
+f_X(x) = \int_0^{1-x}2\,dy = 2(1-x), \quad x\in[0,1].
+$$
+The conditional PDF of $Y$ given $X=x$ is
+$$
+f_{Y|X}(y\mid x) = \frac{f_{X,Y}(x,y)}{f_X(x)} = \frac{2}{2(1-x)} = \frac{1}{1-x}, \quad y\in[0,1-x].
+$$
+This is constant in $y$, so $Y\mid X=x\sim\text{Unif}(0,1-x)$.
+
+\subsection*{3. Expected Distance Between Two Exponentials}
+
+Let $X,Y\overset{iid}{\sim}\text{Expo}(\lambda)$.
+
+\textbf{(a)} By 2-D LOTUS, using symmetry between $x>y$ and $x<y$:
+$$
+E|X-Y| = 2\int_0^\infty\int_0^x(x-y)\lambda^2 e^{-\lambda(x+y)}\,dy\,dx.
+$$
+Computing the inner integral, $\int_0^x(x-y)\lambda e^{-\lambda y}\,dy = 1/\lambda - e^{-\lambda x}(1/\lambda + x/1)$. Then integrating over $x$:
+$$
+E|X-Y| = \frac{1}{\lambda}.
+$$
+
+\textbf{(b)} Write $|X-Y|=\max(X,Y)-\min(X,Y)$. The time until the first arrival is $\min(X,Y)\sim\text{Expo}(2\lambda)$ (minimum of two independent exponentials). By the memoryless property, the gap from the first arrival to the second is independent of the first arrival time and has the same $\text{Expo}(\lambda)$ distribution as a fresh start. So $\max(X,Y)-\min(X,Y)\sim\text{Expo}(\lambda)$, giving
+$$
+E|X-Y| = \frac{1}{\lambda}.
+$$
+
+\subsection*{4. Ratio of Exponential Completion Times}
+
+$Y_1\sim\text{Expo}(\lambda_1)$, $Y_2\sim\text{Expo}(\lambda_2)$, independent.
+
+\textbf{(a)} For $t>0$, condition on $Y_2=y$:
+$$
+F(t) = P\!\left(\frac{Y_1}{Y_2}\le t\right) = \int_0^\infty P(Y_1\le ty)\lambda_2 e^{-\lambda_2 y}\,dy = \int_0^\infty(1-e^{-\lambda_1 ty})\lambda_2 e^{-\lambda_2 y}\,dy.
+$$
+The first term integrates to $1$; the second integrates to $\lambda_2/(\lambda_1 t+\lambda_2)$. So
+$$
+F(t) = \frac{\lambda_1 t}{\lambda_1 t+\lambda_2}, \quad t>0,
+$$
+and the PDF is
+$$
+f(t) = \frac{\lambda_1\lambda_2}{(\lambda_1 t+\lambda_2)^2}, \quad t>0.
+$$
+
+\textbf{(b)} $P(Y_1<Y_2) = F(1) = \frac{\lambda_1}{\lambda_1+\lambda_2}$. Intuitively: if $Y_1$ and $Y_2$ represent waiting times for two independent Poisson processes at rates $\lambda_1$ and $\lambda_2$, then the total rate is $\lambda_1+\lambda_2$ and each arrival is from process $1$ with probability $\lambda_1/(\lambda_1+\lambda_2)$.
+
+\subsection*{5. Fred and Two Bus Lines}
+
+The Blissville bus arrives exactly every $10$ minutes; Fred's wait for it is $U\sim\text{Unif}(0,10)$. The Blotchville bus wait is $X\sim\text{Expo}(1/10)$ by the memoryless property. Fred takes whichever arrives first.
+
+\textbf{(a)} Conditioning on $U=u$,
+$$
+P(X<U) = \int_0^{10}P(X<u)\frac{1}{10}\,du = \frac{1}{10}\int_0^{10}(1-e^{-u/10})\,du = \frac{1}{10}\!\left[10+10e^{-1}-10\right] = e^{-1}.
+$$
+
+\textbf{(b)} Let $T=\min(X,U)$. For $0<t<10$,
+$$
+P(T>t) = P(X>t)P(U>t) = e^{-t/10}\cdot\frac{10-t}{10}.
+$$
+So the CDF of $T$ is
+$$
+F_T(t) = 1-e^{-t/10}\!\left(1-\frac{t}{10}\right), \quad 0\le t\le10,
+$$
+with $F_T(t)=0$ for $t\le0$ and $F_T(t)=1$ for $t\ge10$.
+
+\subsection*{6. Emails as a Poisson Process}
+
+Emails arrive at rate $\lambda$ per hour. $X\sim\text{Pois}(3\lambda)$, $Y\sim\text{Pois}(6\lambda)$, $Z\sim\text{Pois}(6\lambda)$, all independent.
+
+\textbf{(a)} The joint PMF factors by independence:
+$$
+P(X=x,Y=y,Z=z) = \frac{e^{-3\lambda}(3\lambda)^x}{x!}\cdot\frac{e^{-6\lambda}(6\lambda)^y}{y!}\cdot\frac{e^{-6\lambda}(6\lambda)^z}{z!},
+$$
+for nonneg integers $x,y,z$.
+
+\textbf{(b)} Let $T=X+Y+Z\sim\text{Pois}(15\lambda)$. For $x+y+z=t$, applying Bayes' rule and cancelling the common $e^{-15\lambda}$ and $(15\lambda)^t$ factors,
+$$
+P(X=x,Y=y,Z=z\mid T=t) = \frac{t!}{x!\,y!\,z!}\left(\frac{3}{15}\right)^x\left(\frac{6}{15}\right)^y\left(\frac{6}{15}\right)^z.
+$$
+So $(X,Y,Z)\mid T=36$ follows a $\text{Multinomial}\!\left(36,\tfrac{1}{5},\tfrac{2}{5},\tfrac{2}{5}\right)$ distribution.
+
+\textbf{(c)} Merging the 9 am and noon intervals: $W=X+Y$ given $T=36$ is $\text{Binomial}(36,\,3/5)$ (combining the first two Multinomial categories with total weight $1/5+2/5=3/5$). Therefore,
+$$
+E(W\mid T=36) = 36\cdot\frac{3}{5} = 21.6,
+$$
+$$
+\text{Var}(W\mid T=36) = 36\cdot\frac{3}{5}\cdot\frac{2}{5} = 8.64.
+$$
+
+\subsection*{7. The Shakespeare Vocabulary Problem}
+
+\textbf{(a)} In a long play, each position in the text independently has some very small probability of being word $j$, and the positions are weakly dependent. This fits the Poisson paradigm: $X_j$ and $Y_j$ each count rare independent-ish events over a large "volume" (the text), so a Poisson model is natural. Since both plays are by the same author and of the same length, the expected frequency of any given word is the same in each play, justifying the same parameter $\lambda_j$ for both $X_j$ and $Y_j$.
+
+\textbf{(b)} Let $X\sim\text{Pois}(\lambda)$ count uses of "eyeball" in play A and $Y\sim\text{Pois}(\lambda)$ count uses in play B, with $X,Y$ independent. Then
+\begin{align*}
+P(X=0,\,Y>0) &= P(X=0)(1-P(Y=0)) = e^{-\lambda}(1-e^{-\lambda}).
+\end{align*}
+Expanding $e^{-\lambda}$ as a Taylor series and distributing,
+$$
+P(X=0,\,Y>0) = e^{-\lambda}\!\left(\lambda - \frac{\lambda^2}{2!} + \frac{\lambda^3}{3!} - \frac{\lambda^4}{4!}+\cdots\right).
+$$
+
+\textbf{(c)} Now $\lambda$ is a random variable with PDF $f_0$. Conditioning on $\lambda$ and using the result from (b),
+$$
+P(X=0,\,Y>0) = \int_0^\infty e^{-\lambda}\!\left(\lambda-\frac{\lambda^2}{2!}+\frac{\lambda^3}{3!}-\cdots\right)f_0(\lambda)\,d\lambda.
+$$
+Swapping the sum and integral (justified since terms are absolutely summable),
+$$
+= \sum_{k=1}^{\infty}(-1)^{k+1}\int_0^\infty \frac{\lambda^k e^{-\lambda}}{k!}f_0(\lambda)\,d\lambda = \sum_{k=1}^{\infty}(-1)^{k+1}P(X=k),
+$$
+since $\int_0^\infty \frac{\lambda^k e^{-\lambda}}{k!}f_0(\lambda)\,d\lambda = P(X=k)$ by the law of total probability. So the probability is
+$$
+P(X=1)-P(X=2)+P(X=3)-P(X=4)+\cdots
+$$
+
+\textbf{(d)} Let $W$ be the number of distinct words appearing in play B but not in play A, and let $I_j$ be the indicator that word $j$ appears in $B$ but not in $A$. By linearity and part (c),
+$$
+E(W) = \sum_{j=1}^N E(I_j) = \sum_{j=1}^N\left[\sum_{k=1}^\infty(-1)^{k+1}P(X_j=k)\right] = \sum_{k=1}^\infty(-1)^{k+1}\sum_{j=1}^N P(X_j=k).
+$$
+Now $W_k = \sum_{j=1}^N \mathbf{1}(X_j=k)$ is the number of words appearing exactly $k$ times in play A, so $E(W_k)=\sum_{j=1}^N P(X_j=k)$. Therefore,
+$$
+E(W) = E(W_1)-E(W_2)+E(W_3)-E(W_4)+\cdots
+$$
+This is remarkable: the predicted count $W_1-W_2+W_3-\cdots$ can be computed from play A alone, without knowing any of the $\lambda_j$'s or the distribution $f_0$, yet it is an unbiased predictor of the number of new words in play B.
+
+\end{document}

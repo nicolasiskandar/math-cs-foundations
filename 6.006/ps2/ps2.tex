@@ -1,0 +1,453 @@
+%
+% 6.006 problem set 2 solutions
+%
+\documentclass[12pt,twoside]{article}
+\input{macros-sp20}
+\newcommand{\theproblemsetnum}{2}
+
+\usepackage{enumitem}
+
+\title{6.006 Problem Set 2}
+
+\begin{document}
+
+\handout{Problem Set \theproblemsetnum}{}
+\setlength{\parindent}{0pt}
+\medskip\hrulefill\medskip
+
+{\bf Name:} Nicolas Iskandar
+
+\medskip\hrulefill
+
+
+\begin{problems}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\problem  % Problem 1: Solving Recurrences
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problemparts}
+
+%--- 1(a) T(n) = 4T(n/2) + O(n) ---
+\problempart
+
+\textbf{Recursion Tree.}
+Build a tree where the root does $O(n)$ work and branches into $4$ children, each on a subproblem
+of size $n/2$. At depth $i$ there are $4^i$ nodes, each of size $n/2^i$ and doing $O(n/2^i)$ work,
+so the total work at depth $i$ is
+\[
+  4^i \cdot O\!\left(\frac{n}{2^i}\right) = O(2^i n).
+\]
+The recursion bottoms out at depth $\log_2 n$, so summing a geometric series that is dominated by
+its last term gives
+\[
+  \sum_{i=0}^{\log_2 n} O(2^i n) = O(n \cdot 2^{\log_2 n}) = O(n^2).
+\]
+The number of leaves is $4^{\log_2 n} = n^2$, each contributing $\Theta(1)$ work, so the leaves
+alone already force $\Omega(n^2)$ work. Combining the two bounds, $T(n) = \Theta(n^2)$.
+
+\textbf{Master Theorem.}
+With $a=4$, $b=2$, $f(n) = O(n)$, we compare $f(n)$ against $n^{\log_b a} = n^2$.
+Since $n = O(n^{2-\varepsilon})$ for $\varepsilon = 1$, we are in Case~1, giving
+\[
+  \boxed{T(n) = \Theta(n^2).}
+\]
+
+%--- 1(b) T(n) = 3T(n/sqrt(2)) + O(n^4) ---
+\problempart
+
+\textbf{Recursion Tree.}
+With $a = 3$, $b = \sqrt2$, $f(n) = O(n^4)$: at depth $i$ there are $3^i$ nodes, each of size
+$n/(\sqrt2)^i$ and costing $O\!\left((n/(\sqrt2)^i)^4\right) = O(n^4/4^i)$. The total work at
+depth $i$ is
+\[
+  3^i \cdot O\!\left(\frac{n^4}{4^i}\right) = O\!\left(n^4\Big(\frac{3}{4}\Big)^{i}\right).
+\]
+Because $3/4 < 1$, this is a decreasing geometric series in $i$, so its sum over all
+$\log_{\sqrt2} n = 2\log_2 n$ levels is dominated by the root term:
+\[
+  \sum_{i=0}^{2\log_2 n} O\!\left(n^4\Big(\tfrac{3}{4}\Big)^i\right) = O(n^4).
+\]
+The root alone costs $\Theta(n^4)$, so this matches the upper bound and $T(n) = O(n^4)$.
+For the lower bound, simply note the root by itself costs $\Omega(n^4)$ (dropping all recursive
+calls only decreases the total), so $T(n) = \Omega(n^4)$ as well.
+Hence $T(n) = \Theta(n^4)$.
+
+\textbf{Master Theorem.}
+With $a = 3$, $b = \sqrt2$, we get $n^{\log_b a} = n^{\log_{\sqrt2} 3} = n^{2\log_2 3} \approx n^{3.17}$.
+Since $f(n) = \Theta(n^4)$ and $4 > 2\log_2 3$, we check the regularity condition for Case~3:
+\[
+  a f(n/b) = 3\left(\frac{n}{\sqrt2}\right)^4 = 3\cdot\frac{n^4}{4} = \tfrac{3}{4}n^4 \le c\, n^4
+  \quad \text{for } c = \tfrac{3}{4} < 1.
+\]
+The condition holds, so Case~3 applies and
+\[
+  \boxed{T(n) = \Theta(n^4).}
+\]
+
+%--- 1(c) T(n) = 2T(n/2) + 5n log n ---
+\problempart
+
+\textbf{Recursion Tree.}
+At depth $i$ there are $2^i$ nodes of size $n/2^i$, each costing $5 \cdot \frac{n}{2^i}\log\frac{n}{2^i}$.
+Writing $\log(n/2^i) = \log n - i$, the total work at depth $i$ is
+\[
+  2^i \cdot 5\frac{n}{2^i}(\log n - i) = 5n(\log n - i).
+\]
+Reindexing with $j = \log n - i$ (so $j$ runs from $\log n$ down to $0$ as $i$ runs from $0$ to
+$\log n$), the total cost over the whole tree is
+\[
+  \sum_{j=0}^{\log n} 5nj = 5n \cdot \frac{(\log n)(\log n+1)}{2} = \Theta(n\log^2 n).
+\]
+
+\textbf{Master Theorem (Case 2, extended form).}
+Here $a=b=2$ so $n^{\log_b a} = n$, and $f(n) = 5n\log n = \Theta(n^{\log_b a}\log^k n)$ with
+$k=1$. The extended Case 2 gives $T(n) = \Theta(n^{\log_b a}\log^{k+1} n)$, so
+\[
+  \boxed{T(n) = \Theta(n\log^2 n).}
+\]
+
+%--- 1(d) T(n) = T(n-2) + Theta(n) by substitution ---
+\problempart
+
+\textbf{Claim:} $T(n) = \Theta(n^2)$.
+
+\textit{Intuition.} Unrolling once gives $T(n) = \Theta(n) + T(n-2)$, and repeating this
+$\Theta(n)$ times peels off terms $\Theta(n), \Theta(n-2), \Theta(n-4), \dots, \Theta(1)$, an
+arithmetic-like sum of $\Theta(n)$ terms averaging $\Theta(n)$ each, so we expect $\Theta(n^2)$
+total. Substitution turns this guess into a proof by induction: we assume the guessed bound holds
+for the smaller subproblem $T(n-2)$, substitute it into the recurrence, and check that the
+algebra closes for some valid choice of constant.
+
+Let $d>0$ be the constant hidden inside $\Theta(n)$, so concretely
+\[
+  T(n) = T(n-2) + dn.
+\]
+
+\textit{Upper bound: $T(n) = O(n^2)$.}
+\textbf{Guess:} $T(n) \le cn^2$ for some constant $c>0$ and all $n \ge n_0$.
+
+\textbf{Inductive hypothesis:} assume the guess already holds for the smaller input $n-2$, i.e.\
+$T(n-2) \le c(n-2)^2$.
+
+\textbf{Substitute} this into the recurrence:
+\[
+  T(n) = T(n-2) + dn \;\le\; c(n-2)^2 + dn.
+\]
+
+\textbf{Expand} $c(n-2)^2 = cn^2 - 4cn + 4c$, so
+\[
+  T(n) \;\le\; cn^2 - 4cn + 4c + dn \;=\; cn^2 + (d-4c)n + 4c.
+\]
+
+We want to conclude $T(n) \le cn^2$, which holds exactly when the leftover terms satisfy
+\[
+  (d-4c)n + 4c \;\le\; 0.
+\]
+
+\textbf{Choose $c$:} pick $c = d$, so $d - 4c = -3d < 0$. The leftover expression becomes
+$-3dn + 4d$, a downward-sloping line in $n$ that is $\le 0$ once
+\[
+  n \;\ge\; \tfrac{4}{3}.
+\]
+So for all $n \ge n_0 = 2$ (checking the base case $T(1)=\Theta(1)$ separately, absorbed by
+choosing $c$ large enough), the leftover term is non-positive, giving $T(n) \le cn^2$ as desired.
+By induction this holds for all $n \ge n_0$, so $T(n) = O(n^2)$.
+
+\textit{Lower bound: $T(n) = \Omega(n^2)$.}
+\textbf{Guess:} $T(n) \ge cn^2$ for some (possibly different, smaller) constant $c>0$.
+
+\textbf{Inductive hypothesis:} assume $T(n-2) \ge c(n-2)^2$.
+
+\textbf{Substitute and expand} exactly as before:
+\[
+  T(n) = T(n-2) + dn \;\ge\; c(n-2)^2 + dn \;=\; cn^2 + (d-4c)n + 4c.
+\]
+
+Now we want the leftover terms $(d-4c)n + 4c$ to be $\ge 0$, so that $T(n) \ge cn^2$ follows
+directly.
+
+\textbf{Choose $c$:} pick $c = d/8$, so $d - 4c = d - d/2 = d/2 > 0$. Then the leftover term
+$\tfrac{d}{2}n + 4c$ is positive for every $n \ge 0$ automatically, no need to wait for $n$ to
+be large. Hence $T(n) \ge cn^2$ for all $n \ge 1$, so $T(n) = \Omega(n^2)$.
+
+\textit{Conclusion.} Combining $T(n)=O(n^2)$ and $T(n)=\Omega(n^2)$,
+\[
+  \boxed{T(n) = \Theta(n^2).}
+\]
+
+\end{problemparts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\problem  % Problem 2: Sorting Sorts
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problemparts}
+
+%--- 2(a) ---
+\problempart
+
+\textbf{Algorithm: Selection sort.}
+
+The cost of each sort is dominated by how it uses \texttt{get\_at} (cheap, $\Theta(1)$) versus
+\texttt{set\_at} (expensive, $\Theta(n\log n)$), so the right choice is whichever algorithm
+minimizes total \emph{writes}, not comparisons.
+
+\begin{itemize}
+  \item \emph{Selection sort} performs $\Theta(n^2)$ reads to find each minimum but only $n$
+        writes total (one placement per pass): cost $\Theta(n^2) + \Theta(n)\cdot\Theta(n\log n)
+        = \Theta(n^2\log n)$.
+  \item \emph{Insertion sort} can perform up to $\Theta(n^2)$ writes in the worst case (shifting
+        elements one at a time), giving $\Theta(n^2)\cdot\Theta(n\log n) = \Theta(n^3\log n)$.
+  \item \emph{Merge sort} is not in-place (it needs auxiliary storage to merge), so it is
+        disqualified by the problem's requirement.
+\end{itemize}
+
+Since writes are the bottleneck resource here, \textbf{selection sort} wins with
+$\Theta(n^2\log n)$.
+
+%--- 2(b) ---
+\problempart
+
+\textbf{Algorithm: Merge sort.}
+
+Here reads/writes are free but comparisons cost $\Theta(\log n)$ each, so the deciding factor is
+the number of comparisons each algorithm performs.
+
+\begin{itemize}
+  \item Selection sort and insertion sort each make $\Theta(n^2)$ comparisons in the worst case,
+        for a total cost of $\Theta(n^2\log n)$.
+  \item Merge sort makes only $\Theta(n\log n)$ comparisons (each merge step compares once per
+        output element), for a total cost of $\Theta(n\log n)\cdot\Theta(\log n) = \Theta(n\log^2 n)$.
+\end{itemize}
+
+Since $n\log^2 n = o(n^2\log n)$, \textbf{merge sort} is asymptotically best, at
+$\Theta(n\log^2 n)$.
+
+%--- 2(c) ---
+\problempart
+
+\textbf{Algorithm: Insertion sort.}
+
+The key resource to minimize here is total work on a nearly-sorted input, and insertion sort is
+the only one of the three whose running time is sensitive to how far the input already is from
+sorted.
+
+Each of the $\log\log n$ adjacent swaps can create at most one new inversion, so the array has at
+most $\log \log n$ inversions total after the disruption (it started with zero, being sorted).
+Insertion sort's running time is $\Theta(n + I)$ where $I$ is the number of inversions in the
+input, since the inner \texttt{while} loop only performs work proportional to the number of
+inversions it resolves, plus $\Theta(1)$ per outer iteration. Thus insertion sort runs in
+\[
+  \Theta(n + \log\log n) = \Theta(n).
+\]
+Selection sort always costs $\Theta(n^2)$ and merge sort always costs $\Theta(n\log n)$
+irrespective of how close to sorted the input already is, so both are worse here.
+
+Therefore, \textbf{insertion sort} is best, at $\Theta(n)$.
+
+\end{problemparts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\problem  % Problem 3: Friend Finder
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\textbf{Algorithm (bidirectional exponential search).}
+
+Datum sits at kilometer $k$ or kilometer $n-k$ for some unknown $k \ge 0$, and we want a strategy
+whose cost scales with $k$ rather than with $n$, since the island's ends are most urgent.
+
+\textbf{Phase 1 (bracketing).}
+Probe alternately from the north and south ends at exponentially growing offsets. Concretely, for
+$j = 0, 1, 2, \dots$:
+\begin{itemize}
+  \item Teleport to kilometer $2^j$ (measuring from the north). Query the tracker.
+  \item Teleport to kilometer $n - 2^j$ (measuring from the south). Query the tracker.
+\end{itemize}
+Stop as soon as one of these two probes ``overshoots'' Datum, i.e., the tracker reports Datum is
+now on the side of the probe closer to the relevant end. At that point we know Datum lies
+between the previous probe on that side (at offset $2^{j-1}$, or $0$ if $j = 0$) and the current
+one (at offset $2^j$).
+
+Since Datum is $k$ kilometers from the nearer end, the overshoot happens at
+$j^\ast = \lceil \log_2 k \rceil$, and we have made $O(j^\ast) = O(\log k)$ probes (both north
+and south probes together, since they interleave one-for-one).
+
+\textbf{Phase 2 (refinement).}
+The bracket identified in Phase 1 has width at most $2^{j^\ast} = O(k)$. Run ordinary binary
+search inside this bracket, which takes $O(\log(2^{j^\ast})) = O(\log k)$ further probes to pin
+down Datum's exact kilometer.
+
+\textbf{Correctness.} Phase 1 always terminates because probes march monotonically toward the
+center and Datum is at a fixed finite position, so eventually a probe passes Datum's position.
+The resulting bracket is guaranteed (by the tracker's directional guarantee) to contain Datum's
+true location, so binary search within it correctly isolates the exact kilometer.
+
+\textbf{Running time.} Phase 1 costs $O(\log k)$ teleports, Phase 2 costs $O(\log k)$ teleports,
+for a total of $O(\log k)$, as required. $\blacksquare$
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\problem  % Problem 4: MixBookTube Chat
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\textbf{Design goal.}
+Every operation is simple except \texttt{ban}: when a viewer is banned, \emph{all} of their
+previously sent messages must vanish from the chat, and doing this by scanning the whole message
+history would be far too slow. The whole design problem reduces to: \emph{how do we delete one
+viewer's scattered messages without searching the entire chat?} The answer is to give each viewer
+a private index of pointers directly to their own messages, so a ban only ever touches that
+viewer's own messages, never anyone else's.
+
+\textbf{Data structures.}
+
+\begin{enumerate}
+  \item A \textbf{lookup structure} $H$ (a balanced BST, e.g.\ an AVL tree, keyed on viewer ID,
+        to guarantee worst-case $O(\log n)$ operations) mapping each viewer $v$ to a record
+        storing $v$'s banned flag and the head of $v$'s private list $L_v$.
+  \item A \textbf{global doubly-linked list} $M$ containing every currently undeleted message, in
+        chronological order (newest at one fixed end).
+  \item For each viewer $v$, a \textbf{private singly-linked list} $L_v$ that stores, in order,
+        \emph{pointers directly into the nodes of $M$} corresponding to $v$'s own messages, not
+        copies of the messages, but pointers to their exact location in $M$.
+\end{enumerate}
+
+The key idea is layer (3): because $L_v$ points directly at $v$'s nodes inside $M$, deleting all
+of $v$'s messages never requires searching $M$, we already know exactly where each one lives.
+
+\textbf{Operations.}
+
+\textbf{build($V$): $O(n\log n)$.}
+Insert all $n$ viewer records into $H$ one at a time; each insertion costs $O(\log n)$, for
+$O(n\log n)$ total. Initialize $M$ and every $L_v$ as empty in $O(1)$ each.
+
+\textbf{send($v,m$): $O(\log n)$.}
+Look up $v$'s record in $H$, $O(\log n)$; if banned, do nothing. Otherwise, create a node for $m$,
+splice it onto the newest end of $M$ in $O(1)$, and push a pointer to that same node onto the
+front of $L_v$ in $O(1)$. Total: dominated by the lookup, $O(\log n)$.
+
+\textbf{recent($k$): $O(k)$.}
+Since $M$ only ever contains currently undeleted messages, in chronological order, simply walk
+backward from the newest end of $M$, collecting message contents one at a time ($O(1)$ per step),
+stopping after $k$ nodes (or when $M$ is exhausted). Total: $O(k)$.
+
+\textbf{ban($v$): $O(n_v + \log n)$.}
+Look up $v$'s record in $H$ ($O(\log n)$) and mark it banned. Walk $L_v$: for each of the $n_v$
+pointers stored there, we already know exactly which node of $M$ to remove, so splice it out of
+the doubly-linked list $M$ in $O(1)$ using its stored neighbor pointers (no searching needed).
+Total: $O(n_v + \log n)$.
+
+\textbf{Correctness.}
+\texttt{recent} only ever traverses nodes still linked into $M$, and \texttt{ban} removes exactly
+(and immediately) all of a banned viewer's nodes from $M$ the moment they are banned, so a
+banned viewer's messages can never appear in a later \texttt{recent} call. All chronological
+ordering and per-viewer bookkeeping invariants are preserved by every operation, since \texttt{send}
+only ever appends to the newest end of $M$ and the front of $L_v$.
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\problem  % Problem 5: Beaver Bookings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problemparts}
+
+%--- 5(a) ---
+\problempart
+\textbf{Algorithm.}
+We think of a booking schedule as a piecewise-constant ``staircase'' function
+$f(t)$ giving the number of rooms reserved at time $t$; a schedule\\
+$(k_1,s_1,t_1),\dots,(k_m,s_m,t_m)$ is just $f$ chopped into its maximal
+constant-value pieces (with $f=0$ implicitly outside the listed intervals).
+Since $B$ must satisfy $R = R_1 \cup R_2$, and every talk in $R$ came from
+exactly one of $R_1,R_2$, the number of overlapping talks at any time $t$ is
+additive:
+$$f_B(t) = f_{B_1}(t) + f_{B_2}(t).$$
+So it suffices to compute this sum, expressed as a booking schedule.
+
+We compute it with a linear two-pointer sweep, analogous to merging two
+sorted lists. Maintain pointers $i_1, i_2$ into $B_1, B_2$ (initially $0$)
+and a cursor $x$ marking the rightmost time already emitted into the output
+(initially $-\infty$, or the minimum possible start time). Repeat until both
+pointers reach the end of their lists:
+\begin{itemize}[label=\textbullet]
+  \item If one list is exhausted, emit the current booking of the other
+        list as-is (skipping any gap up to its start time via
+        $x \gets \max(x, s)$), and advance that pointer.
+  \item Otherwise let $(k_1,s_1,t_1)$ and $(k_2,s_2,t_2)$ be the current
+        bookings of $B_1,B_2$. Advance $x$ past any joint gap:
+        $x \gets \max(x,\min(s_1,s_2))$. Then:
+        \begin{itemize}[label=\textbullet]
+          \item If $t_1 \le s_2$ (or symmetrically $t_2\le s_1$), the two
+                bookings don't overlap; emit $(k_1, x, t_1)$ and advance
+                $i_1$ (resp. emit $(k_2,x,t_2)$, advance $i_2$).
+          \item Else if $x < s_2$ (resp.\ $x<s_1$), only $B_1$'s (resp.\
+                $B_2$'s) booking is active so far; emit $(k_1,x,s_2)$
+                (resp.\ $(k_2,x,s_1)$) \emph{without} advancing a pointer.
+          \item Otherwise both bookings are simultaneously active; emit
+                $(k_1+k_2,\, x,\, \min(t_1,t_2))$, and advance whichever
+                pointer(s) end exactly at $\min(t_1,t_2)$.
+        \end{itemize}
+\end{itemize}
+Finally, do a single linear pass merging any two adjacent emitted pieces
+that share the same room count and abut in time (this can occur because a
+booking may be emitted across several iterations); this restores the
+invariant that consecutive pieces of a valid schedule have distinct room
+counts.
+
+\textbf{Correctness.} At every point in the sweep, $x$ marks the boundary
+up to which $f_{B_1}+f_{B_2}$ has been fully and correctly emitted as a
+sequence of constant pieces: each case above identifies the next time at
+which either $f_{B_1}$, $f_{B_2}$, or their sum changes value, and emits the
+constant piece up to that point with the correct combined height $k_1$,
+$k_2$, or $k_1+k_2$. Since every relevant breakpoint of $B_1$ and $B_2$ is
+eventually reached by one of $i_1,i_2$, the full sum $f_{B_1}+f_{B_2}$ is
+reconstructed, which is precisely $f_B$ for $B$ satisfying $R_1\cup R_2$.
+The cleanup pass only merges pieces that are truly one contiguous
+constant-height run split across iterations, so it preserves $f_B$ exactly
+while restoring the schedule invariant.
+
+\textbf{Running time.} Each iteration of the sweep does $O(1)$ work and
+emits one piece to the output. An iteration advances at least one of
+$i_1,i_2$ \emph{except} for the ``only one side active'' case, which does
+not advance a pointer but strictly increases $x$ to a fixed boundary
+($s_1$ or $s_2$); this case cannot repeat on consecutive iterations without
+an intervening pointer advance, so it contributes only $O(1)$ extra
+iterations per pointer advance. Hence the sweep runs in
+$O(|B_1|+|B_2|) = O(n)$ time, and the final cleanup pass is a single linear
+scan, also $O(n)$. Total: $O(n)$.
+
+%--- 5(b) ---
+\problempart
+\textbf{Algorithm.}
+Apply divide and conquer, exactly as in merge sort, using part (a) as the
+combine step. Given $R$ with $|R|=n$:
+\begin{itemize}
+  \item If $n=1$, say $R=\{(s,t)\}$, return the trivial schedule
+        $B=((1,s,t))$.
+  \item Otherwise split $R$ arbitrarily into two halves $R_1,R_2$ of size
+        $\lfloor n/2\rfloor$ and $\lceil n/2\rceil$, recursively compute the
+        satisfying schedules $B_1$ for $R_1$ and $B_2$ for $R_2$, and return
+        $B = \textsc{Merge-Bookings}(B_1,B_2)$ from part (a).
+\end{itemize}
+
+\textbf{Correctness.} By induction on $n$: the base case is immediate. For
+the inductive step, $B_1$ and $B_2$ are, by the inductive hypothesis, the
+correct satisfying schedules for $R_1$ and $R_2$ respectively. Since
+$R = R_1 \cup R_2$ (as the split partitions $R$), part (a) guarantees that
+merging $B_1$ and $B_2$ yields the correct satisfying schedule for $R$.
+
+\textbf{Running time.} Note $|B_i| \le |R_i|$ for any request set (a
+schedule has at most one piece per request boundary), so the merge at a
+node handling $n'$ requests costs $O(n')$ by part (a). This gives the
+familiar recurrence
+$$T(n) = 2T(n/2) + O(n),$$
+which by the Master Theorem (or a recursion-tree argument identical to
+merge sort's) solves to
+$$T(n) = O(n\log n).$$
+\end{problemparts}
+
+\end{problems}
+
+\end{document}

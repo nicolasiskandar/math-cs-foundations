@@ -1,0 +1,377 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+
+\title{Stat 110 Strategic Practice 3 \& Homework 3: Solutions}
+\author{Prof.\ Joe Blitzstein (Department of Statistics, Harvard University)}
+\date{Fall 2011}
+
+\begin{document}
+\maketitle
+
+\section*{Strategic Practice 3 Solutions}
+
+\subsection*{1. Continuing with Conditioning}
+
+\textbf{Problem 1: A biased Monty Hall}
+
+Setup: there are three doors, one hiding a car and two hiding goats, each door equally likely to hide the car at the start. You pick Door 1. Monty, who knows where the car is, opens a door showing a goat and offers a swap. If he has a choice between the two remaining doors, he opens Door 2 with probability $p \ge 1/2$.
+
+\medskip
+\textbf{(a)} Let $C_j$ denote the event that the car sits behind door $j$, and let $W$ denote success under the always switch strategy (computed without conditioning on which door Monty actually reveals). Conditioning on the car's location,
+$$
+P(W) = P(W\mid C_1)P(C_1) + P(W\mid C_2)P(C_2) + P(W\mid C_3)P(C_3).
+$$
+If the car is behind Door 1 (your original pick), switching loses, so $P(W\mid C_1)=0$. If the car is behind Door 2 or Door 3, Monty is forced to reveal the other goat door, so switching wins for sure: $P(W\mid C_2)=P(W\mid C_3)=1$. With each $C_j$ having prior probability $1/3$,
+$$
+P(W) = 0\cdot\frac{1}{3} + 1\cdot\frac{1}{3} + 1\cdot\frac{1}{3} = \frac{2}{3}.
+$$
+
+\medskip
+\textbf{(b)} Now suppose we're told Monty opened Door 2, and we want the chance that switching (necessarily to Door 3 now) succeeds. Let $D_i$ denote the event that Monty opens door $i$. Switching succeeds exactly when the car is behind Door 3, so we need $P(C_3 \mid D_2)$. By Bayes' rule and the law of total probability,
+$$
+P(C_3\mid D_2) = \frac{P(D_2\mid C_3)P(C_3)}{P(D_2\mid C_1)P(C_1)+P(D_2\mid C_2)P(C_2)+P(D_2\mid C_3)P(C_3)}.
+$$
+If the car is behind Door 1, Monty can open either Door 2 or Door 3, choosing Door 2 with probability $p$, so $P(D_2\mid C_1)=p$. If the car is behind Door 2, Monty can't open Door 2 (it would reveal the car), so $P(D_2\mid C_2)=0$. If the car is behind Door 3, Monty's only legal move is to open Door 2, so $P(D_2\mid C_3)=1$. Plugging in (with each prior $=1/3$),
+$$
+P(C_3\mid D_2) = \frac{1\cdot\frac13}{p\cdot\frac13 + 0\cdot\frac13 + 1\cdot\frac13} = \frac{1}{1+p}.
+$$
+
+\medskip
+\textbf{(c)} The case where Monty opens Door 3 is structurally a mirror image of part (b), with the roles of "$p$" and "$1-p$" swapped (the restriction $p\ge 1/2$ wasn't actually needed in part (b), so this swap is valid). Relabeling Doors 2 and 3 and applying the result of (b) with $1-p$ in place of $p$,
+$$
+P(C_2\mid D_3) = \frac{1}{1+(1-p)} = \frac{1}{2-p}.
+$$
+
+\bigskip
+\textbf{Problem 2: True/False statements about independence}
+
+\textbf{(a)} \emph{If $X,Y$ independent and $Y,Z$ independent, then $X,Z$ independent.} This is false. Take $X=Z$ for a trivial counterexample: $X$ and $Y$ can be independent, and $Z=X$ is also independent of $Y$ (since $Z$ has the same distribution and relationship to $Y$ as $X$ does), yet $X$ and $Z=X$ are certainly not independent of each other (unless degenerate).
+
+\medskip
+\textbf{(b)} \emph{If $X,Y$ independent, then they're conditionally independent given $Z$.} False. This is the same phenomenon as the fire alarm and popcorn example from lecture, reframed using indicator random variables in place of events: two unconditionally independent quantities can become dependent once we condition on a third variable that's influenced by both.
+
+\medskip
+\textbf{(c)} \emph{If $X,Y$ conditionally independent given $Z$, then they're independent.} False. This mirrors the chess-opponent-of-unknown-skill scenario from lecture: conditional on the opponent's skill level, the outcomes of different games are independent, but unconditionally they're correlated through the shared uncertainty about skill. A coin with a random, unknown bias (as in an earlier homework) gives another instance: conditional on the bias, successive flips are independent, but unconditionally they're not.
+
+\medskip
+\textbf{(d)} \emph{If $X,Y$ have the same conditional distribution given $Z$ for every value of $Z$, then $X,Y$ have the same (marginal) distribution.} True. By the law of total probability,
+$$
+P(X=a) = \sum_z P(X=a\mid Z=z)P(Z=z).
+$$
+Since $P(X=a\mid Z=z)=P(Y=a\mid Z=z)$ for every $z$ by assumption, we can replace each term on the right to get
+$$
+P(X=a) = \sum_z P(Y=a\mid Z=z)P(Z=z) = P(Y=a).
+$$
+
+\subsection*{2. Simpson's Paradox}
+
+\textbf{Problem 1(a): Can unconditional comparisons reverse?}
+
+We're asked whether $P(A\mid E) < P(B\mid E)$ and $P(A\mid E^c) < P(B\mid E^c)$ can coexist with $P(A) > P(B)$. This cannot happen. By the law of total probability, $P(A)$ is a weighted average of $P(A\mid E)$ and $P(A\mid E^c)$ with the same weights ($P(E)$ and $P(E^c)$) that produce $P(B)$ as a weighted average of $P(B\mid E)$ and $P(B\mid E^c)$. Since each term in the average for $A$ is strictly less than the corresponding term for $B$,
+$$
+P(A) = P(A\mid E)P(E) + P(A\mid E^c)P(E^c) < P(B\mid E)P(E) + P(B\mid E^c)P(E^c) = P(B).
+$$
+So $P(A) > P(B)$ is impossible under these hypotheses.
+
+\medskip
+\textbf{Problem 1(b): Can conditional comparisons reverse?}
+
+Now we ask whether $P(A\mid B,E) < P(A\mid B^c,E)$ and $P(A\mid B,E^c) < P(A\mid B^c,E^c)$ can coexist with $P(A\mid B) > P(A\mid B^c)$. Unlike part (a), this \emph{can} happen, and it's precisely the phenomenon known as Simpson's paradox.
+
+For a concrete illustration, picture two doctors, Dr.\ Hibbert and Dr.\ Nick, each performing two kinds of operations: heart transplants and bandaid removals. Let $A$ be the event that an operation succeeds, let $B$ be the event that Dr.\ Nick is the surgeon (so $B^c$ means Dr.\ Hibbert), let $E$ be the event that the operation is a heart transplant, and $E^c$ a bandaid removal.
+
+It's entirely possible for Dr.\ Hibbert to outperform Dr.\ Nick on heart transplants \emph{and} on bandaid removals individually, while still having a lower overall success rate, if Dr.\ Nick mostly does the easy procedures and Dr.\ Hibbert mostly does the hard ones. Concretely: Dr.\ Hibbert does $90$ heart transplants with $70$ successes and $10$ bandaid removals with $10$ successes ($80$ successes out of $100$, an $80\%$ rate). Dr.\ Nick does $10$ heart transplants with $2$ successes and $90$ bandaid removals with $81$ successes ($83$ successes out of $100$, an $83\%$ rate). Picture the sample space as choosing uniformly at random among all $200$ operations. Within each procedure type, Hibbert's success rate beats Nick's, but overall Nick comes out ahead, because the procedure type a doctor tends to perform is a confounding variable.
+
+Real-world analogues abound, such as a player having a higher batting average than a rival in each of two separate seasons but a lower average when the seasons are combined. The lesson is that ignoring a confounding variable (here, procedure difficulty, or season) can completely reverse a comparison.
+
+\bigskip
+\textbf{Problem 2: The Simpsons and Blackheart's ivory}
+
+\textbf{(a)} Define $H$ as the event that Blackheart will harm Stampy, $L$ as the event that Blackheart currently holds a large amount of ivory, and $D$ as the event that Blackheart is an ivory dealer.
+
+\medskip
+\textbf{(b)} Lisa observes $L$, and reasonably infers that this makes $D$ more plausible: $P(D\mid L) > P(D)$. Implicitly, she's also suggesting that this makes harming Stampy more likely:
+$$P(H\mid L) > P(H\mid L^c).$$
+Homer, by contrast, claims the opposite:
+$$P(H\mid L) < P(H\mid L^c).$$
+
+\medskip
+\textbf{(c)} Homer's mistake is failing to account for what observing $L$ tells us about $D$. Seeing that Blackheart already has a huge stockpile of ivory makes it far more plausible that he's an ivory dealer, and being a dealer in turn makes him more dangerous to elephants like Stampy. This is another instance of Simpson's paradox: it might well be true that, \emph{for a fixed value of $D$} (i.e., comparing dealers to dealers, and non-dealers to non-dealers), having more ivory on hand reduces the desire to acquire more, so
+$$P(H\mid L,D) < P(H\mid L^c,D) \quad\text{and}\quad P(H\mid L,D^c) < P(H\mid L^c,D^c).$$
+But these within-group comparisons don't determine the sign of the overall comparison $P(H\mid L)$ versus $P(H\mid L^c)$, because $L$ shifts the mix between dealers and non-dealers. Homer's reasoning ignores this confounding effect entirely.
+
+\subsection*{3. Gambler's Ruin}
+
+\textbf{Problem 1: Bounding the chance of reaching a small profit target}
+
+The gambler wins \$1 with probability $1/3$ and loses \$1 with probability $2/3$ each round, stopping either when ruined or when \$2 ahead, starting from a fortune of \$1{,}000{,}000. We want to show the probability he ever reaches \$2 ahead is below $1/4$.
+
+Let $a_i$ denote the probability of reaching a profit of \$2 (before ruin) starting from a current fortune of $i$. Condition on the result of the very first bet: with probability $1/3$ the fortune becomes $i+1$, and with probability $2/3$ it becomes $i-1$, giving the recursion
+$$
+a_i = \frac{1}{3}a_{i+1} + \frac{2}{3}a_{i-1},
+$$
+with boundary conditions $a_0 = 0$ (already ruined) and $a_{i+2}=1$ (already reached the target, taking $i$ as the gambler's relevant starting offset). Solving this linear recursion (the standard gambler's ruin computation) gives
+$$
+a_i = \frac{2^i - 1}{2^{i+2}-1}.
+$$
+To confirm this is always below $1/4$, note that $\dfrac{2^i-1}{2^{i+2}-1} < \dfrac{1}{4}$ is equivalent (after cross-multiplying) to $4(2^i-1) < 2^{i+2}-1$, i.e., $2^{i+2}-4 < 2^{i+2}-1$, which is obviously true for every $i$. So the desired probability is strictly less than $1/4$ regardless of the starting fortune.
+
+\subsection*{4. Bernoulli and Binomial}
+
+\textbf{Problem 1: World Series}
+
+\textbf{(a)} Team A wins the series the moment it reaches $4$ wins, which can happen after $4$, $5$, $6$, or $7$ games total. Writing $q=1-p$,
+$$
+P(A\text{ wins}) = p^4 + \binom{4}{3}p^4 q + \binom{5}{3}p^4q^2 + \binom{6}{3}p^4q^3.
+$$
+Each term reflects, e.g., for a 5-game series: A must win exactly $3$ of the first $4$ games and then win game $5$, giving $\binom{4}{3}p^3q\cdot p = \binom{4}{3}p^4q$.
+
+A cleaner route uses the idea from part (b): pretend both teams always play all $7$ games regardless of whether the outcome is already decided. Let $X$ be A's total win count among these $7$ games, so $X\sim\text{Binomial}(7,p)$. Team A wins the series exactly when $X\ge 4$, so
+$$
+P(A\text{ wins}) = \sum_{k=4}^{7}\binom{7}{k}p^k q^{7-k} = \binom{7}{4}p^4q^3+\binom{7}{5}p^5q^2+\binom{7}{6}p^6q+p^7.
+$$
+This expression looks different from the first one but is algebraically identical as a function of $p$.
+
+\medskip
+\textbf{(b)} The answer to part (a) is unaffected by whether the teams stop as soon as the series is decided or keep playing out all $7$ games. Imagine that, purely for entertainment, the two teams keep playing extra games after the series outcome is already settled. These extra games don't change who won the series, so the probability of A winning is the same whether or not we imagine these "meaningless" extra games being played.
+
+\bigskip
+\textbf{Problem 2: Conditional uniformity of Bernoulli sequences}
+
+Let $X_j$ indicate success on trial $j$ (so $X_j\in\{0,1\}$), and let $X=X_1+\cdots+X_n$ be the total success count, with each trial succeeding independently with probability $p$. For any sequence $a_1,\dots,a_n\in\{0,1\}$ with $a_1+\cdots+a_n=k$,
+$$
+P(X_1=a_1,\dots,X_n=a_n\mid X=k) = \frac{P(X_1=a_1,\dots,X_n=a_n,\,X=k)}{P(X=k)}.
+$$
+Since $a_1+\cdots+a_n=k$ already forces $X=k$ whenever $X_i=a_i$ for all $i$, the joint event in the numerator is just $\{X_1=a_1,\dots,X_n=a_n\}$, which has probability $p^kq^{n-k}$ (a product of $k$ successes and $n-k$ failures, each with their own probability). The denominator, from the Binomial PMF, is $\binom{n}{k}p^kq^{n-k}$. So
+$$
+P(X_1=a_1,\dots,X_n=a_n\mid X=k) = \frac{p^kq^{n-k}}{\binom{n}{k}p^kq^{n-k}} = \frac{1}{\binom{n}{k}}.
+$$
+This is the same for every valid sequence $(a_1,\dots,a_n)$, so given that there were exactly $k$ successes, all $\binom{n}{k}$ arrangements of $k$ successes and $n-k$ failures are equally likely. Notably, $p$ has dropped out entirely, foreshadowing the concept of a sufficient statistic.
+
+\bigskip
+\textbf{Problem 3: Sums of independent Binomials}
+
+Let $X\sim\text{Binomial}(n,p)$ and, independently, $Y\sim\text{Binomial}(m,p)$.
+
+\medskip
+\textbf{(a)} Think of $X$ as counting successes among $n$ independent trials with success probability $p$, and $Y$ as counting successes among a separate batch of $m$ such trials (same $p$). Then $X+Y$ counts the total successes among all $n+m$ trials combined, which by definition has the $\text{Binomial}(n+m,p)$ distribution.
+
+\medskip
+\textbf{(b)} A Binomial random variable can never take negative values, but $X-Y$ has positive probability of being negative (e.g., if $X=0$ and $Y\ge1$), so $X-Y$ cannot follow a Binomial distribution.
+
+\medskip
+\textbf{(c)} By the definition of conditional probability and the independence of $X$ and $Y$,
+$$
+P(X=k\mid X+Y=j) = \frac{P(X=k,\,X+Y=j)}{P(X+Y=j)} = \frac{P(X=k)P(Y=j-k)}{P(X+Y=j)}.
+$$
+Substituting the Binomial PMFs for $X$, $Y$, and (using part (a)) $X+Y\sim\text{Binomial}(n+m,p)$,
+$$
+P(X=k\mid X+Y=j) = \frac{\binom{n}{k}p^k q^{n-k}\binom{m}{j-k}p^{j-k}q^{m-(j-k)}}{\binom{n+m}{j}p^jq^{n+m-j}} = \frac{\binom{n}{k}\binom{m}{j-k}}{\binom{n+m}{j}}.
+$$
+All the $p$'s cancel. This is exactly the Hypergeometric distribution that appeared in the elk capture-recapture problem from Homework 1. The connection: imagine $n$ male elk and $m$ female elk, each independently "tagged" with probability $p$. Given that a total of $j$ elk ended up tagged, the question of how many of those tagged elk are male no longer depends on $p$ at all, and reduces to the same hypergeometric counting as the original capture-recapture setup.
+
+\bigskip
+\section*{Homework 3 Solutions}
+
+\subsection*{1. A Seven-Door Monty Hall}
+
+\textbf{(a)} Label the doors so you pick Door 1. Suppose first you commit to never switching. Let $S$ be the event of ending up with the car, and $C_j$ the event that the car is behind door $j$. Since your choice doesn't depend on where the car is,
+$$
+P(S) = \sum_{j=1}^{7}P(S\mid C_j)P(C_j) = P(C_1) = \frac{1}{7},
+$$
+because sticking with Door 1 succeeds only if $C_1$ holds.
+
+Now let $M_{ijk}$ denote the event that Monty opens exactly doors $i,j,k$ (for $2\le i<j<k\le 7$). Conditioning on which three doors Monty reveals,
+$$
+P(S) = \sum_{i,j,k} P(S\mid M_{ijk})P(M_{ijk}).
+$$
+By symmetry (Monty's choice of which goat doors to reveal doesn't favor any particular configuration relative to where the car is, given that you stuck with Door 1), $P(S\mid M_{ijk})=P(S)=1/7$ for every valid $(i,j,k)$.
+
+Since the total probability that the car sits behind one of the $3$ unopened, non-chosen doors must be $1-1/7 = 6/7$, and by symmetry these $3$ doors share this probability equally, each of the $3$ remaining doors has conditional probability $\frac{6/7}{3}=\frac{2}{7}$ of hiding the car. Since $2/7 > 1/7$, you should switch, raising your success probability from $1/7$ to $2/7$.
+
+\medskip
+\textbf{(b)} The same argument generalizes: with $n\ge3$ doors and Monty opening $m$ goat doors ($1\le m\le n-2$), sticking with your original choice succeeds with probability $1/n$ (unconditionally and conditionally on which doors Monty opens, by the same symmetry argument). There are $n-m-1$ unopened doors other than your original choice, and together they carry probability $1-1/n=\frac{n-1}{n}$, split equally among them by symmetry, so each carries probability
+$$
+\frac{n-1}{n(n-m-1)}.
+$$
+Since this exceeds $1/n$ for any valid $m$, switching is always advantageous, raising your success probability to $\dfrac{n-1}{n(n-m-1)}$.
+
+\subsection*{2. Odds Form of Bayes' Rule}
+
+\textbf{(a)} We want to verify
+$$
+\frac{P(H\mid D)}{P(H^c\mid D)} = \frac{P(H)}{P(H^c)}\cdot\frac{P(D\mid H)}{P(D\mid H^c)}.
+$$
+By Bayes' rule applied separately to $H$ and $H^c$,
+$$
+P(H\mid D) = \frac{P(D\mid H)P(H)}{P(D)}, \qquad P(H^c\mid D) = \frac{P(D\mid H^c)P(H^c)}{P(D)}.
+$$
+Dividing the first by the second cancels $P(D)$ and yields exactly the claimed identity: posterior odds equal prior odds times the likelihood ratio.
+
+\medskip
+\textbf{(b)} A disease affects $1\%$ of the population. A test has $95\%$ sensitivity (true positive rate) and $95\%$ specificity (true negative rate), so a false positive rate of $5\%$. A patient tests positive twice on two independent administrations of the test.
+
+Recall that probability $p$ corresponds to odds $p/(1-p)$, and conversely odds $r$ correspond to probability $r/(1+r)$. The prior odds of having the disease are $1$ to $99$, i.e., $1/99$. Each positive test result has likelihood ratio $\dfrac{0.95}{0.05}$ (true positive rate over false positive rate).
+
+\emph{Single-step update:} Since the two tests are independent, the combined likelihood ratio for two positive results is $\left(\dfrac{0.95}{0.05}\right)^2$. The posterior odds are
+$$
+\frac{1}{99}\cdot\left(\frac{0.95}{0.05}\right)^2 = \frac{1}{99}\cdot\frac{361}{1} = \frac{361}{99} \approx 3.646,
+$$
+corresponding to a posterior probability of $\dfrac{361}{361+99}=\dfrac{361}{460}\approx 0.78$.
+
+\emph{Two-step update:} After the first positive test, the posterior odds are
+$$
+\frac{1}{99}\cdot\frac{0.95}{0.05}\approx 0.19,
+$$
+giving a probability of about $0.19/1.19\approx 0.16$, matching the standard single-test result. Treating these updated odds as the new prior and updating again with the second positive result multiplies by the same likelihood ratio again:
+$$
+\left(\frac{1}{99}\cdot\frac{0.95}{0.05}\right)\cdot\frac{0.95}{0.05},
+$$
+which is the same product as in the single-step calculation, confirming both routes agree.
+
+\subsection*{3. Reversal of Union Probabilities}
+
+The question asks whether $P(A_1\mid B)>P(A_1\mid C)$ and $P(A_2\mid B)>P(A_2\mid C)$ can coexist with $P(A_1\cup A_2\mid B) < P(A_1\cup A_2\mid C)$.
+
+Yes, this is possible. Since
+$$
+P(A_1\cup A_2\mid B) = P(A_1\mid B)+P(A_2\mid B)-P(A_1\cap A_2\mid B),
+$$
+and similarly for $C$, the only way for the union probabilities to reverse despite each individual term increasing is for the overlap term $P(A_1\cap A_2\mid \cdot)$ to swing dramatically in the opposite direction. So $A_1,A_2$ must not be disjoint, and we need $P(A_1\cap A_2\mid B)$ to be much larger than $P(A_1\cap A_2\mid C)$.
+
+\medskip
+\emph{Example 1:} A randomly chosen one of two basketball players shoots two free throws. Player 1 is extremely streaky: on any given day they either make both shots or miss both, making both with probability $0.8$. Player 2 makes each shot independently with probability $0.7$. Let $A_j$ be the event that free throw $j$ goes in, $B$ the event that Player 1 was selected, $C=B^c$. Then
+$$
+P(A_1\mid B)=P(A_2\mid B)=P(A_1\cap A_2\mid B)=P(A_1\cup A_2\mid B)=0.8,
+$$
+$$
+P(A_1\mid C)=P(A_2\mid C)=0.7,\quad P(A_1\cap A_2\mid C)=0.49,\quad P(A_1\cup A_2\mid C)=2(0.7)-0.49=0.91.
+$$
+Here $0.8>0.7$ for each individual shot, but $0.8<0.91$ for "at least one make."
+
+\medskip
+\emph{Example 2:} Suppose you enroll in exactly one of two classes. In Good Class, you attend lecture $70\%$ of the time, and you understand the material if and only if you attended. In Other Class, you attend $40\%$ of the time and separately understand the material $40\%$ of the time, but (because the lectures are unhelpful) understanding only happens when you \emph{don't} attend. Let $A_1$ = attended lecture, $A_2$ = understood the material, $B$ = took Good Class, $C$ = took Other Class. Then
+$$
+P(A_1\mid B)=P(A_2\mid B)=P(A_1\cap A_2\mid B)=P(A_1\cup A_2\mid B)=0.7,
+$$
+$$
+P(A_1\mid C)=P(A_2\mid C)=0.4,\quad P(A_1\cap A_2\mid C)=0,\quad P(A_1\cup A_2\mid C)=2(0.4)=0.8.
+$$
+Again each individual probability is higher under $B$, but the union probability is higher under $C$.
+
+\subsection*{4. Calvin and Hobbes: Win by Two}
+
+Calvin wins each game independently with probability $p$ (let $q=1-p$), and the match continues until one player leads by exactly $2$ games.
+
+\medskip
+\textbf{(a) Conditioning approach.} Let $C$ be the event Calvin wins the match, and let $X\sim\text{Binomial}(2,p)$ be Calvin's win count in the first two games. If $X=1$ (each player won one of the first two), the match is effectively reset to its starting state, so $P(C\mid X=1)=P(C)$. If $X=0$, Calvin is already down by $2$, so $P(C\mid X=0)=0$; if $X=2$, Calvin is already up by $2$, so $P(C\mid X=2)=1$. Thus
+$$
+P(C) = 0\cdot q^2 + P(C)\cdot(2pq) + 1\cdot p^2,
+$$
+so $P(C)(1-2pq)=p^2$, giving
+$$
+P(C) = \frac{p^2}{1-2pq} = \frac{p^2}{p^2+q^2}
+$$
+(the second form uses $1=(p+q)^2=p^2+2pq+q^2$, so $1-2pq=p^2+q^2$).
+
+As sanity checks: at $p=1$ this gives $1$, at $p=0$ it gives $0$, and at $p=1/2$ it gives $1/2$, all as expected. Also, swapping the roles of $p$ and $q$ correctly gives Hobbes's winning probability $q^2/(p^2+q^2) = 1-P(C)$.
+
+\medskip
+\textbf{(b) Gambler's ruin approach.} The "win by two" structure is equivalent to a gambler's ruin where each player starts with $\$2$ and a win/loss shifts the difference by $1$. The standard gambler's ruin formula for Calvin's probability of reaching $\$4$ (i.e., a lead of $2$, total target $4$) before going broke, starting at $\$2$, is
+$$
+\frac{1-(q/p)^2}{1-(q/p)^4}.
+$$
+Multiplying numerator and denominator by $p^4$ and factoring,
+$$
+\frac{1-(q/p)^2}{1-(q/p)^4} = \frac{(p^2-q^2)/p^2}{(p^4-q^4)/p^4} = \frac{(p^2-q^2)/p^2}{(p^2-q^2)(p^2+q^2)/p^4} = \frac{p^2}{p^2+q^2},
+$$
+matching part (a).
+
+\subsection*{5. Running Total of Die Rolls}
+
+\textbf{(a)} Let $p_n$ be the probability that the running total ever equals exactly $n$. Condition on the value of the very first roll: if the first roll shows $i\in\{1,\dots,6\}$, then hitting total $n$ exactly is equivalent (from that point on) to hitting total $n-i$ exactly in the remaining rolls, which has probability $p_{n-i}$. Averaging over the equally-likely first roll,
+$$
+p_n = \frac{1}{6}(p_{n-1}+p_{n-2}+p_{n-3}+p_{n-4}+p_{n-5}+p_{n-6}),
+$$
+valid for all positive integers $n$, provided we set $p_0=1$ (the running total trivially "equals" $0$ before any rolls) and $p_k=0$ for all $k<0$ (a negative total is unreachable).
+
+\medskip
+\textbf{(b)} Working upward from the recursion,
+$$
+p_1=\frac{1}{6},\quad p_2=\frac{1}{6}\Big(1+\frac16\Big),\quad p_3=\frac{1}{6}\Big(1+\frac16\Big)^2,\quad p_4=\frac{1}{6}\Big(1+\frac16\Big)^3,\quad p_5=\frac{1}{6}\Big(1+\frac16\Big)^4,\quad p_6=\frac{1}{6}\Big(1+\frac16\Big)^5.
+$$
+Then
+$$
+p_7=\frac{1}{6}(p_1+p_2+p_3+p_4+p_5+p_6)=\frac{1}{6}\left[\Big(1+\frac16\Big)^6-1\right]\approx 0.2536.
+$$
+
+\medskip
+\textbf{(c)} Intuitively, the average value of one die roll is $\frac{1+2+3+4+5+6}{6}=\frac{7}{2}$, so on average each roll advances the running total by $3.5$. Over the long run, the running total "lands on" roughly $2$ out of every $7$ consecutive integers (since a jump of size $3.5$ on average skips past about $2.5$ values, hitting roughly $2$ of every $7$), so each individual integer is hit with limiting probability $2/7$.
+
+A more rigorous argument: starting from the recursion, one can show
+$$
+p_{n+1}+2p_{n+2}+3p_{n+3}+4p_{n+4}+5p_{n+5}+6p_{n+6}
+$$
+is invariant under shifting $n$ down by one (each shift just redistributes the same six $p$ values with shifted coefficients, summing telescopically), so this quantity equals its value at $n=0$:
+$$
+p_1+2p_2+3p_3+4p_4+5p_5+6p_6 \;=\; \cdots \;=\; p_5+2p_4+3p_3+4p_2+5p_1+6p_0 = 6.
+$$
+As $n\to\infty$, every $p_{n+i}\to L$ for some common limit $L$ (assuming it exists), so the left side tends to $(1+2+3+4+5+6)L=21L$. Hold on, more carefully: taking the limit gives $(1+2+\cdots+6)L = 6$, so $L=6/21=2/7$, i.e., $p_n\to 2/7$.
+
+\subsection*{6. Trivia Questions: A and B Take Turns}
+
+\textbf{(a)} If A answers $m$ questions, each independently correct with probability $p_1$, the number she gets right is $\text{Binomial}(m,p_1)$, with PMF
+$$
+P(\text{A's correct count}=k) = \binom{m}{k}p_1^k(1-p_1)^{m-k}, \qquad k\in\{0,1,\dots,m\}.
+$$
+
+\medskip
+\textbf{(b)} Let $T$ be the combined number of correct answers, with A answering $m$ questions (success probability $p_1$ each) and B answering $n$ questions (success probability $p_2$ each), independently. For $T=k$, A could contribute any amount $j\in\{0,\dots,k\}$ correct (with B contributing $k-j$); these scenarios are mutually exclusive, so
+$$
+P(T=k) = \sum_{j=0}^{k}\binom{m}{j}p_1^j(1-p_1)^{m-j}\binom{n}{k-j}p_2^{k-j}(1-p_2)^{n-(k-j)}, \qquad k\in\{0,\dots,m+n\}.
+$$
+If $p_1=p_2=p$, this collapses (via Vandermonde's identity, or directly from the Binomial story) to a single $\text{Binomial}(m+n,p)$ distribution. If $p_1\ne p_2$, $T$ is \emph{not} Binomial: a Binomial distribution requires every trial to share the same success probability, and a mixture of trials with two different probabilities can't generally be re-expressed as trials with one common "effective" probability.
+
+\medskip
+\textbf{(c)} Let $r=P(A\text{ wins the game})$. Condition on the outcomes of the very first question asked to each player. If A answers correctly on her first try (probability $p_1$), she wins immediately. If A misses (probability $1-p_1$) but B then answers correctly (probability $p_2$), B wins (contributing $0$ to A's winning probability). If both miss (probability $(1-p_1)(1-p_2)$), the game effectively restarts with A back up first, so the conditional probability of A winning from there is again $r$. Thus
+$$
+r = p_1 + (1-p_1)p_2\cdot 0 + (1-p_1)(1-p_2)r,
+$$
+which rearranges to
+$$
+r\big[1-(1-p_1)(1-p_2)\big] = p_1 \quad\Longrightarrow\quad r = \frac{p_1}{1-(1-p_1)(1-p_2)} = \frac{p_1}{p_1+p_2-p_1p_2}.
+$$
+
+\subsection*{7. Parity Check on a Noisy Channel}
+
+A length-$n$ message has its last bit reserved as a parity check, so $\sum_{i=1}^n x_i$ is always even. Each bit is independently flipped with probability $p$. Errors go \emph{undetected} precisely when the total number of flipped bits is even and nonzero (an even number of flips preserves the overall parity, so the received message still looks consistent; an odd number of flips breaks the parity check and is caught), while zero errors trivially also preserves parity but corresponds to no errors at all.
+
+\medskip
+\textbf{(a)} For $n=5$, $p=0.1$, the number of error bits is $\text{Binomial}(5,0.1)$. Undetected errors correspond to exactly $2$ or exactly $4$ errors (the only nonzero even values $\le 5$):
+$$
+\binom{5}{2}p^2(1-p)^3 + \binom{5}{4}p^4(1-p) \approx 0.073.
+$$
+
+\medskip
+\textbf{(b)} In general, with the number of error bits $\sim\text{Binomial}(n,p)$, the probability of undetected errors is the sum over positive even error counts:
+$$
+\sum_{\substack{k \text{ even}\\ k\ge 2}}\binom{n}{k}p^k(1-p)^{n-k}.
+$$
+
+\medskip
+\textbf{(c)} Define
+$$
+a=\sum_{\substack{k\text{ even}\\k\ge0}}\binom{n}{k}p^k(1-p)^{n-k}, \qquad b=\sum_{\substack{k\text{ odd}\\k\ge1}}\binom{n}{k}p^k(1-p)^{n-k}.
+$$
+By the binomial theorem, $a+b=\sum_{k\ge0}\binom{n}{k}p^k(1-p)^{n-k}=(p+(1-p))^n=1$. Also, $a-b=\sum_{k\ge0}\binom{n}{k}(-p)^k(1-p)^{n-k}=((1-p)-p)^n=(1-2p)^n$. Solving these two equations simultaneously,
+$$
+a=\frac{1+(1-2p)^n}{2}, \qquad b=\frac{1-(1-2p)^n}{2}.
+$$
+The quantity $a$ is the total probability of an even number of errors (including zero), so subtracting off the "zero errors" case, $(1-p)^n$, gives the probability of undetected (nonzero, even) errors:
+$$
+\sum_{\substack{k\text{ even}\\k\ge2}}\binom{n}{k}p^k(1-p)^{n-k} = \frac{1+(1-2p)^n}{2}-(1-p)^n.
+$$
+As sanity checks: plugging in $n=5,p=0.1$ recovers the $\approx0.073$ from part (a); setting $p=0$ gives $0$, as it must (no errors are possible); and setting $p=1$ gives $0$ for odd $n$ and $1$ for even $n$, both of which make sense since $p=1$ means every bit flips deterministically.
+
+\end{document}

@@ -1,0 +1,264 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+
+\title{Stat 110 Strategic Practice 9 \& Homework 9: Solutions}
+\author{Prof.\ Joe Blitzstein (Department of Statistics, Harvard University)}
+\date{Fall 2011}
+
+\begin{document}
+\maketitle
+
+\section*{Strategic Practice 9 Solutions}
+
+\subsection*{1. Beta and Gamma Distributions}
+
+\textbf{Problem 1.} Let $B\sim\text{Beta}(a,b)$.
+
+\textbf{(a)} Let $W=1-B$. Since $g(t)=1-t$ is strictly decreasing with $|g'(t)|=1$, the change-of-variables formula gives
+$$
+f_W(w) = f_B(1-w)\cdot 1 = \frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}(1-w)^{a-1}w^{b-1}, \quad w\in(0,1).
+$$
+This is the $\text{Beta}(b,a)$ PDF, so $1-B\sim\text{Beta}(b,a)$.
+
+\textbf{(b)} Represent $B=\frac{X}{X+Y}$ where $X\sim\text{Gamma}(a,1)$ and $Y\sim\text{Gamma}(b,1)$ are independent (the bank-post office story). Then $1-B=\frac{Y}{X+Y}$. By the same story with the roles of $X$ and $Y$ swapped, $\frac{Y}{X+Y}\sim\text{Beta}(b,a)$.
+
+This connects naturally to the Beta-Binomial conjugate prior setup: if $\text{Beta}(a,b)$ serves as a prior for success probability $p$ (with $a$ representing prior successes and $b$ prior failures), then swapping the labels of success and failure turns $p$ into $1-p$, and the corresponding prior should be $\text{Beta}(b,a)$, which is exactly $1-B$.
+
+\bigskip
+\textbf{Problem 2.} $X\sim\text{Gamma}(a,\lambda)$ and $Y\sim\text{Gamma}(b,\lambda)$ independent, $a$ and $b$ positive integers.
+
+\textbf{(a)} The convolution of the PDFs:
+$$
+f_{X+Y}(t) = \int_0^t f_X(x)f_Y(t-x)\,dx = \int_0^t \frac{\lambda^a x^{a-1}e^{-\lambda x}}{\Gamma(a)}\cdot\frac{\lambda^b(t-x)^{b-1}e^{-\lambda(t-x)}}{\Gamma(b)}\,dx.
+$$
+Pulling out the exponential and powers of $\lambda$,
+$$
+= \frac{\lambda^{a+b}e^{-\lambda t}}{\Gamma(a)\Gamma(b)}\int_0^t x^{a-1}(t-x)^{b-1}\,dx.
+$$
+Substituting $u=x/t$, the integral becomes $t^{a+b-1}B(a,b)=t^{a+b-1}\frac{\Gamma(a)\Gamma(b)}{\Gamma(a+b)}$. So
+$$
+f_{X+Y}(t) = \frac{\lambda^{a+b}e^{-\lambda t}}{\Gamma(a+b)}t^{a+b-1},
+$$
+which is the $\text{Gamma}(a+b,\lambda)$ PDF.
+
+\textbf{(b)} The MGF of $\text{Gamma}(a,\lambda)$ is $\left(\frac{\lambda}{\lambda-t}\right)^a$ for $t<\lambda$. By independence, the MGF of $X+Y$ is
+$$
+\left(\frac{\lambda}{\lambda-t}\right)^a\!\cdot\!\left(\frac{\lambda}{\lambda-t}\right)^b = \left(\frac{\lambda}{\lambda-t}\right)^{a+b},
+$$
+which is the $\text{Gamma}(a+b,\lambda)$ MGF.
+
+\textbf{(c)} Interpret $X$ as the waiting time for the $a$th arrival in a Poisson process with rate $\lambda$. Since inter-arrival times are i.i.d.\ $\text{Expo}(\lambda)$ and are independent of $X$, $Y$ can be interpreted as the additional waiting time for $b$ more arrivals after the $a$th one. Then $X+Y$ is the waiting time until the $(a+b)$th arrival, so $X+Y\sim\text{Gamma}(a+b,\lambda)$.
+
+\bigskip
+\textbf{Problem 3.} Let $W=\frac{X}{X+Y}$ and $S=X+Y$. The bank-post office story establishes that $W\sim\text{Beta}(a,b)$ is independent of $S\sim\text{Gamma}(a+b,\lambda)$. Since $X/Y = W/(1-W)$ is a function of $W$ alone, and $S=X+Y$ is a function of $S$ alone, and $W$ is independent of $S$, it follows that $X/Y$ is independent of $X+Y$.
+
+\bigskip
+\textbf{Problem 4.} Let $X\sim\text{Gamma}(m/2,1/2)$ and $Y\sim\text{Gamma}(n/2,1/2)$ independently, and $V=\frac{X/m}{Y/n}=\frac{nX}{mY}$, so $X=\frac{mV\cdot Y}{n}$. Then
+$$
+\frac{mV}{n+mV} = \frac{mV}{n+mV}.
+$$
+Working directly: $mV/(n+mV)=X/(X+Y)$ after substituting $V=nX/(mY)$. By the bank-post office story, $X/(X+Y)\sim\text{Beta}(m/2,n/2)$.
+
+\subsection*{2. Order Statistics}
+
+\textbf{Problem 1.} $U_1,\dots,U_n\overset{iid}{\sim}\text{Unif}(0,1)$, and $U_{(j)}\sim\text{Beta}(j,n-j+1)$. The PDF is
+$$
+f_{U_{(j)}}(t) = \frac{n!}{(j-1)!(n-j)!}t^{j-1}(1-t)^{n-j}, \quad t\in(0,1).
+$$
+For $T\sim\text{Beta}(a,b)$ with $a=j$ and $b=n-j+1$: $E(T)=\frac{a}{a+b}=\frac{j}{n+1}$.
+
+For the variance, compute $E(T^2)$ by recognizing the integrand as a Beta$(a+2,b)$ kernel:
+$$
+E(T^2) = \frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\cdot\frac{\Gamma(a+2)\Gamma(b)}{\Gamma(a+b+2)} = \frac{a(a+1)}{(a+b)(a+b+1)}.
+$$
+So $\text{Var}(T)=\frac{a(a+1)}{(a+b)(a+b+1)}-\frac{a^2}{(a+b)^2}=\frac{ab}{(a+b)^2(a+b+1)}$. With $a=j$, $b=n-j+1$,
+$$
+\text{Var}(U_{(j)}) = \frac{j(n-j+1)}{(n+1)^2(n+2)}.
+$$
+
+\bigskip
+\textbf{Problem 2.} $X,Y\overset{iid}{\sim}\text{Expo}(\lambda)$, $M=\max(X,Y)$.
+
+\textbf{(a)} The CDF of $M$ is $F_M(x)=(1-e^{-\lambda x})^2$. For $X+\frac{1}{2}Y$, conditioning on $Y=t$:
+$$
+F_{X+Y/2}(x) = \int_0^{2x}(1-e^{-\lambda(x-t/2)})\lambda e^{-\lambda t}\,dt = \int_0^{2x}e^{-\lambda t}\lambda\,dt - \int_0^{2x}\lambda e^{-\lambda x}e^{-\lambda t/2}\,dt.
+$$
+Computing each integral and simplifying yields $(1-e^{-\lambda x})^2$, the same as $F_M(x)$.
+
+\textbf{(b)} Write $M=\min(X,Y)+(M-\min(X,Y))$. The minimum $L=\min(X,Y)\sim\text{Expo}(2\lambda)$. At the moment $L$ is realized, the remaining variable (whichever of $X,Y$ was not the minimum) has residual time $\sim\text{Expo}(\lambda)$ by the memoryless property, independent of $L$. So $M-L\sim\text{Expo}(\lambda)$ independently of $L$. Now $\frac{1}{2}Y\sim\text{Expo}(2\lambda)$ and $X\sim\text{Expo}(\lambda)$ are independent, so $L+\text{Expo}(\lambda)$ and $\frac{1}{2}Y+X$ have the same joint structure and thus the same distribution.
+
+\bigskip
+\textbf{Problem 3.} To have $X_{(i)}\approx a$ and $X_{(j)}\approx b$ (for $a<b$), imagine sorting the $n$ observations into five groups: the $i-1$ values below $a$, the one value near $a$, the $j-i-1$ values between $a$ and $b$, the one value near $b$, and the $n-j$ values above $b$. The number of ways to assign the $n$ observations to these groups (with sizes $i-1,1,j-i-1,1,n-j$) is the multinomial coefficient $\frac{n!}{(i-1)!\,1!\,(j-i-1)!\,1!\,(n-j)!}$. Each configuration contributes probability $F(a)^{i-1}f(a)\,(F(b)-F(a))^{j-i-1}f(b)\,(1-F(b))^{n-j}$ times the infinitesimal areas $da\,db$. So the joint PDF is
+$$
+f_{X_{(i)},X_{(j)}}(a,b) = \frac{n!}{(i-1)!\,(j-i-1)!\,(n-j)!}F(a)^{i-1}(F(b)-F(a))^{j-i-1}(1-F(b))^{n-j}f(a)f(b),
+$$
+for $a<b$.
+
+\subsection*{3. Conditional Expectation}
+
+\textbf{Problem 1.} Let the two envelope values be $a<b$ (the case $a=b$ is trivial). We open our envelope and see $x$, then draw $T\sim\text{Expo}(1)$ and switch if $x<T$.
+
+If we initially picked the envelope with value $a$: we switch (and win) whenever $T>a$, which has probability $e^{-a}$.
+
+If we initially picked the envelope with value $b$: we switch (and lose) whenever $T>b$; otherwise we keep and win. The probability of winning is $P(T\le b)=1-e^{-b}$.
+
+Each envelope is picked with probability $1/2$, so the overall success probability is
+$$
+\frac{1}{2}e^{-a}+\frac{1}{2}(1-e^{-b}) = \frac{1}{2}+\frac{1}{2}(e^{-a}-e^{-b}).
+$$
+Since $a<b$, we have $e^{-a}>e^{-b}$, so $e^{-a}-e^{-b}>0$, making this probability strictly greater than $1/2$.
+
+Intuitively: if $T$ happens to fall between $a$ and $b$ (i.e., $a<T<b$), the strategy works perfectly (switch when holding $a$, keep when holding $b$). If $T$ falls outside the interval, the strategy reduces to random guessing at $1/2$ but never does strictly worse. The possibility of $T$ landing in the interval provides a strict improvement.
+
+\bigskip
+\textbf{Problem 2.} Let $X\sim\text{Geom}(p)$ (number of failures before first success). Condition on whether the first trial is a success:
+$$
+E(X) = E(X\mid\text{success})\cdot p + E(X\mid\text{failure})\cdot q = 0\cdot p + (1+E(X))\cdot q,
+$$
+since after a failure the process restarts. Solving: $E(X)=q+qE(X)$, so $E(X)(1-q)=q$, giving $E(X)=q/p$.
+
+\bigskip
+\textbf{Problem 3.} Let $a_j$ be the expected number of additional days to complete the collection when $j$ numbers are still missing. Condition on $N$, the count of new (previously missing) numbers drawn on the next day. Since $5$ balls are drawn without replacement from $35$ total, $N$ follows a Hypergeometric distribution (tagging the $j$ missing numbers):
+$$
+P(N=n) = \frac{\binom{j}{n}\binom{35-j}{5-n}}{\binom{35}{5}}.
+$$
+After that day, $j-N$ numbers remain missing, so
+$$
+a_j = 1 + \sum_{n=0}^{5}a_{j-n}\cdot P(N=n), \quad j=1,\dots,35,
+$$
+with $a_0=0$ and $a_k=0$ for $k<0$ (no more numbers to collect if $j-n\le0$).
+
+\bigskip
+\textbf{Problem 4.} The bid $b$ is accepted when $b\ge\frac{2}{3}V$, i.e., $V\le\frac{3}{2}b$. For $b\ge2/3$ the bid is always accepted but $E(V-b)=E(V)-b=1/2-b<0$, so never bid that high. For $b<2/3$,
+$$
+E(\text{payoff}) = E(V-b\mid V\le\tfrac{3}{2}b)\cdot P(V\le\tfrac{3}{2}b).
+$$
+Given $V\le\frac{3}{2}b$, the conditional distribution of $V$ is $\text{Unif}(0,\frac{3}{2}b)$, so $E(V\mid V\le\frac{3}{2}b)=\frac{3}{4}b$. Also $P(V\le\frac{3}{2}b)=\frac{3}{2}b$. Therefore,
+$$
+E(\text{payoff}) = \left(\frac{3}{4}b-b\right)\cdot\frac{3}{2}b = -\frac{1}{4}b\cdot\frac{3}{2}b = -\frac{3}{8}b^2 \le 0,
+$$
+with equality only at $b=0$. The optimal bid is $b=0$: do not play. The key lesson is that accepting the bid is informative: it signals that $V$ is small relative to $b$, so conditioning on acceptance dramatically lowers the expected prize value below the unconditional mean of $1/2$.
+
+\bigskip
+\section*{Homework 9 Solutions}
+
+\subsection*{1. Expectation of a Ratio}
+
+\textbf{(a)} Let $X=1$ (constant) and $Y=1$ or $3$ each with probability $1/2$. Then $E(X)/(E(X)+E(Y))=1/(1+2)=1/3$, while $E(X/(X+Y))=\frac{1}{2}\cdot\frac{1}{2}+\frac{1}{2}\cdot\frac{1}{4}=\frac{3}{8}\ne\frac{1}{3}$.
+
+\textbf{(b)} Yes. When $X,Y$ are i.i.d., by symmetry $E(X/(X+Y))=E(Y/(X+Y))$. Adding and using linearity, $2E(X/(X+Y))=E((X+Y)/(X+Y))=1$, so $E(X/(X+Y))=1/2$. On the other hand $E(X)/(E(X)+E(Y))=E(X)/(2E(X))=1/2$.
+
+\textbf{(c)} From the bank-post office story, $W=X/(X+Y)$ is independent of $S=X+Y$ when $X\sim\text{Gamma}(a,\lambda)$ and $Y\sim\text{Gamma}(b,\lambda)$. Since $X^c/(X+Y)^c=W^c$ is a function of $W$ alone and $(X+Y)^c=S^c$ is a function of $S$ alone, and $W\perp S$, we get $W^c\perp S^c$. For independent random variables,
+$$
+E(W^c\cdot S^c)=E(W^c)E(S^c),
+$$
+and $W^c\cdot S^c = (W\cdot S)^c = X^c$, so $E(X^c)=E(W^c)E(S^c)=E\!\left(\frac{X^c}{(X+Y)^c}\right)E((X+Y)^c)$, which gives the claimed identity.
+
+\subsection*{2. The Gumbel Distribution}
+
+\textbf{(a)} Let $G=-\log X$ with $X\sim\text{Expo}(1)$. The CDF of $G$ is
+$$
+P(G\le t)=P(-\log X\le t)=P(X\ge e^{-t})=e^{-e^{-t}}, \quad t\in\mathbb{R}.
+$$
+
+\textbf{(b)} The CDF of $M_n-\log n$ is
+$$
+P(M_n-\log n\le t)=P(X_1\le t+\log n)^n=(1-e^{-(t+\log n)})^n=\left(1-\frac{e^{-t}}{n}\right)^n.
+$$
+Using $(1+x/n)^n\to e^x$ as $n\to\infty$ (here $x=-e^{-t}$), this converges to $e^{-e^{-t}}$, the Gumbel CDF.
+
+\subsection*{3. Negative Binomial Converges to Gamma}
+
+\textbf{(a)} Let $X\sim\text{NBin}(r,p)$ (number of failures before $r$ successes) and $q=1-p$. The MGF of a single $\text{Geom}(p)$ r.v.\ is $p/(1-qe^t)$ for $qe^t<1$, so the MGF of $X$ is $\left(\frac{p}{1-qe^t}\right)^r$. The MGF of the scaled variable $Y_p=\frac{p}{q}X$ is obtained by substituting $tp/q$ for $t$:
+$$
+M_{Y_p}(t)=\left(\frac{p}{1-qe^{tp/q}}\right)^r.
+$$
+As $p\to0$, use the approximation $e^{tp/q}\approx1+tp/q+O(p^2/q^2)$, so $qe^{tp/q}\approx q+tp+O(p^2)\approx1-p+tp+O(p^2)$. Then $1-qe^{tp/q}\approx p-tp+O(p^2)=p(1-t)+O(p^2)$, and
+$$
+M_{Y_p}(t)\approx\left(\frac{p}{p(1-t)}\right)^r=\frac{1}{(1-t)^r},
+$$
+which is the $\text{Gamma}(r,1)$ MGF (valid for $t<1$). By the MGF convergence theorem, $Y_p\to\text{Gamma}(r,1)$ in distribution as $p\to0$.
+
+\textbf{(b)} The Negative Binomial counts discrete failures before $r$ successes, and the Gamma is its continuous counterpart: both measure the "waiting time" (or total effort) to accumulate $r$ events at a given rate. As $p\to0$ the trials become very frequent and each has a tiny success probability, making the total count large; the scaling $p/q\approx p$ converts discrete failure counts into a continuous waiting time. Just as the Geometric (with $r=1$) converges to the Exponential under the same scaling, the Negative Binomial converges to the Gamma.
+
+\subsection*{4. Maximum of Discrete vs. Continuous}
+
+\textbf{(a)} For continuous i.i.d.\ $X,Y$: $P(M=x)$ comes purely from the event that exactly one equals $x$ while the other is less, since ties have probability zero. In the discrete case, $P(X=Y=x)>0$, so the formula must account for the tie event separately, breaking the simple $2F(x)f(x)$ form.
+
+\textbf{(b)} $X,Y\overset{iid}{\sim}\text{Bern}(1/2)$. The joint PMF of $(M,L)$:
+$$
+P(M=0,L=0)=P(X=0,Y=0)=\tfrac{1}{4},
+$$
+$$
+P(M=1,L=0)=P(X=1,Y=0)+P(X=0,Y=1)=\tfrac{1}{2},
+$$
+$$
+P(M=1,L=1)=P(X=1,Y=1)=\tfrac{1}{4},
+$$
+$$
+P(M=0,L=1)=0 \text{ (impossible since }M\ge L\text{)}.
+$$
+Marginal PMF of $M$: $P(M=0)=1/4$, $P(M=1)=3/4$, so $M\sim\text{Bern}(3/4)$.
+
+Marginal PMF of $L$: $P(L=0)=3/4$, $P(L=1)=1/4$, so $L\sim\text{Bern}(1/4)$.
+
+\subsection*{5. Beta-Binomial CDF Identity}
+
+Let $U_1,\dots,U_n\overset{iid}{\sim}\text{Unif}(0,1)$ and define a trial as "successful" if $U_k\le p$. Each trial independently succeeds with probability $p$, so the total number of successes $X\sim\text{Bin}(n,p)$. The $j$th order statistic $U_{(j)}$ is the $j$th smallest among $U_1,\dots,U_n$, and $U_{(j)}\sim\text{Beta}(j,n-j+1)$.
+
+The key observation is: $\{X\ge j\}=\{U_{(j)}\le p\}$. This is because $X\ge j$ means at least $j$ of the $U_k$'s fall in $[0,p]$, which is exactly the condition that the $j$th smallest $U_k$ is at most $p$. Therefore,
+$$
+P(X\ge j) = P(U_{(j)}\le p) = P(B\le p),
+$$
+where $B\sim\text{Beta}(j,n-j+1)$.
+
+\subsection*{6. Expected Flips Until a Pattern}
+
+\textbf{(a)} Waiting for HT: first wait for an H (expected $1/p$ flips), then wait for the first T after that (expected $1/q$ additional flips, since each flip after the first H is T with probability $q$). These phases are independent, so $E(\text{flips until HT})=\frac{1}{p}+\frac{1}{q}$.
+
+\textbf{(b)} Waiting for HH: let $\mu=E(\text{flips})$. Condition on the first flip:
+$$
+\mu = p\cdot E(\text{flips}\mid\text{first is H}) + q\cdot(1+\mu),
+$$
+since after a T the process restarts. Given the first flip is H, condition on the second:
+$$
+E(\text{flips}\mid\text{first is H}) = p\cdot 2 + q\cdot(2+\mu).
+$$
+Substituting: $\mu = p(2p+q(2+\mu))+q(1+\mu)$. Expanding and solving for $\mu$:
+$$
+\mu = 2p+pq(2+\mu)+q+q\mu \implies \mu p^2 = p^2\cdot 2+pq+q = \frac{p+q}{p}+1 = \frac{1}{p}+1,
+$$
+giving $\mu = \frac{1}{p}+\frac{1}{p^2}$.
+
+\textbf{(c)} Now $p\sim\text{Beta}(a,b)$ is unknown. By iterated expectation, $E(\text{flips until HT})=E\!\left[\frac{1}{p}+\frac{1}{q}\right]=E(1/p)+E(1/q)$.
+
+Using the Beta PDF and the identity $\Gamma(a-1)=(a-2)!$ etc.:
+$$
+E\!\left(\frac{1}{p}\right) = \frac{a+b-1}{a-1}, \qquad E\!\left(\frac{1}{q}\right) = \frac{a+b-1}{b-1},
+$$
+so the expected flips until HT is $\frac{a+b-1}{a-1}+\frac{a+b-1}{b-1}$.
+
+Similarly, $E(\text{flips until HH})=E(1/p)+E(1/p^2)$.
+
+$$
+E\!\left(\frac{1}{p^2}\right) = \frac{(a+b-1)(a+b-2)}{(a-1)(a-2)},
+$$
+so the expected flips until HH is $\frac{a+b-1}{a-1}+\frac{(a+b-1)(a+b-2)}{(a-1)(a-2)}$.
+
+\subsection*{7. Roommate Pairs in Stat 110}
+
+Let $I_j$ indicate that both members of roommate pair $j$ take Stat 110, so $X=\sum_{j=1}^n I_j$. Each student independently takes Stat 110 with probability $p$, so $P(I_j=1)=p^2$ and
+$$
+E(X) = np^2.
+$$
+For $E(X\mid N)$: given that $N$ of the $2n$ students enrolled, we condition on $N$ without knowing which pairs they form. For any fixed pair, the probability that student 1 of the pair is in the group of $N$ is $\frac{N}{2n}$, and given that, the probability the partner also is in the group is $\frac{N-1}{2n-1}$. So
+$$
+E(I_j\mid N) = \frac{N}{2n}\cdot\frac{N-1}{2n-1} = \frac{N(N-1)}{2n(2n-1)}.
+$$
+By linearity,
+$$
+E(X\mid N) = n\cdot\frac{N(N-1)}{2n(2n-1)} = \frac{N(N-1)}{2(2n-1)}.
+$$
+
+\end{document}

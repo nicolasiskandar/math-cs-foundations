@@ -1,0 +1,238 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+
+\title{Stat 110 Strategic Practice 6 \& Homework 6: Solutions}
+\author{Prof.\ Joe Blitzstein (Department of Statistics, Harvard University)}
+\date{Fall 2011}
+
+\begin{document}
+\maketitle
+
+\section*{Strategic Practice 6 Solutions}
+
+\subsection*{1. Exponential Distribution and Memorylessness}
+
+\textbf{Problem 1.} Offers on Fred's car are i.i.d.\ $\text{Expo}(1/10000)$ (mean \$10{,}000). Fred accepts the first offer of at least \$15{,}000.
+
+\textbf{(a)} Each offer is "successful" (at least \$15{,}000) with probability
+$$
+p = P(X_i \ge 15000) = e^{-15000/10000} = e^{-3/2}.
+$$
+The number of offers until the first success follows a Geometric distribution with parameter $p$ (where we count the successful offer), so
+$$
+E(\text{number of offers}) = \frac{1}{p} = e^{3/2} \approx 4.48.
+$$
+
+\textbf{(b)} The sale price is the accepted offer, which is $X$ conditioned on $X \ge 15000$ where $X \sim \text{Expo}(1/10000)$. By the memoryless property of the exponential distribution, the excess $X - 15000$ given $X \ge 15000$ has the same $\text{Expo}(1/10000)$ distribution as $X$ itself. Therefore,
+$$
+E(X \mid X \ge 15000) = 15000 + E(X) = 15000 + 10000 = \$25{,}000.
+$$
+
+\bigskip
+\textbf{Problem 2.} We want $E(X^3)$ for $X \sim \text{Expo}(\lambda)$ using LOTUS with at most one integration by parts, given $E(X) = 1/\lambda$ and $\text{Var}(X) = 1/\lambda^2$.
+
+By LOTUS,
+$$
+E(X^3) = \int_0^\infty x^3 \lambda e^{-\lambda x}\,dx.
+$$
+Apply integration by parts with $u = x^3$ and $dv = \lambda e^{-\lambda x}\,dx$, so $v = -e^{-\lambda x}$:
+$$
+E(X^3) = \left[-x^3 e^{-\lambda x}\right]_0^\infty + 3\int_0^\infty x^2 e^{-\lambda x}\,dx = 0 + \frac{3}{\lambda}\int_0^\infty x^2 \lambda e^{-\lambda x}\,dx = \frac{3}{\lambda}E(X^2).
+$$
+Since $E(X^2) = \text{Var}(X) + (E(X))^2 = \frac{1}{\lambda^2} + \frac{1}{\lambda^2} = \frac{2}{\lambda^2}$, we get
+$$
+E(X^3) = \frac{3}{\lambda}\cdot\frac{2}{\lambda^2} = \frac{6}{\lambda^3}.
+$$
+
+\bigskip
+\textbf{Problem 3.} Let $M = \min(X_1, \dots, X_n)$ where $X_j \sim \text{Expo}(\lambda_j)$ are independent. The survival function of $M$ is
+$$
+P(M > t) = P(X_1 > t, \dots, X_n > t) = \prod_{j=1}^n P(X_j > t) = \prod_{j=1}^n e^{-\lambda_j t} = e^{-(\lambda_1 + \cdots + \lambda_n)t}.
+$$
+This is exactly the survival function of $\text{Expo}(\lambda_1 + \cdots + \lambda_n)$, so $M \sim \text{Expo}(\lambda_1 + \cdots + \lambda_n)$.
+
+Intuitively: interpret $\lambda_j$ as the rate at which event $j$ occurs (e.g., the rate at which cars of color $j$ drive past). Then $M$ is the waiting time until the first event of any type, and since all events arrive independently, the combined arrival rate is simply $\lambda_1 + \cdots + \lambda_n$. The resulting waiting time must be continuous and memoryless (given that no event has yet occurred, the remaining wait has the same distribution), which forces it to be exponential.
+
+\bigskip
+\textbf{Problem 4.} Two clerks serve Bob and Claire when Alice arrives; she is next in line.
+
+\textbf{(a)} Alice starts being served as soon as the first of Bob or Claire finishes. The remaining service time for both Bob and Claire is $\text{Expo}(\lambda)$ by the memoryless property (regardless of how long they've been served). Once Alice begins service, she also takes $\text{Expo}(\lambda)$ time. At that point, one of Bob/Claire is still being served, also with residual time $\text{Expo}(\lambda)$ by memorylessness.
+
+So Alice's total service time and the remaining service time of the other customer are both $\text{Expo}(\lambda)$, independent and identically distributed. By symmetry, each is equally likely to finish last, so
+$$
+P(\text{Alice is last}) = \frac{1}{2}.
+$$
+
+\textbf{(b)} Alice's time in the post office is the sum of her waiting time and her service time. Her waiting time is $\min(B', C')$ where $B', C' \sim \text{Expo}(\lambda)$ independently (residual times for Bob and Claire), so by Problem 3 the waiting time is $\text{Expo}(2\lambda)$ with mean $1/(2\lambda)$. Her service time is $\text{Expo}(\lambda)$ with mean $1/\lambda$. By linearity,
+$$
+E(\text{total time}) = \frac{1}{2\lambda} + \frac{1}{\lambda} = \frac{3}{2\lambda}.
+$$
+
+\subsection*{2. Moment Generating Functions}
+
+\textbf{Problem 1.} For $X \sim \text{Expo}(\lambda)$, the MGF is $M(t) = \frac{\lambda}{\lambda - t}$ for $t < \lambda$. One approach is to differentiate three times and evaluate at $t=0$:
+$$
+M'''(t) = \frac{6\lambda}{(\lambda-t)^4} \implies E(X^3) = M'''(0) = \frac{6}{\lambda^3}.
+$$
+A more elegant approach exploits the geometric series form of $M(t)$:
+$$
+M(t) = \frac{1}{1 - t/\lambda} = \sum_{n=0}^{\infty}\left(\frac{t}{\lambda}\right)^n = \sum_{n=0}^{\infty}\frac{n!}{\lambda^n}\cdot\frac{t^n}{n!}.
+$$
+Since the coefficient of $t^n/n!$ in the MGF's Taylor expansion is $E(X^n)$, we read off $E(X^n) = n!/\lambda^n$ for all $n \ge 0$. In particular, $E(X^3) = 6/\lambda^3$, and this single computation gives every moment at once.
+
+\bigskip
+\textbf{Problem 2.} If $X$ has MGF $M(t)$, then $-X$ has MGF
+$$
+E(e^{t(-X)}) = E(e^{(-t)X}) = M(-t).
+$$
+For $a + bX$,
+$$
+E(e^{t(a+bX)}) = E(e^{at}e^{btX}) = e^{at}E(e^{(bt)X}) = e^{at}M(bt).
+$$
+
+\bigskip
+\textbf{Problem 3.} Let $U_1, \dots, U_{60}$ be i.i.d.\ $\text{Unif}(0,1)$ and $X = \sum_{i=1}^{60} U_i$. For a single $U_1$, the MGF is
+$$
+E(e^{tU_1}) = \int_0^1 e^{tu}\,du = \frac{e^t - 1}{t} \quad (t \ne 0),
+$$
+and equals $1$ at $t=0$. Since the $U_i$ are independent, the MGF of $X$ is the product of the individual MGFs:
+$$
+M_X(t) = \left(\frac{e^t - 1}{t}\right)^{60} \quad (t \ne 0), \qquad M_X(0) = 1.
+$$
+
+\bigskip
+\textbf{Problem 4.} For $X \sim \text{Pois}(\lambda)$, the MGF is $M(t) = e^{\lambda(e^t - 1)}$, so the cumulant generating function is
+$$
+g(t) = \ln M(t) = \lambda(e^t - 1) = \lambda\sum_{j=1}^{\infty}\frac{t^j}{j!}.
+$$
+Comparing with the definition $g(t) = \sum_{j=1}^{\infty}\frac{c_j}{j!}t^j$, we read off $c_j = \lambda$ for every $j \ge 1$. All cumulants of the Poisson distribution equal $\lambda$, which is a hallmark of the Poisson family.
+
+\bigskip
+\section*{Homework 6 Solutions}
+
+\subsection*{1. Fred and the Bus}
+
+\textbf{(a)} Buses run every $10$ minutes on a fixed schedule. Fred arrives at a uniformly random time in a $10$-minute cycle, so his waiting time $T \sim \text{Unif}(0, 10)$ with mean $E(T) = 5$ minutes.
+
+\textbf{(b)} We want $P(T \ge 9 \mid T > 6)$. Since $T \sim \text{Unif}(0,10)$,
+$$
+P(T \ge 9 \mid T > 6) = \frac{P(T \ge 9)}{P(T > 6)} = \frac{1/10}{4/10} = \frac{1}{4}.
+$$
+
+\textbf{(c)} In Blotchville, inter-bus intervals are i.i.d.\ $\text{Expo}(1/10)$. Fred arrives at a uniformly random moment within some interval. By the memoryless property of the exponential, the remaining time until the next bus, given any past elapsed time in the current interval, has the same $\text{Expo}(1/10)$ distribution. So Fred's waiting time is $\text{Expo}(1/10)$ with mean $10$ minutes, regardless of when he arrives.
+
+\textbf{(d)} The friend's argument is flawed because it treats all inter-bus intervals as equally likely to be the one Fred lands in. In reality, Fred is more likely to arrive during a long interval than a short one (since longer intervals occupy more time and thus cover more of Fred's possible arrival moments). This is the phenomenon of length-biasing: if you sample a random point in time, you preferentially land in longer intervals. The average waiting time within the interval you land in is not simply half the average interval length, because you oversample long intervals. For example, if one gap is $50$ minutes and another is $5$ minutes, Fred is $10$ times more likely to arrive during the $50$-minute gap, so the naive "$5$ minutes on average" calculation understates the true wait.
+
+This same bias appears in other settings: asking students the size of their class overstates average class size compared to averaging over all offered classes (the class-size paradox), or surveying people about number of siblings versus surveying about number of children yields different distributions.
+
+\subsection*{2. Three Students Finishing a Problem Set}
+
+Let $X_1, X_2, X_3 \sim \text{Expo}(1/6)$ independently (completion times in hours). We want $E(\max(X_1, X_2, X_3))$.
+
+Decompose the waiting time as $T = T_1 + T_2 + T_3$, where $T_1$ is the time until the first student finishes, $T_2$ is the additional time until the second finishes, and $T_3$ is the additional time until the third. By the minimum-of-exponentials result, $T_1 = \min(X_1,X_2,X_3) \sim \text{Expo}(3/6) = \text{Expo}(1/2)$, with mean $2$ hours. By the memoryless property, at the moment the first student finishes, the remaining two students are each independently "restarting" with $\text{Expo}(1/6)$ distributions, so $T_2 \sim \text{Expo}(2/6) = \text{Expo}(1/3)$ with mean $3$ hours. Similarly, $T_3 \sim \text{Expo}(1/6)$ with mean $6$ hours. By linearity,
+$$
+E(T) = 2 + 3 + 6 = 11 \text{ hours}.
+$$
+Starting at 1 pm, on average all three students finish at midnight.
+
+\subsection*{3. Bias-Variance Tradeoff and Optimal Summaries}
+
+\textbf{(a)} Let $b(T) = E(T) - \theta$ be the bias. Then $T - \theta = (T - E(T)) + (E(T) - \theta)$, so
+\begin{align*}
+\text{MSE}(T) = E(T-\theta)^2 &= E\!\left[(T-E(T)) + b(T)\right]^2 \\
+&= E(T-E(T))^2 + 2b(T)\underbrace{E(T-E(T))}_{=0} + b(T)^2 \\
+&= \text{Var}(T) + b(T)^2.
+\end{align*}
+
+\textbf{(b)} Using the identity from (a) with $\theta = c$ and estimator $T(X) = X$,
+$$
+E(X - c)^2 = \text{Var}(X) + (E(X) - c)^2.
+$$
+Since $\text{Var}(X) \ge 0$ is fixed and $(E(X)-c)^2 \ge 0$, the expression is minimized when $(E(X)-c)^2 = 0$, i.e., $c = E(X)$. The minimum value is $\text{Var}(X)$.
+
+\textbf{(c)} \emph{With calculus.} By LOTUS,
+$$
+E|X - c| = \int_{-\infty}^c (c-x)f(x)\,dx + \int_c^{\infty}(x-c)f(x)\,dx.
+$$
+Differentiating with respect to $c$ and applying the fundamental theorem of calculus (boundary terms cancel),
+$$
+\frac{d}{dc}E|X-c| = \int_{-\infty}^c f(x)\,dx - \int_c^{\infty}f(x)\,dx = P(X \le c) - P(X > c) = 2P(X \le c) - 1.
+$$
+Setting this to zero gives $P(X \le c) = 1/2$, i.e., $c$ is the median. The second derivative is $2f(c) > 0$, confirming this is a minimum.
+
+\emph{Without calculus.} Let $m$ be any median and $a \ne m$; we show $E|X - m| \le E|X - a|$. Assume $m < a$ (the other case is symmetric). For each value of $X$: if $X \le m$, then $|X - a| - |X - m| = (a-X) - (m-X) = a - m$; if $X > m$, then $|X-a| - |X-m| \ge -(a-m)$ (the worst case is $X > a$, giving equality). So
+$$
+E(|X-a| - |X-m|) \ge (a-m)P(X \le m) + (m-a)P(X > m) = (a-m)(2P(X\le m)-1) \ge 0,
+$$
+where the last inequality uses $P(X \le m) \ge 1/2$ by the definition of median.
+
+\subsection*{4. Benford's Law}
+
+\textbf{(a)} A naive guess might be $1/9 \approx 11\%$ if one assumes the first digit is uniform. (This is the answer the problem encourages students to form without looking up data.)
+
+\textbf{(b)} Empirically, approximately $28\%$ of countries have populations starting with $1$, far above $11\%$.
+
+\textbf{(c)} We verify that $P(D=j) = \log_{10}\!\left(\frac{j+1}{j}\right)$ is a valid PMF. Each term is nonneg since $(j+1)/j > 1$ and $\log_{10}$ of a number greater than $1$ is positive. For the sum,
+$$
+\sum_{j=1}^{9}\log_{10}\!\left(\frac{j+1}{j}\right) = \sum_{j=1}^9\!\left[\log_{10}(j+1) - \log_{10}(j)\right],
+$$
+which telescopes to $\log_{10}(10) - \log_{10}(1) = 1 - 0 = 1$.
+
+\textbf{(d)} The normalization constant $c$ satisfies
+$$
+1 = \int_1^{10}\frac{c}{x}\,dx = c\ln 10,
+$$
+so $c = 1/\ln 10 = \log_{10} e$. For $Y = aX$ with $a > 0$, the PDF of $Y$ is found via the change-of-variables formula: $f_Y(y) = f_X(y/a)\cdot(1/a) = \frac{c}{y/a}\cdot\frac{1}{a} = \frac{c}{y}$, valid for $a \le y \le 10a$. So multiplying $X$ by any positive constant $a$ produces a random variable with the same functional form $c/y$ of PDF, just over a rescaled range. This is the invariance-under-rescaling (scale invariance) property that characterizes this distribution.
+
+\textbf{(e)} The first digit $D = j$ if and only if $j \le X < j+1$. So
+$$
+P(D = j) = \int_j^{j+1}\frac{1}{x\ln 10}\,dx = \frac{1}{\ln 10}\ln\!\left(\frac{j+1}{j}\right) = \log_{10}\!\left(\frac{j+1}{j}\right),
+$$
+which matches the Benford's Law PMF from part (c).
+
+\subsection*{5. Posterior Distribution for Poisson Rate}
+
+Let $\Lambda$ denote the random rate parameter, with prior $\Lambda \sim \text{Expo}(3)$, so $f_\Lambda(\lambda) = 3e^{-3\lambda}$ for $\lambda > 0$. Customers arrive as a Poisson process with rate $\Lambda$ over a $2$-hour window, so $X \mid \Lambda = \lambda \sim \text{Pois}(2\lambda)$.
+
+By Bayes' rule, the posterior density is proportional to the likelihood times the prior:
+$$
+f_{\Lambda \mid X}(\lambda \mid 2) \propto P(X = 2 \mid \Lambda = \lambda)\cdot f_\Lambda(\lambda) = \frac{e^{-2\lambda}(2\lambda)^2}{2!}\cdot 3e^{-3\lambda} = 6\lambda^2 e^{-5\lambda}.
+$$
+To normalize, we use the fact that $\int_0^\infty \lambda^2 e^{-5\lambda}\,d\lambda = 2!/5^3 = 2/125$ (recognizable as the second moment integral of $\text{Expo}(5)$ scaled appropriately, or computed via integration by parts). So the normalizing constant gives
+$$
+f_{\Lambda \mid X}(\lambda \mid 2) = \frac{5^3}{2!}\lambda^2 e^{-5\lambda} = \frac{125}{2}\lambda^2 e^{-5\lambda}, \quad \lambda > 0.
+$$
+This is the $\text{Gamma}(3, 5)$ distribution (shape $3$, rate $5$).
+
+\subsection*{6. MGF of Binomial Converges to MGF of Poisson}
+
+Let $X_n \sim \text{Bin}(n, \lambda/n)$. The MGF of $X_n$ is
+$$
+M_{X_n}(t) = \left(1 - \frac{\lambda}{n} + \frac{\lambda}{n}e^t\right)^n = \left(1 + \frac{\lambda(e^t - 1)}{n}\right)^n.
+$$
+Using the standard limit $(1 + x/n)^n \to e^x$ as $n \to \infty$ (which follows from taking logs and applying L'Hopital's rule),
+$$
+M_{X_n}(t) \to e^{\lambda(e^t - 1)} = M_X(t),
+$$
+where $X \sim \text{Pois}(\lambda)$. This confirms that the Binomial MGF converges to the Poisson MGF, providing another route to the Poisson approximation theorem.
+
+\subsection*{7. Log-Normal Mean and Variance}
+
+Let $X \sim N(\mu, \sigma^2)$ and $Y = e^X$. The MGF of $X$ is $M_X(t) = e^{\mu t + \sigma^2 t^2/2}$.
+
+For the mean: $E(Y) = E(e^X) = M_X(1) = e^{\mu + \sigma^2/2}$.
+
+For the second moment: $E(Y^2) = E(e^{2X}) = M_X(2) = e^{2\mu + 2\sigma^2}$.
+
+The variance is then
+$$
+\text{Var}(Y) = E(Y^2) - (E(Y))^2 = e^{2\mu + 2\sigma^2} - e^{2\mu + \sigma^2} = e^{2\mu + \sigma^2}(e^{\sigma^2} - 1).
+$$
+
+For the special case $\mu = 0$, $\sigma = 1$: the $n$th moment is
+$$
+E(Y^n) = E(e^{nX}) = M_X(n) = e^{n^2/2}.
+$$
+
+\end{document}

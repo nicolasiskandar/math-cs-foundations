@@ -1,0 +1,303 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+
+\title{Stat 110 Strategic Practice 8 \& Homework 8: Solutions}
+\author{Prof.\ Joe Blitzstein (Department of Statistics, Harvard University)}
+\date{Fall 2011}
+
+\begin{document}
+\maketitle
+
+\section*{Strategic Practice 8 Solutions}
+
+\subsection*{1. Covariance and Correlation}
+
+\textbf{Problem 1.} $X$ and $Y$ are outcomes of a green and orange fair die, independent.
+
+\textbf{(a)} Using bilinearity of covariance,
+$$
+\text{Cov}(X+Y,\, X-Y) = \text{Cov}(X,X) - \text{Cov}(X,Y) + \text{Cov}(Y,X) - \text{Cov}(Y,Y) = \text{Var}(X) - \text{Var}(Y) = 0,
+$$
+since $X$ and $Y$ are i.i.d.\ and $\text{Cov}(X,Y)=0$ by independence.
+
+\textbf{(b)} $X+Y$ and $X-Y$ are not independent, even though they are uncorrelated. If $X+Y=12$, then the only possibility is $X=Y=6$, forcing $X-Y=0$. So $P(X-Y=0 \mid X+Y=12)=1$, which is far larger than $P(X-Y=0)=6/36=1/6$. As another angle: $X+Y$ and $X-Y$ must have the same parity (since their difference $2Y$ is always even), so knowing $X+Y$ is odd immediately tells us $X-Y$ is odd too.
+
+\bigskip
+\textbf{Problem 2.} In the chicken-egg model, writing $Y=N-X$ for the non-hatching eggs, we know from class that $X\sim\text{Pois}(\lambda p)$ and $Y\sim\text{Pois}(\lambda q)$ are independent, with $N=X+Y$. So
+$$
+\text{Cov}(N,X) = \text{Cov}(X+Y,X) = \text{Var}(X) + \text{Cov}(Y,X) = \lambda p + 0 = \lambda p.
+$$
+Since $\text{SD}(N)=\sqrt{\lambda}$ and $\text{SD}(X)=\sqrt{\lambda p}$,
+$$
+\text{Corr}(N,X) = \frac{\lambda p}{\sqrt{\lambda}\cdot\sqrt{\lambda p}} = \sqrt{p}.
+$$
+
+\bigskip
+\textbf{Problem 3.} We want $Z=aX+bY$ and $W=cX+dY$ to be uncorrelated and each standardized (mean $0$, variance $1$). A natural choice is $Z=X$ (so $a=1$, $b=0$). Then
+$$
+\text{Cov}(Z,W) = \text{Cov}(X,\, cX+dY) = c\,\text{Var}(X) + d\,\text{Cov}(X,Y) = c + d\rho = 0,
+$$
+so $c = -d\rho$. Requiring $\text{Var}(W)=1$:
+$$
+\text{Var}(cX+dY) = c^2 + 2cd\rho + d^2 = d^2(\rho^2 - 2\rho^2 + 1) = d^2(1-\rho^2) = 1,
+$$
+giving $d = 1/\sqrt{1-\rho^2}$ and $c = -\rho/\sqrt{1-\rho^2}$. The solution is
+$$
+a=1,\quad b=0,\quad c=\frac{-\rho}{\sqrt{1-\rho^2}},\quad d=\frac{1}{\sqrt{1-\rho^2}}.
+$$
+
+\bigskip
+\textbf{Problem 4.} In the Multinomial story, each of the $n$ objects lands in one of $k$ categories. Let $I_i$ indicate that object $i$ lands in category $1$ and $J_i$ indicate that object $i$ lands in category $2$. Then $X_1=\sum_{i=1}^n I_i$ and $X_2=\sum_{j=1}^n J_j$. By bilinearity,
+$$
+\text{Cov}(X_1,X_2) = \sum_{i,j}\text{Cov}(I_i,J_j).
+$$
+When $i\ne j$, objects $i$ and $j$ are categorized independently, so $\text{Cov}(I_i,J_j)=0$. The diagonal terms ($i=j$) give
+$$
+\text{Cov}(I_i,J_i) = E(I_i J_i) - E(I_i)E(J_i) = 0 - p_1 p_2 = -p_1 p_2,
+$$
+since $I_i J_i=0$ always (an object cannot be in two categories at once). Therefore $\text{Cov}(X_1,X_2)=n(-p_1 p_2)=-np_1p_2$. The same argument gives $\text{Cov}(X_i,X_j)=-np_ip_j$ for all $i\ne j$.
+
+\bigskip
+\textbf{Problem 5.} The identity $\max(X,Y)+\min(X,Y)=X+Y$ is true as a statement about random variables: for every outcome $\omega$, $\max(X(\omega),Y(\omega))+\min(X(\omega),Y(\omega))=X(\omega)+Y(\omega)$. So yes, this always holds.
+
+The covariance claim is incorrect. Covariance is a single number summarizing two random variables globally, not something computed outcome-by-outcome. The r.v.\ $\max(X,Y)$ is not equal to $X$ as a function; it changes which one it is from trial to trial. In fact, when $X$ and $Y$ are i.i.d.\ (and therefore uncorrelated), $\text{Cov}(\max(X,Y),\min(X,Y))>0$: the max and min are positively correlated because a large minimum forces the maximum to also be large. The argument "sometimes the max is $X$ and sometimes $Y$, and covariance is symmetric" conflates the random variable $\max(X,Y)$ with the pair of ordinary numbers $\{X(\omega),Y(\omega)\}$ at a fixed outcome.
+
+\bigskip
+\textbf{Problem 6.} Let $X=V+W$, $Y=V+Z$ where $V,W,Z\overset{iid}{\sim}\text{Pois}(\lambda)$.
+
+\textbf{(a)}
+$$
+\text{Cov}(X,Y)=\text{Cov}(V+W,V+Z)=\text{Var}(V)+\text{Cov}(V,Z)+\text{Cov}(W,V)+\text{Cov}(W,Z)=\lambda,
+$$
+since $V,W,Z$ are independent and all cross-covariances are zero.
+
+\textbf{(b)} $X$ and $Y$ are not independent: $\text{Cov}(X,Y)=\lambda>0$. Alternatively, $E(Y)=2\lambda$ but $E(Y\mid X=0)=\lambda$ (if $X=0$ then $V=W=0$, leaving only $Z$), so the distributions differ.
+
+Given $V$, $X=V+W$ and $Y=V+Z$ are functions of $W$ and $Z$ respectively (plus the now-fixed constant $V$), so they are conditionally independent given $V$, since $W$ and $Z$ are independent.
+
+\textbf{(c)} Condition on $V$:
+$$
+P(X=x,Y=y) = \sum_{v=0}^{\min(x,y)} P(X=x\mid V=v)P(Y=y\mid V=v)P(V=v)
+$$
+$$
+= \sum_{v=0}^{\min(x,y)}\frac{e^{-\lambda}\lambda^{x-v}}{(x-v)!}\cdot\frac{e^{-\lambda}\lambda^{y-v}}{(y-v)!}\cdot\frac{e^{-\lambda}\lambda^v}{v!}
+= e^{-3\lambda}\lambda^{x+y}\sum_{v=0}^{\min(x,y)}\frac{\lambda^{-v}}{(x-v)!(y-v)!v!}.
+$$
+The upper limit is $\min(x,y)$ since $V\le X$ and $V\le Y$ must both hold.
+
+\bigskip
+\textbf{Problem 7.} $X$ is Hypergeometric with parameters $w$ (white balls), $b$ (black balls), $n$ (draws), and $N=w+b$.
+
+\textbf{(a)} $\binom{X}{2}$ counts the number of pairs of draws that both land on white balls. Each of the $\binom{n}{2}$ pairs of draw positions independently has the same probability of both being white: the probability that the first of the pair is white times the conditional probability that the second is white given the first was, which is $\frac{w}{N}\cdot\frac{w-1}{N-1}$. By linearity,
+$$
+E\!\binom{X}{2} = \binom{n}{2}\cdot\frac{w}{N}\cdot\frac{w-1}{N-1}.
+$$
+
+\textbf{(b)} Since $E\binom{X}{2}=\frac{E(X^2)-E(X)}{2}$, we get $E(X^2)=2E\binom{X}{2}+E(X)$. With $p=w/N$, $q=1-p$, and $E(X)=np$,
+$$
+E(X^2) = n(n-1)p\cdot\frac{w-1}{N-1}+np.
+$$
+Note that $\frac{w-1}{N-1}=\frac{Np-1}{N-1}$. Then
+$$
+\text{Var}(X)=E(X^2)-(np)^2 = n(n-1)p\cdot\frac{Np-1}{N-1}+np-n^2p^2.
+$$
+Combining terms over a common denominator $N(N-1)$ and simplifying (several intermediate cancellations occur) yields
+$$
+\text{Var}(X) = \frac{N-n}{N-1}\cdot npq.
+$$
+
+\subsection*{2. Transformations}
+
+\textbf{Problem 1.} $X\sim\text{Unif}(0,1)$.
+
+For $Y=X^2$: set $y=x^2$, so $x=\sqrt{y}$ and $|dx/dy|=1/(2\sqrt{y})$. For $y\in(0,1)$,
+$$
+f_Y(y) = f_X(\sqrt{y})\cdot\frac{1}{2\sqrt{y}} = \frac{1}{2\sqrt{y}} = \frac{1}{2}y^{-1/2}.
+$$
+This is the $\text{Beta}(1/2,1)$ distribution.
+
+For $Y=\sqrt{X}$: set $y=x^{1/2}$, so $x=y^2$ and $|dx/dy|=2y$. For $y\in(0,1)$,
+$$
+f_Y(y) = f_X(y^2)\cdot 2y = 2y.
+$$
+This is the $\text{Beta}(2,1)$ distribution.
+
+\bigskip
+\textbf{Problem 2.} $U\sim\text{Unif}(0,2\pi)$, $T\sim\text{Expo}(1)$ independent. $X=\sqrt{2T}\cos U$, $Y=\sqrt{2T}\sin U$.
+
+Note $X^2+Y^2=2T$ and $U=\arctan(Y/X)$. The Jacobian of the inverse map from $(u,t)$ to $(x,y)$ has absolute determinant $1$ (computed as the absolute value of $\det[\partial(x,y)/\partial(u,t)]$, which evaluates to $|\!-\!\sin^2 u - \cos^2 u|=1$). So
+$$
+f_{X,Y}(x,y) = f_{U,T}(u,t)\cdot|J|^{-1} = \frac{1}{2\pi}e^{-t} = \frac{1}{2\pi}e^{-(x^2+y^2)/2} = \frac{1}{\sqrt{2\pi}}e^{-x^2/2}\cdot\frac{1}{\sqrt{2\pi}}e^{-y^2/2}.
+$$
+This factors into a function of $x$ alone times a function of $y$ alone, so $X$ and $Y$ are independent, each $\sim N(0,1)$. This is the Box-Muller transform for generating standard normal random variables.
+
+\bigskip
+\textbf{Problem 3.} Let $T=X+Y$ and $W=X$. The transformation $(x,y)\mapsto(t,w)=(x+y,x)$ has Jacobian matrix $\begin{pmatrix}1&1\\1&0\end{pmatrix}$ with absolute determinant $1$. Since $y=t-w$,
+$$
+f_{T,W}(t,w) = f_{X,Y}(w,\,t-w) = f_X(w)f_Y(t-w).
+$$
+Integrating out $w$ gives the marginal PDF of $T$:
+$$
+f_T(t) = \int_{-\infty}^{\infty}f_X(x)f_Y(t-x)\,dx,
+$$
+the convolution formula.
+
+\subsection*{3. Existence}
+
+\textbf{Problem 1.} Generate $m$ binary strings of length $n$ independently by flipping a fair coin for each bit. Let $S$ be this random set. We want to show $P(S\text{ is }k\text{-complete})>0$.
+
+There are $N=\binom{n}{k}2^k$ conditions to satisfy (one for each choice of $k$ positions and each binary string of length $k$). Let $A_j$ be the event that condition $j$ fails (no string in $S$ matches the required pattern at the required positions). For each condition, a single random string misses it with probability $1-2^{-k}$, and the $m$ strings are independent, so $P(A_j)=(1-2^{-k})^m$. By the union bound,
+$$
+P\!\left(\bigcup_{j=1}^N A_j\right)\le N(1-2^{-k})^m = \binom{n}{k}2^k(1-2^{-k})^m < 1
+$$
+by hypothesis. So $P(S\text{ is }k\text{-complete})\ge1-P(\bigcup A_j)>0$, meaning a $k$-complete set of size at most $m$ must exist.
+
+\bigskip
+\textbf{Problem 2.} Pick a pair of students uniformly at random. For each of the $8$ problems, let $I_j$ be the indicator that at least one of the two students answered problem $j$ correctly. Since at most $35$ students got problem $j$ wrong, the probability that a randomly chosen student missed it is at most $35/100$. By independence of the two students,
+$$
+P(I_j=0) \le \left(\frac{35}{100}\right)^2 = 0.1225.
+$$
+By linearity, the expected number of problems that at least one of the pair answers correctly is at least $8(1-0.1225)=7.02$. Since the expected score exceeds $7$, some pair of students must score at least $\lceil 7.02\rceil=8$, i.e., they collectively answered every problem correctly.
+
+\bigskip
+\textbf{Problem 3.} Inscribe a random square in the circle by choosing a uniformly random starting point on the circumference; the four corners are then at angles $0°, 90°, 180°, 270°$ from that starting point. Let $I_j$ be the indicator that corner $j$ touches red. By the uniformity of the starting point and since $2/3$ of the circumference is red, $E(I_j)=2/3$ for each $j$. By linearity, the expected number of red corners is $4\cdot(2/3)=8/3>2$. Since $8/3$ is not an integer and the number of red corners is always an integer, some inscribed square must have at least $3$ red corners.
+
+\bigskip
+\textbf{Problem 4.} Take a honeycomb tiling of the plane where each hexagonal cell has a circle of the same radius as the coins inscribed in it. Shift the entire tiling by a uniformly random horizontal and vertical offset (the periodicity of the tiling bounds how large these shifts need to be). For each of the $10$ designated points, let $I_j$ be the indicator that point $j$ falls inside one of the inscribed circles. By the given geometric fact (the area ratio of inscribed circle to hexagon exceeds $0.9$), every point in the plane has probability greater than $0.9$ of landing inside an inscribed circle under a uniformly random shift. So $E(I_j)>0.9$ and
+$$
+E(I_1+\cdots+I_{10}) > 9.
+$$
+Since the expected number of covered points exceeds $9$, there must exist a particular shift for which all $10$ points are covered. Placing coins over the circles that contain the points covers all $10$ points with no stacking needed (each point is in at most one circle per hexagon cell, and the cells tile without overlap).
+
+\bigskip
+\section*{Homework 8 Solutions}
+
+\subsection*{1. Distinct Birthdays}
+
+Let $I_j$ indicate that at least one of the $110$ people was born on day $j$ of the year ($j=1,\dots,365$). Then $X=\sum_{j=1}^{365}I_j$ and each $I_j\sim\text{Bern}(p)$ where
+$$
+p = 1-\left(\frac{364}{365}\right)^{110}.
+$$
+By linearity, $E(X)=365p\approx95.08$.
+
+For the variance, using $\text{Var}(X)=\sum_j\text{Var}(I_j)+2\sum_{i<j}\text{Cov}(I_i,I_j)$:
+$$
+\text{Var}(X) = 365\,p(1-p) + 2\binom{365}{2}\text{Cov}(I_1,I_2).
+$$
+We need $E(I_1 I_2)=P(\text{at least one person born on day 1 and at least one on day 2})$. By inclusion-exclusion on the complement,
+$$
+P(I_1=0\text{ or }I_2=0) = 2\left(\frac{364}{365}\right)^{110}-\left(\frac{363}{365}\right)^{110},
+$$
+so $E(I_1 I_2)=1-2(364/365)^{110}+(363/365)^{110}$. Then $\text{Cov}(I_1,I_2)=E(I_1I_2)-p^2$. Plugging in gives $\text{Var}(X)\approx10.02$.
+
+\subsection*{2. Correlation of the Max and Min of Two Standard Normals}
+
+Let $X,Y\overset{iid}{\sim}N(0,1)$, $M=\max(X,Y)$, $L=\min(X,Y)$. From $M+L=X+Y$ and $M-L=|X-Y|$, taking expectations:
+$$
+E(M)+E(L)=0, \qquad E(M)-E(L)=E|X-Y|.
+$$
+Since $X-Y\sim N(0,2)$, we have $E|X-Y|=\sqrt{2}\cdot E|Z|$ for $Z\sim N(0,1)$, and $E|Z|=\sqrt{2/\pi}$, so $E(M)-E(L)=2/\sqrt{\pi}$. Thus $E(M)=1/\sqrt{\pi}$ and $E(L)=-1/\sqrt{\pi}$.
+
+For the covariance: $ML = \frac{(M+L)^2-(M-L)^2}{4} = \frac{(X+Y)^2-|X-Y|^2}{4} = XY$. So
+$$
+\text{Cov}(M,L) = E(ML)-E(M)E(L) = E(XY)+\frac{1}{\pi} = 0+\frac{1}{\pi} = \frac{1}{\pi}.
+$$
+
+For the variance, take $\text{Var}(M+L)=\text{Var}(X+Y)=2$ and expand: $\text{Var}(M)+\text{Var}(L)+2\text{Cov}(M,L)=2$. By symmetry $\text{Var}(M)=\text{Var}(L)=v$, so $2v+2/\pi=2$, giving $v=1-1/\pi$. Therefore
+$$
+\text{Corr}(M,L) = \frac{1/\pi}{1-1/\pi} = \frac{1}{\pi-1}.
+$$
+
+\subsection*{3. Records in the High Jump}
+
+Let $I_j$ indicate that jumper $j$ sets a record. Recall $P(I_j=1)=1/j$ and the $I_j$ are mutually independent.
+
+\textbf{(a)} $\text{Var}(I_j)=\frac{1}{j}-\frac{1}{j^2}$. Since the $I_j$ are independent (hence uncorrelated), the variance of the total number of records among the first $n$ jumpers is
+$$
+\sum_{j=1}^n\left(\frac{1}{j}-\frac{1}{j^2}\right).
+$$
+As $n\to\infty$, $\sum 1/j$ diverges while $\sum 1/j^2$ converges (to $\pi^2/6$), so the variance grows without bound.
+
+\textbf{(b)} Let $J_j$ indicate a double record at time $j$ (both $j$ and $j-1$ set records), for $2\le j\le n$. By independence, $P(J_j=1)=P(I_{j-1}=1)P(I_j=1)=\frac{1}{j(j-1)}$. Using the telescoping identity $\frac{1}{j(j-1)}=\frac{1}{j-1}-\frac{1}{j}$,
+$$
+E\!\left(\sum_{j=2}^n J_j\right)=\sum_{j=2}^n\frac{1}{j(j-1)}=\sum_{j=2}^n\left(\frac{1}{j-1}-\frac{1}{j}\right)=1-\frac{1}{n}.
+$$
+As $n\to\infty$ the expected number of double records approaches $1$, even though the expected number of single records grows to infinity.
+
+\subsection*{4. PDF of $Z^4$ for $Z\sim N(0,1)$}
+
+Let $Y=Z^4$. For $y>0$, $P(Y\le y)=P(Z^4\le y)=P(|Z|\le y^{1/4})=2\Phi(y^{1/4})-1$. Differentiating using the chain rule, with $\varphi$ the standard normal PDF,
+$$
+f_Y(y) = 2\varphi(y^{1/4})\cdot\frac{1}{4}y^{-3/4} = \frac{1}{2\sqrt{2\pi}}y^{-3/4}e^{-y^{1/2}/2}, \quad y>0.
+$$
+
+\subsection*{5. PDF of a Product}
+
+\textbf{(a)} Conditioning on $X=x$ (with $x>0$),
+$$
+P(T\le t) = \int_0^\infty P(Y\le t/x)f_X(x)\,dx = \int_0^\infty F_Y(t/x)f_X(x)\,dx.
+$$
+Differentiating under the integral,
+$$
+f_T(t) = \int_0^\infty \frac{1}{x}f_Y(t/x)f_X(x)\,dx.
+$$
+Jacobno's formula omits the $1/x$ factor. The error arises because replacing the sum of products by the product introduces a nonlinear change of variables that contributes a Jacobian; Jacobno treats probability densities as if they were probabilities, missing this correction.
+
+\textbf{(b)} Let $Z=\log T$, $W=\log X$, $V=\log Y$ (all finite since $X,Y>0$), so $Z=W+V$. The PDFs of $W$ and $V$ are $f_W(w)=f_X(e^w)e^w$ and $f_V(v)=f_Y(e^v)e^v$ (standard change of variables). By the convolution formula for sums,
+$$
+f_Z(z) = \int_{-\infty}^\infty f_W(w)f_V(z-w)\,dw = \int_{-\infty}^\infty f_X(e^w)e^w f_Y(e^{z-w})e^{z-w}\,dw.
+$$
+Converting back to $T$ via $f_T(t)=f_Z(\log t)/t$ and substituting $x=e^w$,
+$$
+f_T(t) = \int_0^\infty f_X(x)f_Y(t/x)\frac{1}{x}\,dx,
+$$
+confirming the result from (a) and showing Jacobno's missing factor of $1/x$.
+
+\subsection*{6. Polar Coordinates and Spherical Symmetry}
+
+\textbf{(a)} Intuitively: since $f(x,y)=g(x^2+y^2)$ depends only on the distance from the origin, all points at the same distance are equally likely. Knowing the radius $R$ gives no preference to any particular angle, and vice versa, so $R$ and $\theta$ carry independent information.
+
+Formally, the Jacobian of the map $(r,\theta)\mapsto(x,y)=(r\cos\theta,r\sin\theta)$ has absolute determinant $r$. So
+$$
+f_{R,\theta}(r,\theta) = f_{X,Y}(r\cos\theta,r\sin\theta)\cdot r = r\cdot g(r^2), \quad r\ge0,\;\theta\in[0,2\pi).
+$$
+This factors as $h(r)\cdot(1/(2\pi))$ (up to normalization), confirming independence with $\theta\sim\text{Unif}(0,2\pi)$.
+
+\textbf{(b)} For $(X,Y)$ uniform on the unit disk, $f_{X,Y}=1/\pi$ for $x^2+y^2\le1$. So $g(r^2)=1/\pi$ and
+$$
+f_{R,\theta}(r,\theta) = \frac{r}{\pi}, \quad 0\le r\le1,\;\theta\in[0,2\pi).
+$$
+Marginalizing: $f_R(r)=2r$ for $r\in[0,1]$ and $f_\theta(\theta)=1/(2\pi)$.
+
+\textbf{(c)} For $X,Y\overset{iid}{\sim}N(0,1)$, $f_{X,Y}(x,y)=\frac{1}{2\pi}e^{-(x^2+y^2)/2}$, so $g(r^2)=\frac{1}{2\pi}e^{-r^2/2}$ and
+$$
+f_{R,\theta}(r,\theta) = \frac{r}{2\pi}e^{-r^2/2}, \quad r\ge0,\;\theta\in[0,2\pi).
+$$
+Marginalizing: $f_R(r)=re^{-r^2/2}$ for $r\ge0$ (the Rayleigh distribution, or equivalently $R^2\sim\text{Expo}(1/2)$) and $f_\theta(\theta)=1/(2\pi)$.
+
+\subsection*{7. Cliques and Anticliques in a Random Network}
+
+Edges between each pair of nodes are independently present with probability $1/2$.
+
+\textbf{(a)} For each of the $\binom{n}{k}$ subsets of $k$ nodes, let $X_i$ be the indicator that subset $i$ forms a clique. A clique requires all $\binom{k}{2}$ edges to be present, each with probability $1/2$, so $P(X_i=1)=2^{-\binom{k}{2}}$. By linearity,
+$$
+E\!\left(\text{number of }k\text{-cliques}\right) = \binom{n}{k}2^{-\binom{k}{2}}.
+$$
+
+\textbf{(b)} Let $T=\sum_{i=1}^{\binom{n}{3}}X_i$ count triangles ($k=3$). Since $\text{Var}(X_i)=2^{-3}(1-2^{-3})=7/64$,
+$$
+\text{Var}(T) = \binom{n}{3}\cdot\frac{7}{64} + 2\sum_{i<j}\text{Cov}(X_i,X_j).
+$$
+Two triangle-indicator pairs $(X_i,X_j)$ are independent if the two triangles share $0$ or $1$ nodes (no common edge). If they share exactly $2$ nodes (one common edge), then $E(X_iX_j)=2^{-5}$ (all $5$ distinct pairs must be present) and $E(X_i)E(X_j)=2^{-6}$, giving $\text{Cov}(X_i,X_j)=1/64$. The number of pairs of triangles sharing exactly one edge is $\binom{n}{4}\binom{4}{2}=6\binom{n}{4}$ (choose $4$ nodes, then choose which $2$ form the shared edge). So
+$$
+\text{Var}(T) = \frac{7}{64}\binom{n}{3} + 2\cdot 6\binom{n}{4}\cdot\frac{1}{64} = \frac{7}{64}\binom{n}{3}+\frac{3}{16}\binom{n}{4}.
+$$
+
+\textbf{(c)} Let $C$ = number of $k$-cliques and $A$ = number of $k$-anticliques in the random network. By symmetry (anticliques correspond to cliques in the complementary graph, which also has independent fair-coin edges), $E(A)=\binom{n}{k}2^{-\binom{k}{2}}=E(C)$. So
+$$
+E(C+A) = 2\binom{n}{k}2^{-\binom{k}{2}} = \binom{n}{k}2^{1-\binom{k}{2}} < 1
+$$
+by the hypothesis $\binom{n}{k}<2^{\binom{k}{2}-1}$. Since $E(C+A)<1$, we have $P(C+A\ge1)<1$, which means $P(C+A=0)>0$. Therefore there exists a network with no $k$-cliques and no $k$-anticliques.
+
+\end{document}

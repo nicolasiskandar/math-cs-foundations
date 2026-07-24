@@ -1,0 +1,236 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+
+\title{Stat 110 Strategic Practice 11 \& Ultimate Homework: Solutions}
+\author{Prof.\ Joe Blitzstein (Department of Statistics, Harvard University)}
+\date{Fall 2011}
+
+\begin{document}
+\maketitle
+
+\section*{Strategic Practice 11 Solutions}
+
+\subsection*{1. Law of Large Numbers and Central Limit Theorem}
+
+\textbf{Problem 1.} Let $X_1,X_2,\dots$ be i.i.d.\ with mean $\mu$ and variance $\sigma^2$. The CLT tells us that $\frac{\sqrt{n}}{\sigma}(\bar X_n-\mu)\to N(0,1)$ in distribution. For this to hold without blowing up or collapsing to a point, the factor $\bar X_n-\mu$ must shrink at rate $1/\sqrt{n}$. In particular, for any fixed $\epsilon>0$, the probability that $|\bar X_n-\mu|>\epsilon$ can be bounded above by the probability that a standard normal exceeds $\epsilon\sqrt{n}/\sigma$, which goes to zero. This gives the WLLN.
+
+The two results differ in the mode of convergence. The CLT is about convergence in distribution: the CDF of the standardized sample mean converges to the standard normal CDF at every continuity point. The WLLN is about convergence in probability: $\bar X_n$ concentrates near $\mu$ with probability approaching $1$, but says nothing about the shape of the fluctuations.
+
+\bigskip
+\textbf{Problem 2(a).} Let $X_1,X_2,\dots\overset{iid}{\sim}\text{Pois}(1)$ and $S_n=X_1+\cdots+X_n\sim\text{Pois}(n)$. Each $X_j$ has mean $1$ and variance $1$, so by the CLT, $S_n$ is approximately $N(n,n)$ for large $n$.
+
+\textbf{Problem 2(b).} Let $N\sim\text{Pois}(n)$ and approximate it by $Z\sim N(n,n)$. Using the continuity correction,
+$$
+P(N=n)=P\!\left(n-\tfrac12<N<n+\tfrac12\right)\approx P\!\left(n-\tfrac12<Z<n+\tfrac12\right)=\int_{n-1/2}^{n+1/2}\frac{1}{\sqrt{2\pi n}}e^{-(x-n)^2/(2n)}\,dx.
+$$
+Over the short interval of length $1$ centered at $x=n$, the integrand is very close to $\frac{1}{\sqrt{2\pi n}}e^0=\frac{1}{\sqrt{2\pi n}}$. So
+$$
+P(N=n)\approx\frac{1}{\sqrt{2\pi n}}.
+$$
+But directly from the Poisson PMF, $P(N=n)=e^{-n}n^n/n!$. Equating these two expressions:
+$$
+\frac{e^{-n}n^n}{n!}\approx\frac{1}{\sqrt{2\pi n}},
+$$
+which rearranges to $n!\approx\sqrt{2\pi n}\,(n/e)^n$, Stirling's formula.
+
+\bigskip
+\textbf{Problem 3.} A Student-$t$ r.v.\ with $m\ge3$ degrees of freedom has mean $0$ and variance $m/(m-2)$ (computed from the representation $T=Z/\sqrt{V/m}$ where $Z\sim N(0,1)$ is independent of $V\sim\chi^2_m$). By the CLT, the standardized sum of $n$ i.i.d.\ copies converges to $N(0,1)$. Taking $b_n=0$ (since the mean is zero) and $a_n=\sqrt{(m-2)/(mn)}$,
+$$
+a_n(T_1+\cdots+T_n-b_n)=\frac{T_1+\cdots+T_n}{\sqrt{mn/(m-2)}}\to N(0,1).
+$$
+
+\bigskip
+\textbf{Problem 4.} By the strong LLN, $\frac{1}{n}\sum_{i=1}^n X_i\to2$ with probability $1$ and $\frac{1}{n}\sum_{j=1}^n Y_j\to3$ with probability $1$. The intersection of two probability-$1$ events also has probability $1$, so with probability $1$ both limits hold simultaneously. Therefore,
+$$
+\frac{\sum_{i=1}^n X_i}{\sum_{j=1}^n Y_j}=\frac{(1/n)\sum X_i}{(1/n)\sum Y_j}\to\frac{2}{3}\quad\text{with probability }1.
+$$
+No assumption of independence between the $X_i$'s and $Y_j$'s is needed: the strong LLN for each sequence holds under no such cross-sequence assumption.
+
+\bigskip
+\textbf{Problem 5.} Let $I_j=\mathbf{1}(Y_j\le f(X_j))$ for each uniform point $(X_j,Y_j)$ in the rectangle $A=[a,b]\times[0,c]$. Since the $I_j$ are i.i.d.\ with mean
+$$
+\mu=P(Y_1\le f(X_1))=\frac{\int_a^b f(x)\,dx}{c(b-a)},
+$$
+the estimator $c(b-a)\cdot\frac{1}{n}\sum_{j=1}^n I_j$ approximates $\int_a^b f(x)\,dx$. By the strong LLN, $\frac{1}{n}\sum I_j\to\mu$ with probability $1$, so the estimate converges to the true integral with probability $1$.
+
+\subsection*{2. Multivariate Normal}
+
+\textbf{Problem 1.} To show $(X_1,X_2)$ is MVN given that $(X_1,X_2,X_3)$ is MVN: any linear combination $t_1X_1+t_2X_2$ can be written as $t_1X_1+t_2X_2+0\cdot X_3$, which is a linear combination of all three components. Since $(X_1,X_2,X_3)$ is MVN, every linear combination of its components is normal. So $t_1X_1+t_2X_2$ is normal for all $t_1,t_2$, which by definition means $(X_1,X_2)$ is MVN.
+
+\bigskip
+\textbf{Problem 2.} Yes. Any linear combination $\sum s_i X_i+\sum t_j Y_j$ can be split as $(\sum s_i X_i)+(\sum t_j Y_j)$. The two terms are individually normal (by the MVN assumption on $\mathbf{X}$ and $\mathbf{Y}$) and independent (by the independence of $\mathbf{X}$ and $\mathbf{Y}$), so their sum is normal. Since every linear combination of the components of $W$ is normal, $W$ is MVN.
+
+\bigskip
+\textbf{Problem 3.} We need $Z=aX+bY$ and $W=cX+dY$ uncorrelated, each with mean $0$ and variance $1$, under the Bivariate Normal with $\text{Corr}(X,Y)=\rho$.
+
+Try $a=1$, $b=0$ (so $Z=X$). Then $\text{Var}(Z)=1$ automatically. For $\text{Cov}(Z,W)=0$:
+$$
+\text{Cov}(X,\,cX+dY)=c+d\rho=0 \implies c=-d\rho.
+$$
+For $\text{Var}(W)=1$: $\text{Var}(cX+dY)=c^2+2cd\rho+d^2=d^2(\rho^2-2\rho^2+1)=d^2(1-\rho^2)=1$, so $d=1/\sqrt{1-\rho^2}$ and $c=-\rho/\sqrt{1-\rho^2}$. Since $(Z,W)$ is Bivariate Normal (it is MVN as a linear transformation of $(X,Y)$) and $\text{Cov}(Z,W)=0$, we conclude $Z$ and $W$ are independent $N(0,1)$.
+
+\bigskip
+\textbf{Problem 4.} The vector $(\bar X_n,X_1-\bar X_n,\dots,X_n-\bar X_n)$ is a linear transformation of $(X_1,\dots,X_n)$, so it is MVN. We compute $\text{Cov}(\bar X_n,X_j-\bar X_n)$. Conditioning on $\bar X_n$ and using Adam's Law:
+$$
+\text{Cov}(\bar X_n,X_j-\bar X_n)=E\!\left[\bar X_n\cdot E(X_j-\bar X_n\mid\bar X_n)\right].
+$$
+By the result from the penultimate homework (extended from $n=2$), $E(X_j\mid\bar X_n)=\bar X_n$ (by symmetry and linearity), so $E(X_j-\bar X_n\mid\bar X_n)=0$, making the covariance zero. Since $\bar X_n$ is uncorrelated with each $X_j-\bar X_n$ within a MVN, it is independent of the entire vector $(X_1-\bar X_n,\dots,X_n-\bar X_n)$. Since $S_n^2$ is a function of the residuals $X_j-\bar X_n$, it follows that $\bar X_n$ is independent of $S_n^2$.
+
+\subsection*{3. Markov Chains}
+
+\textbf{Problem 1.} Let $Y_k=X_{2k}$. Given the present state $Y_k=X_{2k}$, the Markov property of the $X$-chain says that $X_{2k+1},X_{2k+2},\dots$ is conditionally independent of $X_0,\dots,X_{2k-1}$ given $X_{2k}$. In particular, $Y_{k+1}=X_{2k+2}$ is conditionally independent of $Y_0,\dots,Y_{k-1}$ given $Y_k$. So the $Y$-chain is also Markov.
+
+Intuitively, the state at any even time summarizes all relevant past information for predicting future even-time states. Skipping odd times does not add or remove any information about the even-time evolution.
+
+The transition probabilities of the $Y$-chain are the two-step transition probabilities of the $X$-chain: if $Q$ is the transition matrix of the $X$-chain, then $Q^2$ is the transition matrix of the $Y$-chain.
+
+\bigskip
+\textbf{Problem 2.}
+
+\textbf{(a)} The transition matrix is
+$$
+Q = \begin{pmatrix} 0.5 & 0.5 & 0 & 0 \\ 0.25 & 0.75 & 0 & 0 \\ 0 & 0 & 0.25 & 0.75 \\ 0 & 0 & 0.75 & 0.25 \end{pmatrix}.
+$$
+
+\textbf{(b)} All four states are recurrent. States $1$ and $2$ form a closed communicating class (neither can reach $3$ or $4$), and within that class the chain will return to any given state with probability $1$. The same holds for states $3$ and $4$.
+
+\textbf{(c)} Solving $\pi Q=\pi$ within the $\{1,2\}$ block: $(\pi_1,\pi_2)$ satisfies $\pi_1=0.5\pi_1+0.25\pi_2$ and $\pi_1+\pi_2=1$, yielding $(\pi_1,\pi_2)=(1/3,2/3)$. Within the $\{3,4\}$ block: $(\pi_3,\pi_4)=(1/2,1/2)$. Two stationary distributions are $(1/3,2/3,0,0)$ and $(0,0,1/2,1/2)$. Any convex combination $p(1/3,2/3,0,0)+(1-p)(0,0,1/2,1/2)$ for $p\in[0,1]$ is also stationary.
+
+\bigskip
+\textbf{Problem 3.}
+
+\textbf{(a)} The cat moves to the other room at each step with probability $0.8$. By symmetry the stationary distribution of the cat is $(1/2,1/2)$.
+
+For the mouse: let $\pi=(\pi_1,\pi_2)$ satisfy $\pi Q_{\text{mouse}}=\pi$. With transition matrix entries $q_{12}=0.3$, $q_{11}=0.7$, $q_{21}=0.6$, $q_{22}=0.4$, solving gives $\pi_1=0.6/(0.3+0.6)=2/3$ and $\pi_2=1/3$.
+
+\textbf{(b)} Yes, $Z_0,Z_1,\dots$ is a Markov chain. The pair (cat location, mouse location) at time $n+1$ depends only on the pair at time $n$, since each animal moves according to its own Markov chain independently of the other. Knowing the entire past history of positions adds no further information about the next joint position beyond what is in the current joint position.
+
+\bigskip
+\textbf{Problem 4.} Treat the chessboard as an undirected graph where squares are nodes and edges connect pairs of squares reachable in one king move. The stationary distribution of a random walk on an undirected graph is proportional to the node degrees.
+
+Corner squares (4 total) each have degree $3$. Edge squares (the $24$ non-corner squares on the boundary) each have degree $5$. Interior squares (the $36$ remaining) each have degree $8$. The total degree is $4\cdot3+24\cdot5+36\cdot8=12+120+288=420$.
+
+The stationary probability is $3/420=1/140$ for a corner square, $5/420=1/84$ for an edge square, and $8/420=2/105$ for an interior square.
+
+\bigskip
+\textbf{Problem 5.}
+
+\textbf{(a)} From permutation $g$, the chain picks two distinct positions in the second row uniformly at random ($\binom{26}{2}$ equally likely choices) and swaps them. The probability of going from $g$ to $h\ne g$ is $1/\binom{26}{2}$ if $h$ differs from $g$ in exactly two positions (one swap away), and $0$ otherwise. Since $p(g,h)=p(h,g)$ for all $g,h$, the chain is reversible with respect to the uniform distribution over all $26!$ permutations, which is therefore the stationary distribution.
+
+\textbf{(b)} Let $p(g,h)=1/\binom{26}{2}$ denote the proposal probability (nonzero only when $h$ is one swap from $g$). For $g\ne h$ with $p(g,h)>0$, the actual transition probability is
+$$
+q(g,h)=p(g,h)\cdot\min\!\left(1,\frac{s(h)}{s(g)}\right).
+$$
+We verify the detailed balance condition $s(g)q(g,h)=s(h)q(h,g)$.
+
+Case 1: $s(g)\le s(h)$. Then $q(g,h)=p(g,h)$ and $q(h,g)=p(h,g)\cdot s(g)/s(h)$. Since $p(g,h)=p(h,g)$,
+$$
+s(g)q(g,h)=s(g)p(g,h)=s(h)\cdot p(h,g)\cdot\frac{s(g)}{s(h)}=s(h)q(h,g).
+$$
+Case 2: $s(h)<s(g)$. By symmetry (swapping $g$ and $h$), the same identity holds.
+
+This is detailed balance, so the chain is reversible with stationary distribution proportional to $s(g)$. This algorithm is the Metropolis algorithm, one of the most influential algorithms of the 20th century.
+
+\bigskip
+\section*{Ultimate Homework Solutions}
+
+\subsection*{1. The Volatile Stock}
+
+\textbf{(a)} Each day the stock multiplies by $Y_j=1.7$ (with probability $1/2$) or $Y_j=0.5$ (with probability $1/2$), so $X_n=X_0\prod_{j=1}^n Y_j$. Taking logs:
+$$
+\log X_n = \log X_0 + \sum_{j=1}^n \log Y_j.
+$$
+The terms $Z_j=\log Y_j$ are i.i.d.\ with $E(Z_j)=\frac{1}{2}(\log1.7+\log0.5)=\frac{1}{2}\log0.85\approx-0.081$ and some variance $\sigma_Z^2\approx0.374$. By the CLT, $\sum Z_j$ is approximately $N(n\cdot E(Z_1),\,n\sigma_Z^2)$, so $\log X_n$ is approximately $N(\log100+n\cdot\frac{1}{2}\log0.85,\;n\sigma_Z^2)$.
+
+\textbf{(b)} Each day $E(X_{j+1}\mid X_j)=\frac{1}{2}(1.7+0.5)X_j=1.1X_j$. By iterated expectation, $E(X_n)=1.1^n\cdot100\to\infty$ as $n\to\infty$.
+
+\textbf{(c)} Let $U_n\sim\text{Bin}(n,1/2)$ count the number of up-days. Then $X_n=100\cdot(1.7)^{U_n}(0.5)^{n-U_n}$. By the LLN, $U_n/n\to1/2$ with probability $1$. So
+$$
+\frac{1}{n}\log(X_n/100)=\frac{U_n}{n}\log1.7+\left(1-\frac{U_n}{n}\right)\log0.5\to\frac{1}{2}\log1.7+\frac{1}{2}\log0.5=\frac{1}{2}\log0.85<0
+$$
+with probability $1$. Thus $\log X_n\to-\infty$ and $X_n\to0$ with probability $1$.
+
+The apparent contradiction ($E(X_n)\to\infty$ yet $X_n\to0$ a.s.) parallels the St.\ Petersburg paradox: a tiny probability of astronomically large gains inflates the mean while the typical outcome collapses to zero.
+
+\subsection*{2. Chi-squared and $t$-distributions}
+
+\textbf{(a)} Write $V_n=Z_1^2+\cdots+Z_n^2$ with $Z_j\overset{iid}{\sim}N(0,1)$. Each $Z_j^2$ has mean $1$ and variance $\text{Var}(Z^2)=E(Z^4)-(EZ^2)^2=3-1=2$. By the CLT,
+$$
+\frac{V_n-n}{\sqrt{2n}}\to N(0,1)\text{ in distribution},
+$$
+so $a_n=1/\sqrt{2n}$ and $b_n=n$.
+
+\textbf{(b)} Write $T_n=Z_0/\sqrt{V_n/n}$ with $Z_0\sim N(0,1)$ independent of $V_n\sim\chi^2_n$. Then
+$$
+\frac{T_n^2}{n+T_n^2}=\frac{Z_0^2/V_n}{1+Z_0^2/V_n}=\frac{Z_0^2}{Z_0^2+V_n}.
+$$
+Since $Z_0^2\sim\chi^2_1\sim\text{Gamma}(1/2,1/2)$ and $V_n\sim\text{Gamma}(n/2,1/2)$ are independent, the bank-post office story gives $Z_0^2/(Z_0^2+V_n)\sim\text{Beta}(1/2,n/2)$.
+
+\subsection*{3. Bivariate Normal: Independence and Sums}
+
+\textbf{(a)} For $(X,Y)$ BVN with $\rho=0$, the joint MGF is
+$$
+E(e^{sX+tY})=\exp\!\left(E(sX+tY)+\tfrac12\text{Var}(sX+tY)\right)=e^{(s^2+t^2)/2}=e^{s^2/2}e^{t^2/2},
+$$
+since $\text{Var}(sX+tY)=s^2+t^2$ when $\rho=0$. This factors as the product of the MGFs of $X$ and $Y$ individually, which equals the joint MGF of two independent $N(0,1)$ random variables. Because the MGF determines the distribution, $X$ and $Y$ are independent.
+
+\textbf{(b)} Any linear combination $s(X+Y)+t(X-Y)=(s+t)X+(s-t)Y$ is a linear combination of $X$ and $Y$, hence normal. Therefore $(X+Y,X-Y)$ is MVN.
+
+\textbf{(c)} Compute $\text{Cov}(X+Y,X-Y)=\text{Var}(X)-\text{Var}(Y)=1-1=0$. Since they are uncorrelated components of an MVN vector, they are independent. Their marginals: $X+Y\sim N(0,2+2\rho)$ and $X-Y\sim N(0,2-2\rho)$. So the joint PDF factors:
+$$
+f(s,t)=\frac{1}{\sqrt{4\pi(1+\rho)}}\exp\!\left(\frac{-s^2}{4(1+\rho)}\right)\cdot\frac{1}{\sqrt{4\pi(1-\rho)}}\exp\!\left(\frac{-t^2}{4(1-\rho)}\right).
+$$
+
+\subsection*{4. Two-State Markov Chain}
+
+\textbf{(a)} The transition matrix is
+$$
+Q=\begin{pmatrix}p & 1-p\\ 1-p & p\end{pmatrix}.
+$$
+
+\textbf{(b)} Since $Q$ is symmetric, the uniform distribution $(1/2,1/2)$ is stationary (symmetric transition matrices always have the uniform stationary distribution).
+
+\textbf{(c)} As $n\to\infty$, the chain converges to stationarity from any starting state (since the chain is irreducible and aperiodic for $p\ne1$). So every row of $Q^n$ converges to $(1/2,1/2)$:
+$$
+Q^n\to\begin{pmatrix}1/2 & 1/2\\ 1/2 & 1/2\end{pmatrix}.
+$$
+
+\subsection*{5. Ehrenfest Chain}
+
+\textbf{(a)} At each step, one particle moves between containers, so the parity of the particle count in container $1$ flips at every step. Starting in state $i$, after an odd number of steps the parity is opposite to $i$, so the chain cannot be in state $i$, giving $q_{ii}^{(n)}=0$ for all odd $n$.
+
+\textbf{(b)} We verify detailed balance $s_i q_{ij}=s_j q_{ji}$ with $s_i=\binom{M}{i}(1/2)^M$. The only nonzero off-diagonal transitions are to adjacent states: $q_{i,i+1}=(M-i)/M$ (choosing one of the $M-i$ particles in container $2$ to move) and $q_{i+1,i}=(i+1)/M$. For $j=i+1$,
+$$
+s_i q_{i,i+1}=\binom{M}{i}\frac{1}{2^M}\cdot\frac{M-i}{M}=\frac{M!}{i!(M-i)!}\cdot\frac{M-i}{M\cdot2^M}=\frac{(M-1)!}{i!(M-i-1)!}\cdot\frac{1}{2^M}.
+$$
+$$
+s_{i+1}q_{i+1,i}=\binom{M}{i+1}\frac{1}{2^M}\cdot\frac{i+1}{M}=\frac{M!}{(i+1)!(M-i-1)!}\cdot\frac{i+1}{M\cdot2^M}=\frac{(M-1)!}{i!(M-i-1)!}\cdot\frac{1}{2^M}.
+$$
+These are equal, confirming detailed balance. So $s$ is the stationary distribution.
+
+This makes intuitive sense: after running the chain for a very long time, each particle independently is equally likely to be in either container, and the number in container $1$ would be $\text{Bin}(M,1/2)$.
+
+\subsection*{6. Three Dragons}
+
+\textbf{(a)} Since each dragon starts in the stationary distribution and the chain preserves it, $P(X_k=0)=s_0$ for every $k=0,1,\dots,24$. By linearity, the expected number of times Drogon is at home is $25s_0$.
+
+\textbf{(b)} Yes, $W_0,W_1,\dots$ is a Markov chain. The triple $(X_n,Y_n,Z_n)$ at time $n+1$ depends only on $(X_n,Y_n,Z_n)$, since each dragon moves independently according to its own Markov chain. Formally, by independence:
+$$
+P(W_{n+1}=w\mid W_0,\dots,W_n)=P(X_{n+1}=x,Y_{n+1}=y,Z_{n+1}=z\mid X_n,Y_n,Z_n),
+$$
+which depends only on the current state $(X_n,Y_n,Z_n)$.
+
+\textbf{(c)} The stationary distribution for $W_n=(X_n,Y_n,Z_n)$ at state $(x,y,z)$ is $s_xs_ys_z$, by independence of the three chains. The probability that all three are simultaneously home is $s_0^3$. Starting from the home state for all three, the expected return time is $1/s_0^3$.
+
+\subsection*{7. Graph Coloring Chain}
+
+Let $\mathcal{C}$ be the set of all valid $k$-colorings. For colorings $i,j\in\mathcal{C}$ with $i\ne j$, the transition probability $q_{ij}=0$ unless $i$ and $j$ differ on exactly one node $v$. If they do differ on exactly one node $v$, let $L(i,v)$ be the number of legal colors for $v$ in coloring $i$ (holding all other nodes fixed). The key observation is that $L(i,v)=L(j,v)$: since $i$ and $j$ only differ at $v$, the constraints imposed by $v$'s neighbors are the same in both colorings (they're unchanged), so the number of permitted colors for $v$ is the same. Therefore,
+$$
+q_{ij}=\frac{1}{n}\cdot\frac{1}{L(i,v)}=\frac{1}{n}\cdot\frac{1}{L(j,v)}=q_{ji}.
+$$
+Since $q_{ij}=q_{ji}$ for all $i,j$, the chain is reversible with respect to the uniform distribution on $\mathcal{C}$. The stationary distribution is therefore uniform over all valid $k$-colorings.
+
+This chain is an instance of the Gibbs sampler, which together with the Metropolis algorithm forms the backbone of Markov chain Monte Carlo methods widely used throughout science and statistics.
+
+\end{document}

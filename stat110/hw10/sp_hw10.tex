@@ -1,0 +1,272 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+
+\title{Stat 110 Strategic Practice 10 \& Penultimate Homework: Solutions}
+\author{Prof.\ Joe Blitzstein (Department of Statistics, Harvard University)}
+\date{Fall 2011}
+
+\begin{document}
+\maketitle
+
+\section*{Strategic Practice 10 Solutions}
+
+\subsection*{1. Conditional Expectation and Conditional Variance}
+
+\textbf{Problem 1.} We verify that $E((Y-E(Y|X))^2\mid X)=E(Y^2\mid X)-(E(Y|X))^2$.
+
+Write $g(X)=E(Y|X)$. Expanding the square inside the conditional expectation:
+$$
+E((Y-g(X))^2\mid X)=E(Y^2-2Yg(X)+g(X)^2\mid X).
+$$
+By linearity of conditional expectation and the rule of taking out what is known (since $g(X)$ is a function of $X$ and thus fixed when we condition on $X$):
+$$
+=E(Y^2\mid X)-2g(X)E(Y\mid X)+g(X)^2 = E(Y^2\mid X)-2g(X)^2+g(X)^2 = E(Y^2\mid X)-g(X)^2.
+$$
+
+\bigskip
+\textbf{Problem 2. (Eve's Law)} We prove $\text{Var}(Y)=E(\text{Var}(Y\mid X))+\text{Var}(E(Y\mid X))$.
+
+Let $g(X)=E(Y\mid X)$. By Adam's Law, $E(g(X))=E(Y)$.
+
+From the definition $\text{Var}(Y\mid X)=E(Y^2\mid X)-g(X)^2$, taking the unconditional expectation:
+$$
+E(\text{Var}(Y\mid X))=E(Y^2)-E(g(X)^2).
+$$
+For the second term, since $E(g(X))=E(Y)$:
+$$
+\text{Var}(E(Y\mid X))=E(g(X)^2)-(E(g(X)))^2=E(g(X)^2)-(E(Y))^2.
+$$
+Adding the two expressions, $E(g(X)^2)$ cancels and we obtain
+$$
+E(\text{Var}(Y\mid X))+\text{Var}(E(Y\mid X))=E(Y^2)-(E(Y))^2=\text{Var}(Y).
+$$
+
+\bigskip
+\textbf{Problem 3.} $W=Y-E(Y\mid X)$ is the prediction residual.
+
+\textbf{(a)} By Adam's Law and linearity,
+$$
+E(W)=E(Y)-E(E(Y\mid X))=E(Y)-E(Y)=0.
+$$
+Conditioning on $X$ and taking out what is known ($E(Y\mid X)$ is a function of $X$):
+$$
+E(W\mid X)=E(Y\mid X)-E(E(Y\mid X)\mid X)=E(Y\mid X)-E(Y\mid X)=0.
+$$
+
+\textbf{(b)} With $W\mid X\sim N(0,X^2)$ and $X\sim N(0,1)$, Eve's Law gives
+$$
+\text{Var}(W)=E(\text{Var}(W\mid X))+\text{Var}(E(W\mid X))=E(X^2)+\text{Var}(0)=E(X^2)=1.
+$$
+
+\bigskip
+\textbf{Problem 4.} Emails arrive with inter-arrival times i.i.d.\ $\text{Expo}(\lambda)$; each is non-spam with probability $p$.
+
+Let $N$ be the index of the first non-spam email, so $N-1\sim\text{Geom}(p)$ (number of spam emails before the first non-spam). Write $X=X_1+X_2+\cdots+X_N$ where $X_j$ is the inter-arrival time before the $j$th email, each $\text{Expo}(\lambda)$ and independent.
+
+\textbf{(a)} By Adam's Law, $E(X\mid N=n)=n/\lambda$, so
+$$
+E(X)=E(N/\lambda)=\frac{E(N)}{\lambda}=\frac{1}{\lambda p}.
+$$
+For the variance, by Eve's Law:
+$$
+\text{Var}(X)=E(\text{Var}(X\mid N))+\text{Var}(E(X\mid N))=E\!\left(\frac{N}{\lambda^2}\right)+\text{Var}\!\left(\frac{N}{\lambda}\right)=\frac{E(N)}{\lambda^2}+\frac{\text{Var}(N)}{\lambda^2}.
+$$
+With $N\sim\text{Geom}(p)$ (support $\{1,2,\dots\}$): $E(N)=1/p$ and $\text{Var}(N)=q/p^2$. So
+$$
+\text{Var}(X)=\frac{1}{\lambda^2 p}+\frac{q}{\lambda^2 p^2}=\frac{1}{\lambda^2 p^2}.
+$$
+
+\textbf{(b)} Conditioning on $N$ and using the independence of the $X_j$'s:
+$$
+E(e^{tX})=E\!\left(E(e^{tX}\mid N)\right)=E\!\left(M_1(t)^N\right),
+$$
+where $M_1(t)=\frac{\lambda}{\lambda-t}$ is the MGF of a single $\text{Expo}(\lambda)$. By LOTUS for the Geometric:
+$$
+E(M_1(t)^N)=\sum_{n=1}^\infty M_1(t)^n\cdot p\,q^{n-1}=\frac{p}{q}\sum_{n=1}^\infty(q\,M_1(t))^n=\frac{p}{q}\cdot\frac{q\,M_1(t)}{1-q\,M_1(t)}=\frac{p M_1(t)}{1-q M_1(t)}.
+$$
+Substituting $M_1(t)=\lambda/(\lambda-t)$:
+$$
+\frac{p\lambda/(\lambda-t)}{1-q\lambda/(\lambda-t)}=\frac{p\lambda}{(\lambda-t)-q\lambda}=\frac{p\lambda}{p\lambda-t}=\frac{\lambda p}{\lambda p-t}.
+$$
+This is the $\text{Expo}(\lambda p)$ MGF, so $X\sim\text{Expo}(\lambda p)$.
+
+\bigskip
+\textbf{Problem 5.} A coin is picked at random from $\{p_1,p_2\}$; it is flipped $n$ times and $X$ counts Heads.
+
+Let $I$ be the indicator of picking coin $p_1$. By Adam's Law,
+$$
+E(X)=E(E(X\mid I))=E(Inp_1+(1-I)np_2)=\frac{n(p_1+p_2)}{2}.
+$$
+By Eve's Law, $\text{Var}(X\mid I)=I\,np_1(1-p_1)+(1-I)np_2(1-p_2)$, which equals $np_1(1-p_1)$ or $np_2(1-p_2)$ each with probability $1/2$. Also $E(X\mid I)$ takes values $np_1$ or $np_2$ each with probability $1/2$. So
+$$
+E(\text{Var}(X\mid I))=\frac{n}{2}(p_1(1-p_1)+p_2(1-p_2)),
+$$
+$$
+\text{Var}(E(X\mid I))=\frac{n^2}{4}(p_1-p_2)^2.
+$$
+Therefore,
+$$
+\text{Var}(X)=\frac{n}{2}(p_1(1-p_1)+p_2(1-p_2))+\frac{n^2}{4}(p_1-p_2)^2.
+$$
+
+\subsection*{2. Inequalities}
+
+For all parts, $X$ and $Y$ are i.i.d.\ positive r.v.s, $c>0$.
+
+\begin{enumerate}
+\item[(a)] $E(\ln X)\le\ln(E(X))$: the log function is concave, so Jensen gives $\le$.
+\item[(b)] $E(X)\le\sqrt{E(X^2)}$: since $\text{Var}(X)\ge0$, we have $(E(X))^2\le E(X^2)$, so take square roots.
+\item[(c)] $E(\sin^2 X)+E(\cos^2 X)=1$: by linearity and the identity $\sin^2+\cos^2=1$.
+\item[(d)] $E(|X|)\le\sqrt{E(X^2)}$: since $X>0$, $|X|=X$, so this is the same as (b).
+\item[(e)] $P(X>c)\le E(X^3)/c^3$: applying Markov's inequality to $X^3$ with threshold $c^3$.
+\item[(f)] $P(X\le Y)=P(X\ge Y)$: wait, by symmetry (i.i.d.) $P(X\le Y)=P(Y\le X)=P(X\ge Y)$, so $=$.
+\item[(g)] $E(XY)\le\sqrt{E(X^2)E(Y^2)}$: by the Cauchy-Schwarz inequality.
+\item[(h)] $P(X+Y>10)\le P(X>5\text{ or }Y>5)$: if $X+Y>10$ then $\max(X,Y)>5$, i.e., $X>5$ or $Y>5$.
+\item[(i)] $E(\min(X,Y))\le\min(E(X),E(Y))$: $\min(X,Y)\le X$ pointwise, so take expectation; similarly for $Y$.
+\item[(j)] $E(X/Y)\ge E(X)/E(Y)$: since $E(1/Y)\ge1/E(Y)$ by Jensen (as $1/y$ is convex), and $E(X/Y)=E(X)E(1/Y)$ by independence.
+\item[(k)] $E(X^2(X^2+1))\ge E(X^2(Y^2+1))$: both sides equal $E(X^4)+E(X^2)$. Since $X,Y$ are i.i.d., $E(X^4)$ appears on the left and $E(X^2Y^2)=E(X^2)E(Y^2)=(E(X^2))^2\le E(X^4)$ on the right. So $\ge$.
+\item[(l)] $E(X^3/(X^3+Y^3))=E(Y^3/(X^3+Y^3))$: the two expressions sum to $1$ and are equal by symmetry (i.i.d.), so each equals $1/2$.
+\end{enumerate}
+
+\bigskip
+\textbf{Problem 2(a).} $g(x)=1/x$ is strictly convex on $(0,\infty)$ since $g''(x)=2x^{-3}>0$. By Jensen's inequality (strict for non-constant r.v.s),
+$$
+E(1/X)>1/E(X).
+$$
+
+\textbf{Problem 2(b).} Let $W=Y/X$, a positive non-constant r.v. By part (a),
+$$
+E(X/Y)=E(1/W)>\frac{1}{E(W)}=\frac{1}{E(Y/X)},
+$$
+so $E(X/Y)\cdot E(Y/X)>1$.
+
+\bigskip
+\textbf{Problem 3.} We want $P(|\bar X_n-\mu|>2\sigma)\le0.01$. By Chebyshev's inequality,
+$$
+P(|\bar X_n-\mu|>2\sigma)\le\frac{\text{Var}(\bar X_n)}{(2\sigma)^2}=\frac{\sigma^2/n}{4\sigma^2}=\frac{1}{4n}.
+$$
+Setting $1/(4n)\le1/100$ gives $n\ge25$.
+
+\bigskip
+\textbf{Problem 4. (AM-GM via Jensen)} Assume the $a_j$ are distinct (if not, assign each distinct value a probability proportional to its multiplicity). Let $X$ take value $a_j$ with probability $1/n$ for each $j$. Since $\log$ is concave, Jensen gives $E(\log X)\le\log(E(X))$:
+$$
+\frac{1}{n}\sum_{j=1}^n\log a_j\le\log\!\left(\frac{a_1+\cdots+a_n}{n}\right).
+$$
+Exponentiating both sides and using $\exp\!\left(\frac{1}{n}\sum\log a_j\right)=(a_1\cdots a_n)^{1/n}$:
+$$
+(a_1 a_2\cdots a_n)^{1/n}\le\frac{a_1+a_2+\cdots+a_n}{n}.
+$$
+
+\bigskip
+\section*{Penultimate Homework Solutions}
+
+\subsection*{1. Judit's Tournament Wins}
+
+$N\sim\text{Geom}(s)$ (number of tournaments, support $\{0,1,2,\dots\}$ here treated as $\{1,2,\dots\}$; we take $N\sim\text{Geom}(s)$ with $E(N)=(1-s)/s$), and $T\mid N\sim\text{Bin}(N,p)$.
+
+\textbf{(a)} By Adam's Law:
+$$
+E(T)=E(E(T\mid N))=E(Np)=p\cdot\frac{1-s}{s}.
+$$
+By Eve's Law:
+$$
+\text{Var}(T)=E(\text{Var}(T\mid N))+\text{Var}(E(T\mid N))=E(Np(1-p))+\text{Var}(Np)=p(1-p)\frac{1-s}{s}+p^2\frac{1-s}{s^2}.
+$$
+Combining over a common denominator,
+$$
+\text{Var}(T)=\frac{p(1-s)(s+p(1-s))}{s^2}.
+$$
+
+\textbf{(b)} The MGF of $T$ is found by conditioning on $N$. Each tournament win indicator is Bernoulli($p$) independently, so
+$$
+E(e^{tT})=E\!\left(E(e^{tT}\mid N)\right)=E\!\left((pe^t+q)^N\right)=\sum_{n=0}^\infty(pe^t+q)^n s(1-s)^n=\frac{s}{1-(1-s)(pe^t+q)}.
+$$
+This matches the MGF of a $\text{Geom}(\theta)$ distribution (for an appropriate $\theta$). Setting $\theta=s/(s+p(1-s))$ puts it in standard form, showing $T\sim\text{Geom}\!\left(\frac{s}{s+p(1-s)}\right)$.
+
+\emph{Story proof:} Each event in Judit's career is a win (probability $(1-s)p$), a loss (probability $(1-s)(1-p)$), or retirement (probability $s$). Conditioning on the outcome being either a win or retirement (i.e., ignoring losses), the probability that a non-loss outcome is a retirement is $\frac{s}{s+p(1-s)}$, and $T$ counts the wins before the first retirement. This is Geometric with the stated parameter.
+
+\subsection*{2. Conditional Expectation of a Weighted Sum}
+
+Since $X_1$ and $X_2$ are i.i.d., by symmetry $E(X_1\mid\bar X)=E(X_2\mid\bar X)$. By linearity and taking out what is known,
+$$
+E(X_1\mid\bar X)+E(X_2\mid\bar X)=E(X_1+X_2\mid\bar X)=2\bar X,
+$$
+so $E(X_1\mid\bar X)=E(X_2\mid\bar X)=\bar X$. Therefore, for any constants $w_1,w_2$ with $w_1+w_2=1$,
+$$
+E(w_1X_1+w_2X_2\mid\bar X)=w_1\bar X+w_2\bar X=\bar X.
+$$
+
+\subsection*{3. Stock Volatility: Mixture of Normals}
+
+$X=I_1X_1+I_2X_2$ with $I_1\sim\text{Bern}(p)$, $I_2=1-I_1$, $X_j\sim N(0,\sigma_j^2)$ all independent.
+
+\textbf{(a)} \emph{Via Eve's Law:} Given $I_1$, $X$ equals $X_1\sim N(0,\sigma_1^2)$ or $X_2\sim N(0,\sigma_2^2)$, so $E(X\mid I_1)=0$ always and $\text{Var}(X\mid I_1)=I_1\sigma_1^2+(1-I_1)\sigma_2^2$. By Eve's Law,
+$$
+\text{Var}(X)=E(I_1\sigma_1^2+(1-I_1)\sigma_2^2)+\text{Var}(0)=p\sigma_1^2+(1-p)\sigma_2^2.
+$$
+
+\emph{Direct covariance method:} Since $I_1 I_2=0$ always, all cross-terms $\text{Cov}(I_1X_1,I_2X_2)=E(I_1I_2X_1X_2)=0$. Also $E(I_1X_1)=0$ (as $E(X_1)=0$), so
+$$
+\text{Var}(I_1X_1)=E(I_1^2X_1^2)=E(I_1)E(X_1^2)=p\sigma_1^2.
+$$
+Similarly $\text{Var}(I_2X_2)=q\sigma_2^2$. So $\text{Var}(X)=p\sigma_1^2+q\sigma_2^2$.
+
+\textbf{(b)} Since $I_1I_2=0$ and $I_j^k=I_j$ for any $k\ge1$:
+$$
+X^4=(I_1X_1+I_2X_2)^4=I_1X_1^4+I_2X_2^4.
+$$
+For $Z\sim N(0,\sigma^2)$, $E(Z^4)=3\sigma^4$. So
+$$
+E(X^4)=E(I_1)E(X_1^4)+E(I_2)E(X_2^4)=3p\sigma_1^4+3q\sigma_2^4.
+$$
+With $\mu=E(X)=0$ and $\sigma_X^2=p\sigma_1^2+q\sigma_2^2$,
+$$
+\text{Kurt}(X)=\frac{E(X^4)}{\sigma_X^4}-3=\frac{3(p\sigma_1^4+q\sigma_2^4)}{(p\sigma_1^2+q\sigma_2^2)^2}-3.
+$$
+When $\sigma_1=\sigma_2$, this reduces to $3\sigma^4/\sigma^4-3=0$ (Gaussian kurtosis). When $\sigma_1\ne\sigma_2$, the numerator exceeds the denominator by Jensen's inequality applied to the convex function $t^2$: $E(Y^2)>(E(Y))^2$ for the r.v.\ $Y$ taking values $\sigma_1^2$ or $\sigma_2^2$. So the kurtosis is strictly positive, reflecting heavier tails than a Normal.
+
+\subsection*{4. Unbiased vs.\ Bayes Estimator}
+
+\textbf{(a)} Let $\hat\theta$ be unbiased, so $E(\hat\theta\mid\theta)=\theta$. Conditioning on $\theta$:
+$$
+E(\hat\theta-\theta)^2=E\!\left[E\!\left((\hat\theta-\theta)^2\mid\theta\right)\right]=E\!\left[E(\hat\theta^2\mid\theta)-2\theta E(\hat\theta\mid\theta)+\theta^2\right]=E(\hat\theta^2)-2E(\theta^2)+E(\theta^2)=E(\hat\theta^2)-E(\theta^2).
+$$
+
+\textbf{(b)} Now $\hat\theta=E(\theta\mid X)$ (the Bayes procedure). Conditioning on $X$ (and using the fact that $\hat\theta$ is a function of $X$, hence known given $X$):
+$$
+E(\hat\theta-\theta)^2=E\!\left[E\!\left((\hat\theta-\theta)^2\mid X\right)\right]=E\!\left[\hat\theta^2-2\hat\theta E(\theta\mid X)+E(\theta^2\mid X)\right]=E(\hat\theta^2)-2E(\hat\theta^2)+E(\theta^2)=E(\theta^2)-E(\hat\theta^2).
+$$
+
+\textbf{(c)} If $\hat\theta$ were both Bayes and unbiased, then from (a) the MSE is $E(\hat\theta^2)-E(\theta^2)$ and from (b) it is $E(\theta^2)-E(\hat\theta^2)$. Both must be equal to the same non-negative quantity, so $E(\hat\theta^2)-E(\theta^2)=E(\theta^2)-E(\hat\theta^2)$, giving $2E(\hat\theta^2)=2E(\theta^2)$. Combined with $E(\hat\theta-\theta)^2=0$, the non-negative r.v.\ $(\hat\theta-\theta)^2$ has mean zero, forcing $P(\hat\theta=\theta)=1$. This means the data $X$ reveal $\theta$ perfectly, which is only possible in degenerate cases where there is no statistical uncertainty left after observing $X$.
+
+\subsection*{5. Entropy}
+
+\textbf{(a)} Since $x\mapsto x^3$ is a one-to-one function, $X^3$ takes distinct values $a_j^3$ each with the same probability $p_j$ as $X$ takes value $a_j$. The entropy only depends on the probability distribution, not the labels, so $H(X^3)=H(X)$.
+
+For $X^2$: let $X$ take values $-1$ and $+1$ each with probability $1/2$. Then $X^2=1$ always, so $H(X^2)=0$, whereas $H(X)=\log_2 2=1$. This works because $x\mapsto x^2$ is not one-to-one.
+
+\textbf{(b)} Let $Y$ be a r.v.\ taking value $p_j$ with probability $p_j$ for each $j$. Then $H(X)=E(\log_2(1/Y))$. Also,
+$$
+E(1/Y)=\sum_{j=1}^n p_j\cdot\frac{1}{p_j}=n.
+$$
+Since $\log_2$ is concave, Jensen's inequality gives
+$$
+H(X)=E(\log_2(1/Y))\le\log_2(E(1/Y))=\log_2 n.
+$$
+Equality holds if and only if $1/Y$ is constant, i.e., all $p_j$ are equal to $1/n$. So the entropy is maximized by the uniform distribution, which is the intuitively natural result: maximum uncertainty about $X$'s value corresponds to maximum information gained upon observing it.
+
+\subsection*{6. Survey Sampling Bound}
+
+Let $X_i$ be the indicator that person $i$ in the sample supports the policy, so $X_i\overset{iid}{\sim}\text{Bern}(p)$ and $\hat p=\bar X_n=\frac{1}{n}\sum_{i=1}^n X_i$. Then $E(\hat p)=p$ and $\text{Var}(\hat p)=p(1-p)/n$.
+
+By Chebyshev's inequality,
+$$
+P(|\hat p-p|>c)\le\frac{\text{Var}(\hat p)}{c^2}=\frac{p(1-p)}{nc^2}.
+$$
+Since $p(1-p)\le1/4$ for all $p\in[0,1]$ (maximized at $p=1/2$),
+$$
+P(|\hat p-p|>c)\le\frac{1}{4nc^2}.
+$$
+
+\end{document}

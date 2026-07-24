@@ -1,0 +1,273 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+
+\title{Stat 110 Strategic Practice 2 \& Homework 2: Solutions}
+\author{Prof.\ Joe Blitzstein (Department of Statistics, Harvard University)}
+\date{Fall 2011}
+
+\begin{document}
+\maketitle
+
+\section*{Strategic Practice 2 Solutions}
+
+\subsection*{1. Inclusion-Exclusion}
+
+\textbf{Problem 1: All four seasons represented among 7 birthdays}
+
+Let $A_i$ be the event that nobody in the group of $7$ was born in season $i$ ($i=1,2,3,4$), where each person's birth season is uniform over the four seasons and independent of the others. We want
+$$P(\text{all 4 seasons appear}) = 1 - P(A_1 \cup A_2 \cup A_3 \cup A_4).$$
+Since it's impossible for all four seasons to be missing simultaneously, $A_1 \cap A_2 \cap A_3 \cap A_4 = \varnothing$, so the inclusion-exclusion sum truncates after three terms. By symmetry among the seasons,
+$$
+P(A_1 \cup A_2 \cup A_3 \cup A_4) = \binom{4}{1}P(A_1) - \binom{4}{2}P(A_1\cap A_2) + \binom{4}{3}P(A_1\cap A_2\cap A_3).
+$$
+Here $A_1$ means every person avoided season $1$, which (each independently) happens with probability $3/4$, so $P(A_1) = (3/4)^7$. Likewise $P(A_1\cap A_2) = (1/2)^7$ (everyone avoids two of the four seasons) and $P(A_1\cap A_2 \cap A_3) = (1/4)^7$ (everyone is born in the single remaining season). Thus
+$$P(A_1\cup A_2\cup A_3\cup A_4) = 4\left(\tfrac{3}{4}\right)^7 - 6\left(\tfrac{1}{2}\right)^7 + 4\left(\tfrac{1}{4}\right)^7,$$
+and so
+$$P(\text{all 4 seasons appear}) = 1 - \left[4\left(\tfrac{3}{4}\right)^7 - \tfrac{6}{2^7} + \tfrac{4}{4^7}\right] \approx 0.513.$$
+
+\bigskip
+\textbf{Problem 2: Alice's class schedule}
+
+\emph{Direct counting approach.} For Alice to have at least one class every weekday while taking only $7$ classes total, the only possible distributions of classes across the $5$ days are: (i) two days get $2$ classes each and the other three days get $1$ class each, or (ii) one day gets $3$ classes and the remaining four days get $1$ class each.
+
+For case (i): choose which $2$ of the $5$ days are the "double" days ($\binom{5}{2}$ ways), choose $2$ of the $6$ classes offered on each of those days ($\binom{6}{2}$ ways per day), and choose $1$ of the $6$ classes on each of the remaining $3$ days ($6^3$ ways). This gives $\binom{5}{2}\binom{6}{2}^2 6^3$ schedules.
+
+For case (ii): choose which day is the "triple" day ($\binom{5}{1}$ ways), choose $3$ of the $6$ classes that day ($\binom{6}{3}$ ways), and choose $1$ class on each of the other $4$ days ($6^4$ ways). This gives $\binom{5}{1}\binom{6}{3}6^4$ schedules.
+
+Dividing by the total number of $7$-class selections out of $30$, $\binom{30}{7}$, gives
+$$
+P(\text{class every weekday}) = \frac{\binom{5}{2}\binom{6}{2}^2 6^3 + \binom{5}{1}\binom{6}{3}6^4}{\binom{30}{7}} = \frac{114}{377} \approx 0.302.
+$$
+
+\emph{Inclusion-exclusion approach.} Work instead with the complementary events $B_i = A_i^c$, the event that day $i$ has no scheduled class, for $i=1,\dots,5$. Since Alice has only $7$ classes spread over $5$ days, at most $3$ days can simultaneously be empty (if $4$ or $5$ days were empty, all $7$ classes would be crammed into $1$ or $2$ days, which is impossible since each day offers only $6$ classes). So inclusion-exclusion needs only three terms:
+$$
+P(B_1\cup\cdots\cup B_5) = \sum_i P(B_i) - \sum_{i<j}P(B_i\cap B_j) + \sum_{i<j<k}P(B_i\cap B_j\cap B_k).
+$$
+If a specific day is empty, Alice's $7$ classes all come from the other $24$ classes, so $P(B_i) = \binom{24}{7}/\binom{30}{7}$. Similarly, if $2$ specific days are empty, $P(B_i\cap B_j) = \binom{18}{7}/\binom{30}{7}$, and if $3$ specific days are empty, $P(B_i\cap B_j\cap B_k)=\binom{12}{7}/\binom{30}{7}$. By symmetry,
+$$
+P(B_1\cup\cdots\cup B_5) = \frac{5\binom{24}{7} - \binom{5}{2}\binom{18}{7} + \binom{5}{3}\binom{12}{7}}{\binom{30}{7}} = \frac{263}{377}.
+$$
+Therefore $P(A_1\cap A_2\cap A_3\cap A_4\cap A_5) = 1 - \frac{263}{377} = \frac{114}{377} \approx 0.302$, agreeing with the direct count.
+
+\subsection*{2. Independence}
+
+\textbf{Problem 1: Can an event be independent of itself?}
+
+If $A$ is independent of itself, then $P(A\cap A) = P(A)P(A)$, i.e., $P(A) = P(A)^2$. This forces $P(A) \in \{0,1\}$. So self-independence only happens in these two degenerate cases.
+
+\bigskip
+\textbf{Problem 2: Independence of complements}
+
+Yes, this always holds. Starting from the complement of a union,
+$$P(A^c \cap B^c) = 1 - P(A\cup B) = 1 - \big(P(A)+P(B)-P(A\cap B)\big).$$
+Using independence of $A$ and $B$ to replace $P(A\cap B)$ with $P(A)P(B)$,
+$$P(A^c\cap B^c) = 1 - P(A) - P(B) + P(A)P(B) = (1-P(A))(1-P(B)) = P(A^c)P(B^c).$$
+
+\bigskip
+\textbf{Problem 3: Pairwise independent but not mutually independent}
+
+Toss two fair coins independently. Let $A$ = "first toss is Heads," $B$ = "second toss is Heads," and $C$ = "the two tosses match." Each pair among $A,B,C$ is independent: $A,B$ are independent by construction; for $A$ and $C$, note $P(A\cap C) = P(A\cap B) = 1/4 = P(A)P(C)$ (since $P(C)=1/2$), and symmetrically for $B,C$.
+
+However, the triple is not mutually independent, since knowing $A$ and $B$ completely determines $C$ (and vice versa for any pair). Concretely, $A\cap B \cap C = A \cap B$, so
+$$P(A\cap B\cap C) = P(A\cap B) = \tfrac14 \ne \tfrac18 = P(A)P(B)P(C).$$
+
+\bigskip
+\textbf{Problem 4: $P(A\cap B\cap C)=P(A)P(B)P(C)$ without independence}
+
+Take an extreme case: let $P(A)=0$. Then automatically $P(A)P(B)P(C)=0$. Also $A\cap B\cap C \subseteq A$, so $P(A\cap B\cap C) \le P(A) = 0$, forcing $P(A\cap B\cap C)=0$ as well. The triple product equation holds regardless of the relationship between $B$ and $C$, so let $B=C$ with $0 < P(B) < 1$; then $B$ and $C$ are clearly dependent (in fact identical), yet the displayed equation still holds.
+
+\subsection*{3. Thinking Conditionally}
+
+\textbf{Problem 1: Lewis Carroll's marble problem}
+
+Let $A$ = "the original marble in the bag was green," $B$ = "the marble removed was green," and $C$ = "the marble left behind is green." We want $P(C\mid B)$. Condition on the color of the original marble:
+$$P(C\mid B) = P(C\mid B,A)P(A\mid B) + P(C\mid B,A^c)P(A^c\mid B) = 1\cdot P(A\mid B) + 0 \cdot P(A^c \mid B),$$
+since if the original marble was green, the remaining marble (after a green one is removed) must also be green, whereas if the original was blue, the remaining marble must be blue.
+
+To find $P(A\mid B)$, apply Bayes' rule. We have $P(A) = P(A^c) = 1/2$. Given $A$ (original green), the bag has two green marbles, so $P(B\mid A)=1$. Given $A^c$ (original blue), the bag has one green and one blue marble, so $P(B\mid A^c) = 1/2$. Then
+$$P(A\mid B) = \frac{P(B\mid A)P(A)}{P(B\mid A)P(A)+P(B\mid A^c)P(A^c)} = \frac{1\cdot \tfrac12}{1\cdot\tfrac12 + \tfrac12\cdot\tfrac12} = \frac{2}{3}.$$
+Hence $P(C\mid B) = 2/3$.
+
+\bigskip
+\textbf{Problem 2: Spam filter}
+
+Let $S$ = "the email is spam" and $F$ = "the email contains 'free money'." We're given $P(S)=0.8$, $P(F\mid S)=0.1$, $P(F\mid S^c)=0.01$. By Bayes' rule,
+$$
+P(S\mid F) = \frac{P(F\mid S)P(S)}{P(F\mid S)P(S) + P(F\mid S^c)P(S^c)} = \frac{0.1\times 0.8}{0.1\times 0.8 + 0.01\times 0.2} = \frac{80}{82} \approx 0.9756.
+$$
+
+\bigskip
+\textbf{Problem 3: Sequential vs. combined evidence about guilt}
+
+\textbf{(a)} Yes, it's entirely possible for two pieces of evidence to each individually raise the probability of guilt while jointly lowering it. Suppose the crime occurred sometime between 1pm and 3pm. Let $E_1$ = "the suspect was seen at a nearby cafe from 1pm to 2pm" and $E_2$ = "the suspect was seen at the same cafe from 2pm to 3pm." Each event alone places the suspect near the scene, which might raise $P(G\mid E_i)$ above $P(G)$. But together, $E_1\cap E_2$ means the suspect was at the cafe for the \emph{entire} window, giving them an alibi for the whole crime, so $P(G\mid E_1,E_2) < P(G)$.
+
+\medskip
+\textbf{(b)} Whether we update in one step or two, the result is the same. Updating on $E_1$ first gives a new probability measure $P_{\text{new}}(\cdot) = P(\cdot \mid E_1)$. Updating this measure on $E_2$ gives, by the definition of conditional probability applied within $P_{\text{new}}$:
+$$
+P_{\text{new}}(G\mid E_2) = \frac{P_{\text{new}}(G\cap E_2)}{P_{\text{new}}(E_2)} = \frac{P(G\cap E_2\mid E_1)}{P(E_2\mid E_1)} = \frac{P(G\cap E_1\cap E_2)/P(E_1)}{P(E_1\cap E_2)/P(E_1)} = \frac{P(G\cap E_1\cap E_2)}{P(E_1\cap E_2)} = P(G\mid E_1,E_2).
+$$
+So sequential updating and joint updating agree.
+
+\bigskip
+\textbf{Problem 4: Blood type evidence}
+
+Let $A$ = "suspect $A$ is guilty," $B$ = "suspect $B$ is guilty" (with $P(A)=P(B)=1/2$ a priori), and $M$ = "$A$'s blood matches the blood found at the scene."
+
+\textbf{(a)} Since the blood type occurs in $10\%$ of the population, an innocent person matches purely by chance with probability $0.1$. If $A$ is guilty, $A$ certainly matches: $P(M\mid A)=1$. If $B$ is guilty (so $A$ is innocent), $A$ matches only by coincidence: $P(M\mid B) = 0.1$. By Bayes' rule,
+$$
+P(A\mid M) = \frac{P(M\mid A)P(A)}{P(M\mid A)P(A)+P(M\mid B)P(B)} = \frac{1\cdot\tfrac12}{1\cdot\tfrac12 + 0.1\cdot\tfrac12} = \frac{10}{11}.
+$$
+
+\medskip
+\textbf{(b)} Let $C$ = "$B$'s blood type matches the blood found at the scene." Condition on who is guilty:
+$$
+P(C\mid M) = P(C\mid M,A)P(A\mid M) + P(C\mid M,B)P(B\mid M).
+$$
+If $A$ is guilty, $B$ is just a random member of the population, so $P(C\mid M,A) = 1/10$. If $B$ is guilty, $B$ certainly matches, so $P(C\mid M,B)=1$. Using $P(A\mid M)=10/11$ and $P(B\mid M)=1/11$ from part (a),
+$$
+P(C\mid M) = \frac{1}{10}\cdot\frac{10}{11} + 1\cdot\frac{1}{11} = \frac{2}{11}.
+$$
+
+\bigskip
+\textbf{Problem 5: Chess games against an unknown opponent}
+
+Let $W_i$ be the event of winning game $i$, and let the opponent's skill level be Beginner, Intermediate, or Master, each with prior probability $1/3$, with corresponding win probabilities $0.9$, $0.5$, $0.3$.
+
+\textbf{(a)} By the law of total probability,
+$$P(W_1) = \frac{1}{3}(0.9+0.5+0.3) = \frac{17}{30}.$$
+
+\medskip
+\textbf{(b)} We want $P(W_2\mid W_1) = P(W_1,W_2)/P(W_1)$. The denominator is $17/30$ from (a). For the numerator, condition on the opponent's skill level and use conditional independence of $W_1,W_2$ given that level:
+$$
+P(W_1,W_2) = \frac{1}{3}\left(0.9^2 + 0.5^2 + 0.3^2\right) = \frac{23}{60}.
+$$
+Therefore
+$$P(W_2\mid W_1) = \frac{23/60}{17/30} = \frac{23}{34}.$$
+
+\medskip
+\textbf{(c)} Full (unconditional) independence of $W_1$ and $W_2$ would mean that observing $W_1$ tells us nothing whatsoever about $W_2$. Conditional independence given the skill level means $W_1$ and $W_2$ are independent \emph{once we know how good the opponent is}, but unconditionally they can still be correlated through our uncertainty about that skill level.
+
+The conditional-independence assumption is the more realistic one here. Winning the first game is informative about the opponent's skill (it makes "Beginner" more likely and "Master" less likely), and this updated belief about skill in turn affects our prediction for the second game. So the games are not unconditionally independent: information flows between them via what we learn about the opponent.
+
+\bigskip
+\section*{Homework 2 Solutions}
+
+\subsection*{1. Arby's Incoherent Probabilities (Dutch Book)}
+
+Suppose $A$ and $B$ are disjoint events. We consider two cases based on how Arby's assignment fails to be additive. Throughout, money is measured in units of \$1000, and a "$C$-certificate" pays $1$ unit if event $C$ occurs and $0$ otherwise.
+
+\textbf{Case 1: $P_{\text{Arby}}(A\cup B) < P_{\text{Arby}}(A) + P_{\text{Arby}}(B)$.}
+
+Sell Arby an $A$-certificate (Arby pays you $P_{\text{Arby}}(A)$) and a $B$-certificate (Arby pays you $P_{\text{Arby}}(B)$), and simultaneously buy from Arby an $(A\cup B)$-certificate (you pay Arby $P_{\text{Arby}}(A\cup B)$). Your net cash gain up front is
+$$P_{\text{Arby}}(A)+P_{\text{Arby}}(B) - P_{\text{Arby}}(A\cup B) > 0.$$
+Now consider the payouts the next day. Since $A,B$ are disjoint, at most one of them occurs.
+\begin{itemize}
+\item If neither $A$ nor $B$ occurs: all three certificates pay $0$. Net payout to you: $0$.
+\item If exactly one of $A,B$ occurs (say $A$): your $(A\cup B)$-certificate (which you hold) pays you $1$, while Arby's $A$-certificate (which Arby holds, since you sold it) also pays out $1$ which you must cover. These cancel.
+\end{itemize}
+Either way, no money changes hands at settlement, so your initial profit is locked in: pure arbitrage in your favor.
+
+\medskip
+\textbf{Case 2: $P_{\text{Arby}}(A\cup B) > P_{\text{Arby}}(A) + P_{\text{Arby}}(B)$.}
+
+Reverse the trades: buy an $A$-certificate and a $B$-certificate from Arby, and sell Arby an $(A\cup B)$-certificate. Your up-front net gain is
+$$P_{\text{Arby}}(A\cup B) - P_{\text{Arby}}(A) - P_{\text{Arby}}(B) > 0.$$
+By the same disjointness argument, the payouts at settlement again cancel exactly (or both are zero), so this profit is guaranteed.
+
+\medskip
+In either case, by repeating these trades at larger and larger volumes (Arby is willing to trade arbitrarily many certificates at "their" price), you can extract an unbounded amount of money from Arby: Arby goes bankrupt. This demonstrates that finite additivity isn't an arbitrary axiom: violating it creates an arbitrage opportunity.
+
+\subsection*{2. Hand Void in Some Suit}
+
+Let $S,H,D,C$ denote the events that a $13$-card hand contains no Spades, Hearts, Diamonds, or Clubs, respectively. We want $P(S\cup H\cup D\cup C)$. By inclusion-exclusion and symmetry across suits,
+$$
+P(S\cup H\cup D\cup C) = \binom{4}{1}P(S) - \binom{4}{2}P(S\cap H) + \binom{4}{3}P(S\cap H\cap D) - \binom{4}{4}P(S\cap H\cap D\cap C).
+$$
+A hand void in one named suit must be drawn entirely from the other $39$ cards, so $P(S) = \binom{39}{13}/\binom{52}{13}$. A hand void in two named suits comes from the remaining $26$ cards, so $P(S\cap H)=\binom{26}{13}/\binom{52}{13}$. A hand void in three named suits comes from the remaining $13$ cards, so $P(S\cap H\cap D) = \binom{13}{13}/\binom{52}{13} = 1/\binom{52}{13}$. A hand void in all four suits is impossible, so the last term is $0$. Putting this together,
+$$
+P(S\cup H\cup D\cup C) = \frac{4\binom{39}{13} - 6\binom{26}{13} + 4}{\binom{52}{13}} \approx 0.051.
+$$
+
+\subsection*{3. Birth Order of Three Siblings}
+
+\textbf{(a)} The two events "$A$ is older than $B$" and "$A$ is older than $C$" are \emph{not} independent: learning that $A$ is older than $B$ makes it more likely that $A$ is also older than $C$. Out of the $6$ equally likely birth orders, $A>B$ holds for $ABC, ACB, CAB$, and in two of those three ($ABC, ACB$), $A$ is also older than $C$. Only in $CAB$ is $A$ younger than $C$. So conditioning on $A>B$ shifts the odds toward $A>C$ as well.
+
+A clean way to see why this must happen: imagine $100$ siblings $A_1,\dots,A_{100}$ instead of $3$. If $A_1$ is older than $A_2,\dots,A_{99}$ (all but one of the others), then $A_1$ is almost certainly the oldest of the whole group, which strongly suggests $A_1$ is also older than $A_{100}$. The events are entangled because they share information about where $A$ falls in the overall ranking.
+
+\medskip
+\textbf{(b)} Writing $x>y$ for "$x$ is older than $y$,"
+$$
+P(A>B \mid A>C) = \frac{P(A>B,\,A>C)}{P(A>C)}.
+$$
+The event $\{A>B, A>C\}$ is exactly the event that $A$ is the eldest of the three, which (by symmetry among the three children) has probability $1/3$. The event $\{A>C\}$ has probability $1/2$ by symmetry between $A$ and $C$. So
+$$P(A>B\mid A>C) = \frac{1/3}{1/2} = \frac{2}{3}.$$
+
+\subsection*{4. Two Coins, One Fair and One Biased}
+
+Let "fair" and "biased" denote which coin was drawn, each with prior probability $1/2$. The fair coin has $P(\text{Heads})=1/2$; the biased coin has $P(\text{Heads})=1/4$.
+
+\textbf{(a)} Given two Heads in a row (event $HH$), Bayes' rule gives
+$$
+P(\text{fair}\mid HH) = \frac{P(HH\mid\text{fair})P(\text{fair})}{P(HH\mid\text{fair})P(\text{fair}) + P(HH\mid\text{biased})P(\text{biased})}
+= \frac{(1/2)^2\cdot\tfrac12}{(1/2)^2\cdot\tfrac12 + (1/4)^2\cdot\tfrac12} = \frac{4}{5}.
+$$
+
+\medskip
+\textbf{(b)} No, the first and second tosses of Coin $C$ are not independent. Observing the first toss provides information about which coin was drawn (a Heads makes "fair" more likely, since the fair coin is more likely to produce Heads), and this updated belief about the coin's identity changes the probability of Heads on the second toss.
+
+\medskip
+\textbf{(c)} Let $X$ be the number of Heads in $10$ tosses of Coin $C$. Conditioning on which coin was drawn (each with probability $1/2$, \emph{not} assuming we've already seen $HH$):
+$$
+P(X=3) = P(X=3\mid\text{fair})P(\text{fair}) + P(X=3\mid\text{biased})P(\text{biased}).
+$$
+Each conditional distribution is Binomial, so
+$$
+P(X=3) = \binom{10}{3}\left(\frac12\right)^{10}\cdot\frac12 + \binom{10}{3}\left(\frac14\right)^3\left(\frac34\right)^7\cdot\frac12
+= \frac12\binom{10}{3}\left(\frac{1}{2^{10}} + \frac{3^7}{4^{10}}\right).
+$$
+
+\subsection*{5. Domestic Abuse as Evidence of Guilt}
+
+Define the events:
+\begin{itemize}
+\item $G$: the husband is guilty of murdering his wife;
+\item $M$: the wife was murdered;
+\item $A$: the husband previously abused his wife.
+\end{itemize}
+We are given $P(A\mid G,M) = 0.5$, $P(G\mid M)=0.2$, and $P(A\mid G^c,M)=0.1$. We want $P(G\mid A,M)$, the probability of guilt given \emph{both} that abuse occurred \emph{and} that a murder occurred (the defense attorney's "1 in 1000" figure addresses a different, irrelevant conditional probability, since it doesn't condition on the murder having happened).
+
+By Bayes' rule (with everything implicitly conditioned on $M$):
+$$
+P(G\mid A,M) = \frac{P(A\mid G,M)P(G\mid M)}{P(A\mid G,M)P(G\mid M) + P(A\mid G^c,M)P(G^c\mid M)}
+= \frac{0.5\times 0.2}{0.5\times 0.2 + 0.1\times 0.8} = \frac{5}{9} \approx 0.556.
+$$
+
+So conditioning on the murder having occurred, the history of abuse raises the probability of guilt from the baseline $20\%$ to about $56\%$: a substantial increase. The defense attorney's framing is misleading: the relevant question is not "how often does abuse lead to murder" but "given that this murder happened, how much does prior abuse implicate the husband," and the answer is that it implicates him quite a lot.
+
+\subsection*{6. Two Children, Gender and Birth Month}
+
+Let $G_j$ = "child $j$ (1 = elder, 2 = younger) is a girl" and $M_j$ = "child $j$ was born in March," for $j\in\{1,2\}$, with all genders and months independent and uniform across children.
+
+\textbf{(a)} We want $P(G_1\cap G_2 \mid G_1\cap M_1)$. Since the conditioning event already guarantees $G_1$, the event $G_1\cap G_2$ occurring is equivalent to $G_2$ occurring (given $G_1$). So
+$$P(G_1\cap G_2\mid G_1\cap M_1) = P(G_2\mid G_1\cap M_1).$$
+By independence of the two children's characteristics, information about child 1 (being a girl born in March) tells us nothing about child 2, so
+$$P(G_2\mid G_1\cap M_1) = P(G_2) = \frac{1}{2}.$$
+
+\medskip
+\textbf{(b)} Now condition on the weaker event "at least one child is a girl born in March." We compute
+$$
+P(\text{both girls}\mid \text{at least one March-born girl}) = \frac{P(\text{both girls and at least one born in March})}{P(\text{at least one March-born girl})}.
+$$
+For the numerator: both children are girls with probability $1/4$, and given that, at least one of the two (independent, uniform-month) children is born in March with probability $1-(11/12)^2$. So the numerator is $\frac{1}{4}\left(1-\left(\frac{11}{12}\right)^2\right)$.
+
+For the denominator: each child is independently a "March-born girl" with probability $\frac{1}{2}\cdot\frac{1}{12} = \frac{1}{24}$, so the probability that neither child is a March-born girl is $(23/24)^2$, and the denominator is $1-(23/24)^2$.
+
+Putting these together,
+$$
+P(\text{both girls}\mid\text{at least one March-born girl}) = \frac{\tfrac14\left(1-(11/12)^2\right)}{1-(23/24)^2} = \frac{23}{47} \approx 0.489.
+$$
+
+For comparison, without the birth-month information, $P(\text{both girls}\mid \text{at least one girl}) = 1/3$. So the seemingly irrelevant "born in March" detail actually shifts the answer noticeably, from $1/3$ up to roughly $0.489$, much closer to $1/2$. The specific month doesn't matter (March could be replaced by any other month by symmetry); what matters is that extra identifying detail makes "at least one" closer to pinpointing a \emph{specific} child, and the more precisely we can identify which child satisfies the condition, the closer the answer approaches the unconditional $1/2$.
+
+\end{document}

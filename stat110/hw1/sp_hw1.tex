@@ -1,0 +1,191 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+
+\title{Stat 110 Strategic Practice 1 \& Homework 1: Solutions}
+\author{Prof.\ Joe Blitzstein (Department of Statistics, Harvard University)}
+\date{Fall 2011}
+
+\begin{document}
+\maketitle
+
+\section*{Strategic Practice 1 Solutions}
+
+\subsection*{1. Naive Definition of Probability}
+
+\textbf{(a)}
+$$P(\text{sum of 4 dice} = 21) \; > \; P(\text{sum of 4 dice} = 22)$$
+
+\emph{Reasoning:} Every ordered outcome (i.e., every sequence of four die values) is equally likely, so we just need to count ordered sequences. As a warm-up, note that with two dice a sum of $9$ beats a sum of $10$ in likelihood: $9$ arises from $(5,4)$ in two orders, while $10$ arises from $(5,5)$ in only one order.
+
+For a sum of $21$ with four dice, the underlying multisets are $\{6,6,6,3\}$, $\{6,5,5,5\}$, and $\{6,6,5,4\}$, contributing $4$, $4$, and $4!/2=12$ orderings, for $20$ ordered outcomes in total.
+
+For a sum of $22$, the multisets are $\{6,6,6,4\}$ and $\{6,6,5,5\}$, contributing $4$ and $4!/2^2=6$ orderings, for $10$ ordered outcomes in total.
+
+Twenty outcomes beats ten, so a sum of $21$ is strictly more probable than a sum of $22$ (in fact, exactly twice as probable).
+
+\medskip
+\textbf{(b)}
+$$P(\text{a 2-letter word is a palindrome}) \; = \; P(\text{a 3-letter word is a palindrome})$$
+
+\emph{Reasoning:} A word is a palindrome exactly when its first and last characters match, and whatever sits in the middle doesn't affect this condition. Since this is the only requirement in both cases, the two probabilities coincide.
+
+\subsection*{2. Poker Hand Probabilities}
+
+\textbf{(a) Flush, excluding royal flushes:}
+
+Fix one of the $4$ suits. Within that suit there are $\binom{13}{5}$ five-card combinations, one of which is the royal flush (A-K-Q-J-10). Removing it and multiplying by the $4$ choices of suit gives
+$$P(\text{flush}) = \frac{4\left[\binom{13}{5} - 1\right]}{\binom{52}{5}}.$$
+
+\medskip
+\textbf{(b) Two pair:}
+
+First pick the two ranks that will form the pairs ($\binom{13}{2}$ ways), then for each of those ranks pick $2$ of the $4$ available cards ($\binom{4}{2}$ ways each), and finally pick the fifth (unrelated) card from the remaining $52-8=44$ cards:
+$$P(\text{two pair}) = \frac{\binom{13}{2}\binom{4}{2}^2 \cdot 44}{\binom{52}{5}}.$$
+
+\subsection*{3. Lattice Paths}
+
+\textbf{(a)} Represent each path as a string of $U$ (up-step) and $R$ (right-step) moves. Reaching $(110,111)$ from the origin requires exactly $110$ $R$'s and $111$ $U$'s, in some order. The number of distinct arrangements of this multiset is
+$$\binom{221}{110}.$$
+
+\medskip
+\textbf{(b)} The first leg, from $(0,0)$ to $(110,111)$, can be done in $\binom{221}{110}$ ways. The second leg, from $(110,111)$ to $(210,211)$, needs $100$ $R$'s and $100$ $U$'s and can be done in $\binom{200}{100}$ ways. Since the legs are independent, the multiplication rule gives the total count of paths through the intermediate point:
+$$\binom{221}{110}\binom{200}{100}.$$
+
+\subsection*{4. Norepeatwords}
+
+A norepeatword using all $26$ letters is just an ordering of the alphabet, so there are $26!$ of these.
+
+More generally, a norepeatword of length $k$ (for $1 \le k \le 26$) is built by first selecting which $k$ letters appear ($\binom{26}{k}$ ways) and then arranging them in order ($k!$ ways), giving $\binom{26}{k}k!$ norepeatwords of that length.
+
+Hence the probability that a uniformly random norepeatword uses every letter is
+$$
+P(\text{all 26 letters used}) = \frac{26!}{\sum_{k=1}^{26}\binom{26}{k}k!}
+= \frac{26!}{\sum_{k=1}^{26} \dfrac{26!}{(26-k)!}}
+= \frac{1}{1 + \dfrac{1}{1!} + \dfrac{1}{2!} \cdots}
+= \frac{1}{1 + \dfrac{1}{1!} + \cdots + \dfrac{1}{25!}}.
+$$
+
+The denominator is precisely the partial sum of $e^x = \sum_{j\ge 0} x^j/j!$ at $x=1$, truncated after $26$ terms, so the whole expression is extremely close to $1/e$: the truncation error is smaller than $10^{-26}$.
+
+\subsection*{5. Story Proof: $\sum_{k=0}^n \binom{n}{k} = 2^n$}
+
+Take a group of $n$ people and ask: how many ways can we form a committee (a subset, of any size)? Splitting by committee size, there are $\binom{n}{k}$ committees of size $k$, so the total is $\sum_{k=0}^n \binom{n}{k}$. Alternatively, each person independently is either on the committee or not, two choices each, so the multiplication rule gives $2^n$ total committees. Both expressions count the same collection of committees, so they must be equal.
+
+\subsection*{6. Story Proof: $\dfrac{(2n)!}{2^n \cdot n!} = (2n-1)(2n-3)\cdots 3 \cdot 1$}
+
+We count the number of ways to pair up $2n$ people into $n$ couples, in two different ways.
+
+\emph{First way:} Arrange all $2n$ people in a row, giving $(2n)!$ orderings, and pair off consecutive people: positions $1$ and $2$, $3$ and $4$, and so on. Every pairing arises this way, but it's produced multiple times: the $n!$ orderings of the pairs themselves and the $2^n$ ways of swapping the two members within each pair all give the same final pairing. So the true count is $(2n)!/(2^n n!)$.
+
+\emph{Second way:} Person $1$ can be paired with any of the other $2n-1$ people. Whoever remains unpaired and is "first" in some fixed sense then has $2n-3$ possible partners, and so on, down to a final pair with $1$ choice. This gives $(2n-1)(2n-3)\cdots 1$.
+
+Both procedures enumerate the same set of pairings, so the resulting counts agree.
+
+\subsection*{7. Pascal's Rule}
+
+\textbf{(a) Algebraic derivation:}
+$$
+\binom{n}{k} + \binom{n}{k-1} = \frac{n!}{k!(n-k)!} + \frac{n!}{(k-1)!(n-k+1)!}
+= \frac{(n-k+1)n! + k \cdot n!}{k!(n-k+1)!}
+= \frac{n!(n+1)}{k!(n-k+1)!}
+= \binom{n+1}{k}.
+$$
+
+\medskip
+\textbf{(b) Combinatorial argument:} Picture $n+1$ people, one of whom we single out as the "president." We want to count the $k$-person committees that can be formed from this group: that's $\binom{n+1}{k}$ by definition.
+
+Now split these committees according to whether the president is on them:
+\begin{itemize}
+\item \emph{President included:} The remaining $k-1$ seats are filled from the other $n$ people, giving $\binom{n}{k-1}$ committees.
+\item \emph{President excluded:} All $k$ seats are filled from the other $n$ people, giving $\binom{n}{k}$ committees.
+\end{itemize}
+Every committee falls into exactly one of these two categories, so the total is $\binom{n}{k}+\binom{n}{k-1}$. Since both expressions count the same committees, $\binom{n}{k}+\binom{n}{k-1} = \binom{n+1}{k}$.
+
+\bigskip
+\section*{Homework 1 Solutions}
+
+\subsection*{1. Birth Order Probability}
+
+Number the girls $1,2,3$ and the boys $4,5,6$. Each birth order corresponds to one of the $6!$ equally-likely permutations of $\{1,\dots,6\}$.
+
+We want the permutations in which $1,2,3$ (in some order) all precede $4,5,6$ (in some order); equivalently, the permutation is some arrangement of $\{1,2,3\}$ followed by some arrangement of $\{4,5,6\}$. There are $3! \times 3! = (3!)^2$ such permutations, so
+$$P(\text{3 eldest are girls}) = \frac{(3!)^2}{6!} = 0.05.$$
+
+\emph{A quicker route:} ignore the internal ordering of the girls and boys, and just ask which $3$ of the $6$ birth-order slots the girls occupy. There are $\binom{6}{3}$ equally-likely ways to do this, and only one of them, slots $1,2,3$, corresponds to the girls being the three eldest. So
+$$P(\text{3 eldest are girls}) = \frac{1}{\binom{6}{3}} = 0.05.$$
+
+\subsection*{2. Splitting into Teams}
+
+\textbf{(a)} Pick $2$ people out of $12$ for the pair-team, then $5$ out of the remaining $10$ for what we'll temporarily call "Team 1" (the last $5$ automatically form "Team 2"). Since nothing actually distinguishes Team 1 from Team 2, this procedure double-counts each split, so we divide by $2$:
+$$\frac{\binom{12}{2}\binom{10}{5}}{2} = 8316.$$
+
+\medskip
+\textbf{(b)} If we cared which group was "Team A," "Team B," and "Team C," there would be $\dfrac{12!}{4!\,4!\,4!}$ ways to fill the three labeled teams of $4$. Because the labels don't actually matter, every unlabeled split has been counted $3!$ times (once for each way to assign the labels), so
+$$\frac{12!}{4!\,4!\,4!\,3!} = 5775.$$
+
+\subsection*{3. Schedule Conflict Probability}
+
+The three courses get assigned to slots independently and uniformly. The probability they land in three \emph{distinct} slots is
+$$\frac{10 \cdot 9 \cdot 8}{10^3} = 0.72$$
+(the first course can go anywhere, the second must avoid the first's slot, and the third must avoid both). The complementary event, at least one pair of courses sharing a slot, therefore has probability
+$$1 - 0.72 = 0.28.$$
+
+\subsection*{4. Robberies in Districts}
+
+Each of the $6$ robberies is independently assigned to one of $6$ districts, giving $6^6$ equally-likely outcomes overall. The outcomes in which every district gets exactly one robbery correspond to the $6!$ ways of matching robberies to districts one-to-one. So the probability that \emph{no} district sees more than one robbery is $6!/6^6$, and consequently
+$$P(\text{some district has more than one robbery}) = 1 - \frac{6!}{6^6} \approx 0.9846.$$
+
+(As a fun corollary: roll a fair die $6$ times, and there's better than a $98\%$ chance some number comes up more than once.)
+
+\subsection*{5. Capture-Recapture (Hypergeometric)}
+
+All $\binom{N}{m}$ possible second-samples are equally likely, so we can use the naive definition directly. For exactly $k$ of the new sample to be previously-tagged elk, we need to pick $k$ animals from the $n$ tagged ones and the remaining $m-k$ from the $N-n$ untagged ones:
+$$
+P(\text{exactly } k \text{ tagged}) = \frac{\binom{n}{k}\binom{N-n}{m-k}}{\binom{N}{m}},
+$$
+valid whenever $0 \le k \le n$ and $0 \le m-k \le N-n$ (and zero otherwise). This is the familiar Hypergeometric probability.
+
+\subsection*{6. Red and Green Balls}
+
+\textbf{(a)} Nothing in the setup privileges "drawn first" over "drawn second": before any balls are revealed, each position in the draw is, by symmetry, equally likely to hold any particular ball. So whatever probability governs the color of the first draw must also govern the color of the second. (Equivalently: imagine grabbing both balls simultaneously with two hands, there's no reason the left hand's ball should have different color statistics than the right hand's.)
+
+\medskip
+\textbf{(b)} Number the balls $1$ through $g+r$, with $1,\dots,g$ green and the rest red. An outcome is an ordered pair $(a,b)$ of distinct labels from $\{1,\dots,g+r\}$, and all $(g+r)(g+r-1)$ such pairs are equally likely. Write $G_i$ for "the $i$-th ball drawn is green."
+
+The total number of outcomes is $(g+r)(g+r-1)$.
+
+\emph{Outcomes favoring $G_1$:} pick any of the $g$ green balls first, then any of the remaining $g+r-1$ balls second, giving $g(g+r-1)$ outcomes.
+
+\emph{Outcomes favoring $G_2$:} pick any of the $g$ green balls for the second slot, and any of the $g+r-1$ remaining balls for the first slot, again giving $g(g+r-1)$ outcomes (the multiplication rule doesn't care about chronological order). One can also verify this by splitting on the color of the first ball: $g(g-1)$ outcomes have both balls green, and $rg$ have a red first ball and green second, totaling $g(g-1)+rg = g(g+r-1)$.
+
+Either way,
+$$P(G_i) = \frac{g(g+r-1)}{(g+r)(g+r-1)} = \frac{g}{g+r}, \quad i=1,2,$$
+matching the symmetry argument in (a).
+
+\medskip
+\textbf{(c)} Let $A$ denote "the two balls have different colors":
+$$A = (G_1 \cap G_2^c) \cup (G_1^c \cap G_2).$$
+We're told $P(A) = P(A^c)$, so $P(A)=1/2$, i.e.
+$$\frac{2gr}{(g+r)(g+r-1)} = \frac{1}{2}.$$
+Cross-multiplying and simplifying yields
+$$g^2 + r^2 - 2gr - g - r = 0 \iff (g-r)^2 = g+r.$$
+With $g+r=16$, we need $(g-r)^2=16$, i.e. $g-r = \pm 4$. The two possibilities are
+$$g=10,\ r=6 \qquad\text{or}\qquad g=6,\ r=10.$$
+
+\subsection*{7. Hockey-Stick Identity and Gummi Bears}
+
+\textbf{(a)} Line up $n+1$ people by age, and consider all the $(k+1)$-person subgroups one could form. For any such subgroup, let "Aemon" be its oldest member. If Aemon happens to be the $(j+1)$-th oldest person overall (so that exactly $j$ people in the full group are younger than Aemon, with $k \le j \le n$), then the other $k$ members of the subgroup must all come from those $j$ younger people, in $\binom{j}{k}$ ways. Every $(k+1)$-subgroup has a unique oldest member, so summing over all possible identities of Aemon (i.e., over all valid $j$) accounts for each subgroup exactly once:
+$$\sum_{j=k}^{n} \binom{j}{k} = \binom{n+1}{k+1}.$$
+This is the hockey-stick identity. The name comes from how the relevant entries look when highlighted in Pascal's triangle.
+
+\medskip
+\textbf{(b)} For a fixed pack size of $i$ gummi bears, choosing the flavor composition amounts to a multiset of size $i$ drawn from $5$ flavors (order irrelevant, repetition allowed), which can be done in
+$$\binom{5+i-1}{i} = \binom{i+4}{i} = \binom{i+4}{4}$$
+ways. Summing over the allowed pack sizes $i=30,\dots,50$ and reindexing with $j=i+4$:
+$$\sum_{i=30}^{50} \binom{i+4}{4} = \sum_{j=34}^{54} \binom{j}{4}.$$
+This partial sum can be written as a difference of two hockey-stick sums starting from $j=4$:
+$$\sum_{j=34}^{54}\binom{j}{4} = \sum_{j=4}^{54}\binom{j}{4} - \sum_{j=4}^{33}\binom{j}{4} = \binom{55}{5} - \binom{34}{5}.$$
+Numerically, this comes out to $3{,}200{,}505$ possible compositions.
+
+\end{document}

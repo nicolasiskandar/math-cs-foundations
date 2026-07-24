@@ -1,0 +1,305 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+
+\title{Stat 110 Strategic Practice 4 \& Homework 4: Solutions}
+\author{Prof.\ Joe Blitzstein (Department of Statistics, Harvard University)}
+\date{Fall 2011}
+
+\begin{document}
+\maketitle
+
+\section*{Strategic Practice 4 Solutions}
+
+\subsection*{1. Distributions and Expected Values for Discrete Random Variables}
+
+\textbf{Problem 1.} We want two random variables sharing a distribution but never taking the same value simultaneously. One clean construction: let $X\sim\text{Bernoulli}(1/2)$ and set $Y=1-X$. Since flipping a fair coin and recording its complement gives the same distribution ($Y$ is also $\text{Bernoulli}(1/2)$), but $X=0$ forces $Y=1$ and vice versa, the event $\{X=Y\}$ is impossible.
+
+For a more general family: take $X\sim\text{Binomial}(n,1/2)$ and $Y=n-X$ for any odd $n$. Swapping which outcome counts as "success" preserves the distribution, but $X+Y=n$ is always an odd number, so $X\ne Y$ with certainty.
+
+\bigskip
+\textbf{Problem 2.} Both $X$ and $Y$ have the same distribution: since $Y$ is simply the day following $X$, and the days of the week cycle with uniform probability, $Y$ is just as likely to fall on any particular day as $X$ is. So yes, they share the same uniform distribution over $\{1,2,\dots,7\}$.
+
+For $P(X<Y)$: the only case where $X\not<Y$ is when $X=7$ (Saturday), in which case $Y=1$ (Sunday, coded as $1<7$). This occurs with probability $1/7$, so $P(X<Y)=6/7$.
+
+\bigskip
+\textbf{Problem 3.} Since $X$ counts the toss on which Heads first appears (including that toss), we have $X\sim\text{Geometric}(p)$ shifted so that $X\ge1$. The event $\{X>x\}$ for $x\ge1$ means the first $\lfloor x\rfloor$ tosses all landed Tails, which has probability $(1-p)^{\lfloor x\rfloor}$. So the CDF is
+$$
+F(x) = P(X\le x) = 1-(1-p)^{\lfloor x\rfloor}, \quad x\ge 1,
+$$
+and $F(x)=0$ for $x<1$. For a fair coin ($p=1/2$), $F(x)=1-(1/2)^{\lfloor x\rfloor}$ for $x\ge1$. This is a staircase function that jumps at each positive integer, with jump sizes that halve each time.
+
+\bigskip
+\textbf{Problem 4.} Yes, such random variables exist. The key is to allow $X$ to take an enormous value with tiny probability, inflating $E(X)$, while $Y$ sits at a moderate constant. For instance, let $X=10^6$ with probability $1/100$ and $X=0$ otherwise, and let $Y=1$ always. Then $E(X)=10^4$ and $E(Y)=1$, so $E(X)=10^4\cdot E(Y)>100\,E(Y)$. Yet $P(Y>X)=P(X=0)=99/100\ge0.99$.
+
+\bigskip
+\textbf{Problem 5.} Let $X$ be a discrete random variable with possible values $1, 2, 3, \dots$ and let $F(n) = P(X \le n)$ be the CDF of $X$. We wish to show that $E(X) = \sum_{n=0}^{\infty} (1 - F(n))$. We begin with the tail sum expression:
+$$
+\sum_{n=0}^{\infty} (1 - F(n)).
+$$
+By the definition of the CDF and the complement rule, $1 - F(n) = P(X > n)$. Thus:
+$$
+\sum_{n=0}^{\infty} (1 - F(n)) = \sum_{n=0}^{\infty} P(X > n).
+$$
+Since $X$ takes values in $\{1, 2, 3, \dots\}$, the event $X > n$ can be written as the sum of probabilities for all $k > n$:
+$$
+\sum_{n=0}^{\infty} P(X > n) = \sum_{n=0}^{\infty} \sum_{k=n+1}^{\infty} P(X = k).
+$$
+To reorder this double summation, we look at the region defined by $n \ge 0$ and $k \ge n+1$, which corresponds to $0 \le n < k < \infty$. Reversing the order of summation means $k$ now ranges from $1$ to $\infty$, and for each $k$, $n$ ranges from $0$ to $k-1$:
+$$
+\sum_{k=1}^{\infty} \sum_{n=0}^{k-1} P(X = k).
+$$
+Since the term $P(X = k)$ does not depend on $n$, we can pull it out of the inner sum:
+$$
+\sum_{k=1}^{\infty} P(X = k) \left( \sum_{n=0}^{k-1} 1 \right).
+$$
+The inner sum $\sum_{n=0}^{k-1} 1$ simply counts the number of integers from $0$ to $k-1$, which is exactly $k$. Substituting this result yields:
+$$
+\sum_{k=1}^{\infty} k \cdot P(X = k) = E(X).
+$$
+
+\bigskip
+\textbf{Problem 6.} 
+
+Let $X$ be the index of the first candidate to arrive who ranks better than $C_1$. We find the distribution of $X$ and compute $E[X]$.
+
+\bigskip
+\textbf{Finding $P(X > n)$.}
+The event $\{X > n\}$ is the event that $C_1$ is better than each of $C_2, C_3, \ldots, C_n$, i.e., that $C_1$ is the best among the first $n$ candidates. Since all $n!$ orderings of $C_1, \ldots, C_n$ are equally likely, each of the $n$ candidates is equally likely to be the best. Therefore,
+\[
+  P(X > n) = \frac{1}{n}, \qquad n = 1, 2, 3, \ldots
+\]
+
+\bigskip
+\textbf{Finding $P(X = n)$.}
+Using the identity $P(X = n) = P(X > n-1) - P(X > n)$ for $n \geq 2$,
+\[
+  P(X = n) = \frac{1}{n-1} - \frac{1}{n} = \frac{1}{n(n-1)}, \qquad n = 2, 3, 4, \ldots
+\]
+As a sanity check, these probabilities sum to 1 via a telescoping series:
+\[
+  \sum_{n=2}^{\infty} \frac{1}{n(n-1)}
+  = \sum_{n=2}^{\infty} \left(\frac{1}{n-1} - \frac{1}{n}\right)
+  = 1.
+\]
+
+\bigskip
+\textbf{Computing $E[X]$.}
+\[
+  E[X]
+  = \sum_{n=2}^{\infty} n \cdot P(X = n)
+  = \sum_{n=2}^{\infty} n \cdot \frac{1}{n(n-1)}
+  = \sum_{n=2}^{\infty} \frac{1}{n-1}
+  = \sum_{k=1}^{\infty} \frac{1}{k}
+  = \infty.
+\]
+The expected waiting time is infinite because the tail probability $P(X > n) = 1/n$ decays too slowly: the harmonic series $\sum_{k=1}^{\infty} \frac{1}{k}$ diverges.
+
+\subsection*{2. Indicator Random Variables and Linearity of Expectation}
+
+\textbf{Problem 1.} For the expected number of birthday-sharing pairs: create an indicator variable $I_{ij}$ equal to $1$ if persons $i$ and $j$ share a birthday, for each of the $\binom{50}{2}$ pairs. Since birthdays are chosen independently and uniformly from $365$ days, $P(I_{ij}=1)=1/365$. By linearity,
+$$
+E\!\left(\text{birthday-sharing pairs}\right) = \binom{50}{2}\cdot\frac{1}{365}.
+$$
+
+For the expected number of days on which at least two people share a birthday: create an indicator $J_d$ for each day $d$ of the year, equal to $1$ if at least two of the $50$ people were born on that day. Then $P(J_d=1)=1-P(\text{nobody born on }d)-P(\text{exactly one person born on }d)$. The probability that a specific person was \emph{not} born on day $d$ is $364/365$, so nobody among $50$ shares day $d$ with probability $(364/365)^{50}$. The probability that exactly one person was born on day $d$ is $50\cdot(1/365)\cdot(364/365)^{49}$. So
+$$
+P(J_d=1)=1-\left(\frac{364}{365}\right)^{50}-50\cdot\frac{1}{365}\cdot\left(\frac{364}{365}\right)^{49},
+$$
+and by linearity the expected number of such days is $365\cdot P(J_d=1)$.
+
+\bigskip
+\textbf{Problem 2.} Each of the $20$ bags goes to a uniformly random student, independently. Let $X_j$ be the number of bags student $j$ receives; then $X_j\sim\text{Binomial}(20,1/20)$, so $E(X_j)=1$. By linearity, the expected total bags for the first three students is $E(X_1+X_2+X_3)=3$.
+
+For the expected number of students who receive at least one bag: let $I_j$ be the indicator that student $j$ gets at least one bag. Then $P(I_j=1)=1-P(\text{student }j\text{ gets nothing})=1-(19/20)^{20}$. By linearity,
+$$
+E\!\left(\text{students with at least one bag}\right)=20\left[1-\left(\frac{19}{20}\right)^{20}\right].
+$$
+
+\bigskip
+\textbf{Problem 3.}
+
+We have 100 shoelaces in a box, giving $200$ free ends. At each stage, we pick
+two random ends and tie them together, either creating a loop (if both ends
+belong to the same piece) or merging two pieces into one. Each step reduces the
+number of free ends by exactly 2, so the process always terminates in
+exactly
+\[
+    \boxed{100 \text{ steps (deterministic).}}
+\]
+
+\textbf{Expected number of loops.} We use indicator random variables. At the
+step when $2k$ free ends remain ($k = 100, 99, \ldots, 1$), define
+\[
+    L_k = \begin{cases} 1 & \text{if a loop is created at this step,} \\ 0 & \text{otherwise.} \end{cases}
+\]
+To compute $P(L_k = 1)$: pick any one free end, call it $A$. There are $2k-1$
+remaining ends, exactly \emph{one} of which is the other end of the same piece
+as $A$. Hence
+\[
+    P(L_k = 1) = \frac{1}{2k-1}.
+\]
+The total number of loops is $\sum_{k=1}^{100} L_k$, so by linearity of
+expectation,
+\[
+    E[\text{number of loops}]
+    = \sum_{k=1}^{100} E[L_k]
+    = \sum_{k=1}^{100} \frac{1}{2k-1}
+    = 1 + \frac{1}{3} + \frac{1}{5} + \cdots + \frac{1}{199}
+    \approx 2.937.
+\]
+Note that the final step ($k=1$, two free ends remaining) always creates a
+loop with probability $\tfrac{1}{1}=1$, while early steps almost certainly
+just merge two pieces, since only one of the many free ends closes the current
+piece.
+
+\bigskip
+\textbf{Problem 4.}
+
+There are $k$ people and $n$ locations. Each person is assigned independently
+and uniformly at random to one of the $n$ locations. For each location $i$,
+define indicator random variables according to how many phone numbers land
+there.
+
+\bigskip
+\textbf{Expected number of empty locations.}
+Let $E_i = \mathbf{1}[\text{location } i \text{ is empty}]$. Each of the $k$
+people independently avoids location $i$ with probability
+$\left(1 - \tfrac{1}{n}\right)$, so
+\[
+    P(E_i = 1) = \left(1 - \frac{1}{n}\right)^k.
+\]
+By linearity of expectation, summing over all $n$ locations,
+\[
+    E[\text{empty}] = n\!\left(1 - \frac{1}{n}\right)^{\!k}.
+\]
+
+\bigskip
+\textbf{Expected number of locations with exactly one phone number.}
+Let $O_i = \mathbf{1}[\text{location } i \text{ has exactly one number}]$.
+We need exactly one of the $k$ people to land on location $i$ and the
+remaining $k-1$ to avoid it:
+\[
+    P(O_i = 1) = \binom{k}{1}\frac{1}{n}\left(1 - \frac{1}{n}\right)^{k-1}
+               = \frac{k}{n}\left(1 - \frac{1}{n}\right)^{k-1}.
+\]
+By linearity of expectation,
+\[
+    E[\text{exactly one}] = k\!\left(1 - \frac{1}{n}\right)^{\!k-1}.
+\]
+
+\bigskip
+\textbf{Expected number of locations with more than one phone number.}
+Every location must be empty, have exactly one number, or have more than one
+number, these three cases are mutually exclusive and exhaustive. Hence for
+each location $i$, the corresponding indicators sum to 1 deterministically,
+and summing over all $n$ locations gives
+\[
+    E[\text{empty}] + E[\text{exactly one}] + E[\text{more than one}] = n.
+\]
+Solving by complement,
+\[
+    E[\text{more than one}] = n - n\!\left(1-\frac{1}{n}\right)^{\!k}
+                                  - k\!\left(1-\frac{1}{n}\right)^{\!k-1}.
+\]
+
+\bigskip
+\textbf{Do these quantities add up to $n$?} Yes, and necessarily so, since
+every location falls into exactly one of the three categories, so the total
+count is always $n$ regardless of $k$ and $n$.
+
+\bigskip
+\section*{Homework 4 Solutions}
+
+\subsection*{1. Converting Between CDF and Left-Continuous Version}
+
+$F(x)=P(X\le x)$ whereas $G(x)=P(X<x)$. The difference between the two is the probability of the single point $x$:
+$$
+G(x)=P(X<x)=P(X\le x)-P(X=x)=F(x)-P(X=x).
+$$
+When $x$ is not a nonneg integer, $P(X=x)=0$ and $G(x)=F(x)$. When $x\in\{0,1,2,\dots\}$, the jump in $F$ at $x$ equals $P(X=x)=F(x)-F(x-1/2)$ (since $F$ is flat between integers), so
+$$
+G(x)=F(x-1/2), \quad x\in\{0,1,2,\dots\}.
+$$
+Equivalently, $G(x)=\lim_{t\to x^-}F(t)$ (the left-hand limit of $F$ at $x$), which also equals $F(\lceil x\rceil-1)$ where $\lceil x\rceil$ is the ceiling of $x$.
+
+\subsection*{2. Hatching and Surviving Chicks}
+
+Each of the $n$ eggs hatches independently with probability $p$. The number that hatch, say $H$, is a count of independent Bernoulli trials each with success probability $p$, so $H\sim\text{Binomial}(n,p)$ with PMF
+$$
+P(H=k)=\binom{n}{k}p^k(1-p)^{n-k}, \quad k=0,1,\dots,n.
+$$
+Each of the $n$ eggs independently produces a surviving chick with probability $pr$ (it must both hatch, probability $p$, and then survive, probability $r$). Since these events are independent across eggs, the number of survivors $X\sim\text{Binomial}(n,pr)$, with PMF
+$$
+P(X=k)=\binom{n}{k}(pr)^k(1-pr)^{n-k}, \quad k=0,1,\dots,n.
+$$
+
+\subsection*{3. Expected Number of Children}
+
+The couple's first child establishes a "target gender." From the second child onward, each child independently has probability $1/2$ of being the opposite gender. The number of additional children needed to get one of the other gender follows a $\text{Geometric}(1/2)$ distribution (counting the success), which has mean $2$. Including the first child, the expected total is $1+2=3$.
+
+As a sanity check: the couple always needs at least $2$ children, and sometimes more, so an answer below $2$ would be impossible. An answer of $4$ or more would correspond to a much stricter condition (like needing a boy followed by a girl in that order), which is a harder requirement than what's asked.
+
+\subsection*{4. Expected Empty Boxes}
+
+Place $k$ distinguishable balls into $n$ distinguishable boxes uniformly and independently. Let $I_j$ indicate that box $j$ is empty. Each ball goes into box $j$ with probability $1/n$, so it avoids box $j$ with probability $1-1/n$. Since the balls are placed independently, $P(I_j=1)=(1-1/n)^k$. The expected number of empty boxes is then
+$$
+E\!\left(\sum_{j=1}^{n}I_j\right)=n\left(1-\frac{1}{n}\right)^k.
+$$
+Quick checks: for $k=0$ this gives $n$ (all boxes empty), which is correct; for $n=1$ and $k\ge1$ this gives $0$ (the single box can't be empty), also correct; as $k\to\infty$ the result decays to $0$, matching the intuition that enough balls eventually fill every box.
+
+\subsection*{5. Fisher's Exact Test}
+
+\textbf{(a)} Under the null hypothesis $p_1=p_2=p$, we have $X\sim\text{Binomial}(m,p)$ and $Y\sim\text{Binomial}(n,p)$ independently, so $X+Y\sim\text{Binomial}(m+n,p)$ (as shown in class). Conditioning on $X+Y=r$ and applying Bayes' rule,
+$$
+P(X=x\mid X+Y=r)=\frac{P(Y=r-x)P(X=x)}{P(X+Y=r)}
+=\frac{\binom{m}{x}p^x(1-p)^{m-x}\cdot\binom{n}{r-x}p^{r-x}(1-p)^{n-r+x}}{\binom{m+n}{r}p^r(1-p)^{m+n-r}}.
+$$
+All factors involving $p$ cancel, leaving
+$$
+P(X=x\mid X+Y=r)=\frac{\binom{m}{x}\binom{n}{r-x}}{\binom{m+n}{r}}.
+$$
+This is the Hypergeometric distribution with parameters $m$, $n$, and $r$.
+
+\medskip
+\textbf{(b)} The disappearance of $p$ is not magic: once we know that exactly $r$ people in the combined sample of $m+n$ are diseased, the value of $p$ that caused this outcome is irrelevant to the question of how those $r$ infected individuals are distributed between women and men. Under the null hypothesis, any particular set of $r$ people out of $m+n$ is equally likely to be the infected group, so we're simply asking how many of those $r$ people happen to be among the $m$ women. This is exactly the structure of the elk capture-recapture problem: think of the $m$ women as "tagged" elk and the $n$ men as "untagged" elk, with a fresh sample of size $r$ drawn uniformly from the combined population.
+
+\subsection*{6. Bubble Sort}
+
+\textbf{(a)} There are $\binom{n}{2}$ pairs of numbers in the list, and each pair is equally likely to appear in either relative order. By symmetry and linearity (using an indicator for each pair being an inversion), the expected number of inversions is
+$$
+\frac{1}{2}\binom{n}{2}.
+$$
+
+\medskip
+\textbf{(b)} Let $X$ be the total number of comparisons and $V$ the number of inversions. Every inversion must eventually be corrected, and each comparison eliminates at most one inversion (a swap fixes exactly one, while a non-swap fixes none). So $X\ge V$, giving $E(X)\ge E(V)=\frac{1}{2}\binom{n}{2}$.
+
+For the upper bound: the algorithm performs at most $n-1$ sweeps, with sweep $s$ making at most $n-s$ comparisons. Summing up,
+$$
+X\le(n-1)+(n-2)+\cdots+1=\frac{n(n-1)}{2}=\binom{n}{2}.
+$$
+Combining both bounds,
+$$
+\frac{1}{2}\binom{n}{2}\le E(X)\le\binom{n}{2}.
+$$
+
+\subsection*{7. Records in the High Jump}
+
+\textbf{(a)} Let $I_j$ be the indicator that jumper $j$ sets a record (i.e., beats all previous jumpers). By symmetry among the first $j$ heights (which are i.i.d. with a continuous distribution, so ties have probability zero), each of the $j$ jumpers is equally likely to be the tallest among the first $j$. So $P(I_j=1)=1/j$.
+
+For the joint event that both jumpers $110$ and $111$ set records: this requires the $111$th jumper to be the all-time best so far, and the $110$th to be the second-best among the first $111$. The remaining $109$ jumpers can be in any order among themselves. The number of favorable arrangements out of $111!$ total is $109!$ (place the top two in their required positions, arrange the rest freely), so
+$$
+P(I_{110}=1,\,I_{111}=1)=\frac{109!}{111!}=\frac{1}{110\cdot111}.
+$$
+Since $P(I_{110}=1)\cdot P(I_{111}=1)=\frac{1}{110}\cdot\frac{1}{111}=\frac{1}{110\cdot111}$, the two events are independent.
+
+Intuitively: knowing that jumper $111$ set a record tells us only that their height was the highest among the first $111$, which carries no information about the relative ordering of the first $110$ heights among themselves. Whether jumper $110$ set a record depends solely on that internal ordering.
+
+\medskip
+\textbf{(b)} By linearity of expectation and the fact that $P(I_j=1)=1/j$, the expected number of records among the first $n$ jumpers is
+$$
+\sum_{j=1}^{n}\frac{1}{j}=1+\frac{1}{2}+\frac{1}{3}+\cdots+\frac{1}{n}.
+$$
+This is the $n$th partial sum of the harmonic series, which grows without bound as $n\to\infty$. So the expected number of records is unbounded, though it grows only logarithmically.
+
+\end{document}
