@@ -15,114 +15,165 @@
 \setlength{\parindent}{0pt}
 \medskip\hrulefill\medskip
 
-{\bf Name:} Your Name
+{\bf Name:} Nicolas Iskandar
 
 \medskip
 
-{\bf Collaborators:} Name1, Name2
+{\bf Collaborators:} None
 
 \medskip\hrulefill
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% See below for common and useful latex constructs. %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Some useful commands:
-%$f(x) = \Theta(x)$
-%$T(x, y) \leq \log(x) + 2^y + \binom{2n}{n}$
-% {\tt code\_function}
-
-
-% You can create unnumbered lists as follows:
-%\begin{itemize}
-%    \item First item in a list
-%        \begin{itemize}
-%            \item First item in a list
-%                \begin{itemize}
-%                    \item First item in a list
-%                    \item Second item in a list
-%                \end{itemize}
-%            \item Second item in a list
-%        \end{itemize}
-%    \item Second item in a list
-%\end{itemize}
-
-% You can create numbered lists as follows:
-%\begin{enumerate}
-%    \item First item in a list
-%    \item Second item in a list
-%    \item Third item in a list
-%\end{enumerate}
-
-% You can write aligned equations as follows:
-%\begin{align}
-%    \begin{split}
-%        (x+y)^3 &= (x+y)^2(x+y) \\
-%                &= (x^2+2xy+y^2)(x+y) \\
-%                &= (x^3+2x^2y+xy^2) + (x^2y+2xy^2+y^3) \\
-%                &= x^3+3x^2y+3xy^2+y^3
-%    \end{split}
-%\end{align}
-
-% You can create grids/matrices as follows:
-%\begin{align}
-%    A =
-%    \begin{bmatrix}
-%        A_{11} & A_{21} \\
-%        A_{21} & A_{22}
-%    \end{bmatrix}
-%\end{align}
-
-% You can include images and PDFs as follows:
-% \includegraphics[width=0.5\textwidth]{img.jpg}
-
 \begin{problems}
 
-\problem  % Problem 1
+\problem % Problem 3-1
 
 \begin{problemparts}
-\problempart % Problem 1a
-\problempart % Problem 1b
+\problempart % 3-1a
+Hashes:
+\[
+\begin{array}{c|ccccccc}
+k & 47 & 61 & 36 & 52 & 56 & 33 & 92\\
+\hline
+(10k+4)\bmod 7 & 5 & 5 & 0 & 6 & 4 & 5 & 0
+\end{array}
+\]
+Hash table:
+\[
+\begin{array}{c|l}
+0 & 36 \to 92\\
+1 & \varnothing\\
+2 & \varnothing\\
+3 & \varnothing\\
+4 & 56\\
+5 & 47 \to 61 \to 33\\
+6 & 52
+\end{array}
+\]
+
+\problempart % 3-1b
+Checking $c$ from 7 upward because there are 7 keys and only 7 slots. Collisions occur for all $c<13$; for $c=13$, the hashes are distinct. Hence, the smallest $c=13$.
+The Python code I used:
+\lstdefinestyle{pythonstyle}{
+    backgroundcolor=\color{gray!10},   
+    commentstyle=\color{green!60!black},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{purple},
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true, numbers=left
+}
+
+% Usage
+\begin{lstlisting}[language=Python, style=pythonstyle]
+A = [47, 61, 36, 52, 56, 33, 92]
+slot = set()
+
+for c in range(7, 100):
+    for item in A:
+        val = ((10 * item + 4) % c) % 7
+        if val in slot:
+            slot = set()
+            break
+        slot.add(val)
+
+    if slot:
+        print(c)
+        break
+\end{lstlisting}
 \end{problemparts}
 
 \newpage
 
-\problem  % Problem 2
+\problem % Problem 3-2
+\begin{problemparts}
+ 
+\problempart % 3-2a
+The family $h_{ab}(k) = (ak+b)\bmod n$ is linear in $k$ modulo $n$. Notice that $(ak+b) \bmod n$ only depends on $k \bmod n$, not on the exact value of $k$. So if two keys are congruent mod $n$, they collide under \emph{every} function in the family, regardless of which $a,b$ are chosen.
+ 
+Choose $k_1 \equiv k_2 \pmod n$ (e.g., $1$ and $n+1$). Then for any $a,b$, $(ak_1+b)\bmod n = (ak_2+b)\bmod n$, so they are guaranteed to collide.
+ 
+\problempart % 3-2b
+The family $h_a(k) = \lfloor kn/u \rfloor + a \bmod n$ first buckets $k$ into one of $n$ contiguous ranges of the ID space (via $\lfloor kn/u\rfloor$), then shifts by $a$. Since $u \gg n$, many \emph{consecutive} IDs fall into the very same range no matter what $a$ is, because the shift and the mod-$n$ reduction don't change which bucket-index results once two keys already share the same $\lfloor kn/u \rfloor$ value.
+ 
+Choose $k_1=0, k_2=1$ (or $1,2$ if IDs must be positive). Since $u\ge 2n$, $\lfloor kn/u\rfloor=0$ for both, so $h_a(0)=h_a(1)$ for all $a$. Guaranteed.
+ 
+\problempart % 3-2c
+This family's defining property is that, for \emph{any} two distinct keys, the probability of a collision over a uniformly random choice of $a,b$ is at most $1/n$, where $n$ is the number of buckets. Because this bound applies uniformly to every possible pair of keys, there is no clever choice of $k_1,k_2$ that Rony and Tiri can make in advance to beat it, unlike parts (a) and (b), where the structure of the family let an adversary force a guaranteed collision.
+ 
+The family is universal, so for any two distinct keys the collision probability is at most $1/n$. They cannot guarantee a collision; the highest possible probability is $1/n$.
+ 
+\end{problemparts}
+
+\problem % Problem 3-3
 
 \begin{problemparts}
-\problempart % Problem 2a
-\problempart % Problem 2b
-\problempart % Problem 2c
+\problempart % 3-3a
+Identifier length $=16\lceil \log_4(\sqrt n)\rceil = O(\log n)$ ASCII characters, which is $O(\log n)$ bits, small enough to fit in a constant number of machine words. Treating each identifier as an integer, the range of possible values is polynomially bounded in $n$, so radix sort applies directly.
+ 
+Interpret as an integer in $[0,n^{O(1)})$ and radix-sort in $\Theta(n)$.
+ 
+\problempart % 3-3b
+The ages are bounded by a fixed constant ($8\times10^5$) that does not grow with $n$. Whenever the range of possible key values is constant, counting sort gives linear time directly, without needing radix sort's extra machinery.
+ 
+Ages are integers in the constant range $[0,8\cdot10^5]$; use counting sort in $\Theta(n)$.
+ 
+\problempart % 3-3c
+The thicknesses are rationals of the form $m/n^3$. Multiplying every value by $n^3$ converts them into integers in the polynomially-bounded range $[0,4n^3]$, which is again exactly the setting where radix sort achieves $\Theta(n)$ time.
+ 
+Thickness $\times n^3$ gives integer $m\in[0,4n^3]$; radix sort in $\Theta(n)$.
+ 
+\problempart % 3-3d
+Here there is no numeric key at all, only a pairwise comparison oracle. This puts us in the comparison model of sorting, whose worst-case lower bound is $\Theta(n\log n)$. Merge sort achieves this bound and is therefore optimal; no algorithm relying solely on comparisons can do asymptotically better.
+ 
+Only pairwise comparisons are available; use merge sort in $\Theta(n\log n)$, which is optimal in the comparison model.
+ 
+\end{problemparts}
+
+\problem % Problem 3-4
+
+\begin{problemparts}
+ 
+\problempart % 3-4a
+The key idea is that for each box $b_i$, its only possible partner is the unique value $r-b_i$ (since all ream counts are distinct). A hash table lets us look up whether that partner exists, and if so, retrieve its index in expected $O(1)$ time, after which checking the closeness condition is $O(1)$.
+ 
+Build a hash table mapping $b_i \mapsto i$ in expected $O(n)$. For each $i$, look up $r-b_i$; if found with $j$ and $|i-j| < n/10$, return True. Expected $O(n)$.
+ 
+\problempart % 3-4b
+Since hashing only gives an \emph{expected}-time guarantee, achieving worst-case $O(n)$ requires a deterministic approach based on sorting.
+
+\textbf{Prune.} Discard any box with $b_i \ge r$: since every $b_i$ is a positive integer, such a box would require its partner to satisfy $b_j \le 0$ to sum to $r$, which is impossible. This filtering pass takes $O(n)$ time and cannot remove any valid pair.
+
+\textbf{Bound and sort.} Every surviving value satisfies $b_i < r < n^2$, a polynomial range in $n$. Radix-sort the tuples $(b_i, i)$ by $b_i$ (retaining original indices, needed later for the closeness check) into an array $A$; since the keys are bounded by $O(n^2)$, this runs in worst-case $\Theta(n + n\log_n(n^2)) = \Theta(n)$ time, unlike hashing.
+
+\textbf{Two-pointer sweep.} Initialize $i=0$, $j=|A|-1$. Repeat until $i=j$:
+\begin{itemize}
+  \item If $A[i].b + A[j].b = r$: a valid sum has been found. Check $|A[i].x - A[j].x| < n/10$; if satisfied, return \texttt{True}.
+  \item If $A[i].b + A[j].b < r$: even paired with the largest remaining value, $A[i]$ cannot reach $r$, so no smaller partner can either; increment $i$.
+  \item If $A[i].b + A[j].b > r$: symmetrically, $A[j]$ cannot be part of a valid pair with anything remaining; decrement $j$.
+\end{itemize}
+Each iteration does $O(1)$ work and permanently eliminates one array position, so the sweep runs in $O(n)$.
+
+\textbf{Correctness.} The pruning step never discards a box that could be part of a valid pair. In the sweep, each discarded pointer position is provably incapable of forming a valid sum with \emph{any} remaining element, so no valid pair is ever skipped; if the pointers meet without a close matching sum being found, no such pair exists.
+
+\textbf{Running time.} Pruning, sorting, and sweeping each take $O(n)$ worst-case time, for a total of $O(n)$, with no reliance on randomization.
+ 
 \end{problemparts}
 
 \newpage
 
-\problem  % Problem 3
+\problem % Problem 3-5
 
 \begin{problemparts}
-\problempart % Problem 3a
-\problempart % Problem 3b
-\problempart % Problem 3c
-\problempart % Problem 3d
-\end{problemparts}
-
-\newpage
-
-\problem  % Problem 4
-
-\begin{problemparts}
-\problempart % Problem 4a
-\problempart % Problem 4b
-\end{problemparts}
-
-\newpage
-
-\problem  % Problem 5
-
-\begin{problemparts}
-\problempart % Problem 5a
-\problempart % Problem 5b
-\problempart Submit your implementation to {\small\url{alg.mit.edu}}.
+ 
+\problempart % 3-5a
+We maintain a 26-entry frequency vector for each length-$k$ substring of $A$. Rather than recomputing each window's frequency vector from scratch (which would cost $O(k)$ per window and $O(|A|k)$ overall), we slide the window across $A$: at each step we decrement the count of the character leaving the window and increment the count of the character entering it, an $O(1)$ update. Each resulting frequency vector is stored as a key in a hash table, mapped to how many windows produced that exact vector. To answer a query for string $B$, we compute $B$'s own frequency vector in $O(k)$ time and look it up in the table, the stored count is exactly the anagram substring count, or zero if the vector never appeared.
+ 
+For each length-$k$ substring of $A$, maintain a 26-entry frequency vector. Build all vectors via a sliding window in $O(|A|)$ and store each vector's multiplicity in a hash table. Query: compute $B$'s vector in $O(k)$ and look it up.
+ 
+\problempart % 3-5b
+This is simply a batched version of part (a): build the data structure once on $T$, then reuse it for each of the $n$ queries.
+ 
+Build the data structure from (a) on $T$ in $O(|T|)$; for each $S_i$, compute its vector in $O(k)$ and look up. Total expected time $O(|T| + nk)$.
+ 
 \end{problemparts}
 
 \end{problems}
