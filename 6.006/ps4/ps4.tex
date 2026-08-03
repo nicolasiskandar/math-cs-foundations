@@ -1,0 +1,336 @@
+%
+% 6.006 problem set 4 solutions template
+%
+\documentclass[12pt,twoside]{article}
+
+\input{macros-sp20}
+\newcommand{\theproblemsetnum}{4}
+
+\title{6.006 Problem Set \theproblemsetnum}
+
+\begin{document}
+
+\handout{Problem Set \theproblemsetnum}
+
+\setlength{\parindent}{0pt}
+\medskip\hrulefill\medskip
+
+{\bf Name:} Nicolas Iskandar
+
+\medskip
+
+{\bf Collaborators:} None
+
+\medskip\hrulefill
+
+\begin{problems}
+
+%=====================================================================
+\problem  % Problem 1: Binary Tree Practice
+%=====================================================================
+
+\begin{problemparts}
+
+\problempart % 1a
+The skew of a node $v$ is $\mathrm{height}(v.\mathrm{right}) -
+\mathrm{height}(v.\mathrm{left})$; a node is height-balanced iff its
+skew is in $\{-1,0,1\}$. Computing heights bottom-up:
+
+\begin{center}
+\begin{tikzpicture}
+\Tree [.47 [.16 [.3 ] [.37 [.35 [.28 ] ] ] ] [.84 [.64 [.49 ] ] [.86 [.88 ] ] ] ]
+\end{tikzpicture}
+\end{center}
+
+Node $16$ has skew $+2$ (right subtree $2$ taller) and node $37$ has
+skew $-2$ (left subtree $2$ taller). Every other node is balanced.
+
+\problempart % 1b
+Plain BST insert/delete (no rotations): insert walks down by key
+comparison to an empty spot; delete of a 2-child node swaps in a
+predecessor/successor and deletes that (now $\le 1$-child) node
+instead.
+
+\begin{center}
+\begin{tikzpicture}
+\Tree [.47 [.16 [.3 [.2 ] ] [.37 [.35 [.28 ] ] ] ] [.84 [.64 [.49 ] ] [.86 [.88 ] ] ] ]
+\end{tikzpicture}
+\hfill\texttt{insert(2)}
+\end{center}
+\begin{center}
+\begin{tikzpicture}
+\Tree [.47 [.16 [.3 [.2 ] ] [.37 [.35 [.28 ] ] ] ] [.84 [.64 ] [.86 [.88 ] ] ] ]
+\end{tikzpicture}
+\hfill\texttt{delete(49)} (49 was a leaf)
+\end{center}
+\begin{center}
+\begin{tikzpicture}
+\Tree [.47 [.16 [.3 [.2 ] ] [.37 [.28 ] ] ] [.84 [.64 ] [.86 [.88 ] ] ] ]
+\end{tikzpicture}
+\hfill\texttt{delete(35)} (one child, splice)
+\end{center}
+\begin{center}
+\begin{tikzpicture}
+\Tree [.47 [.16 [.3 [.2 ] ] [.37 [.28 ] ] ] [.84 [.64 ] [.86 [.88 [.85 ] ] ] ] ]
+\end{tikzpicture}
+\hfill\texttt{insert(85)}
+\end{center}
+\texttt{delete(84)}: two children, so swap in either the predecessor
+($64$) or successor ($86$):
+\begin{center}
+\begin{tikzpicture}
+\Tree [.47 [.16 [.3 [.2 ] ] [.37 [.28 ] ] ] [.64 [.86 [.88 [.85 ] ] ] ] ]
+\end{tikzpicture}
+\hspace{1cm}
+\begin{tikzpicture}
+\Tree [.47 [.16 [.3 [.2 ] ] [.37 [.28 ] ] ] [.86 [.64 ] [.88 [.85 ] ] ] ]
+\end{tikzpicture}
+\end{center}
+
+\problempart % 1c
+A rotation is an $O(1)$ local restructuring that preserves the BST
+property. Applied to the original tree from (a):
+
+\emph{Node $16$} (skew $+2$): both directions fail to balance, since
+$16$'s imbalance is a \emph{zig-zag} case (its heavy child is itself
+skewed the other way), a single rotation can't fix this, only a
+double rotation could.
+\begin{center}
+\begin{tikzpicture}
+\Tree [.47 [.37 [.16 [.3 ] [.35 [.28 ] ] ] ] [.84 [.64 [.49 ] ] [.86 [.88 ] ] ] ]
+\end{tikzpicture}
+\hfill rotate left (still unbalanced)
+\end{center}
+\begin{center}
+\begin{tikzpicture}
+\Tree [.47 [.3 [.16 [.37 [.35 [.28 ] ] ] ] ] [.84 [.64 [.49 ] ] [.86 [.88 ] ] ] ]
+\end{tikzpicture}
+\hfill rotate right (still unbalanced)
+\end{center}
+
+\emph{Node $37$} (skew $-2$): a left rotation is impossible (no right
+child to bring up); a right rotation is a \emph{straight}
+(left-heavy) case, so it fixes the imbalance:
+\begin{center}
+\begin{tikzpicture}
+\Tree [.47 [.16 [.3 ] [.35 [.28 ] [.37 ] ] ] [.84 [.64 [.49 ] ] [.86 [.88 ] ] ] ]
+\end{tikzpicture}
+\hfill rotate right at 37: \textbf{height-balanced!}
+\end{center}
+
+\end{problemparts}
+
+\newpage
+%=====================================================================
+\problem  % Problem 2: Heap Practice
+%=====================================================================
+
+An array $A[0..n-1]$ represents a complete tree with children of
+$A[i]$ at $A[2i+1], A[2i+2]$; it's a max-heap if every parent $\ge$
+its children (min-heap: $\le$). We fix a non-heap by repeated
+parent/child swaps.
+
+\begin{problemparts}
+
+\problempart % 2a
+\begin{center}
+\begin{tikzpicture}
+\Tree [.4 [.12 [.21 ] [.14 ] ] [.8 [.9 ] [.17 ] ] ]
+\end{tikzpicture}
+\end{center}
+Every parent $\le$ its children: \textbf{min-heap}.
+
+\problempart % 2b
+\begin{center}
+\begin{tikzpicture}
+\Tree [.701 [.253 [.229 ] [.17 ] ] [.24 [.22 ] ] ]
+\end{tikzpicture}
+\end{center}
+Every parent $\ge$ its children: \textbf{max-heap}.
+
+\problempart % 2c
+\begin{center}
+\begin{tikzpicture}
+\Tree [.2 [.9 [.8 ] [.0 ] ] [.13 [.2 ] ] ]
+\end{tikzpicture}
+\end{center}
+\textbf{Neither} ($9 > 0$ and $13 > 2$ both violate the min-heap
+property). Bottom-up sift-down fixes it in three swaps:
+\begin{center}
+\begin{tikzpicture}
+\Tree [.2 [.9 [.8 ] [.0 ] ] [.\textbf{2} [.\textbf{13} ] ] ]
+\end{tikzpicture}
+\hfill swap $(13,2)$
+\end{center}
+\begin{center}
+\begin{tikzpicture}
+\Tree [.2 [.\textbf{0} [.8 ] [.\textbf{9} ] ] [.2 [.13 ] ] ]
+\end{tikzpicture}
+\hfill swap $(9,0)$
+\end{center}
+\begin{center}
+\begin{tikzpicture}
+\Tree [.\textbf{0} [.\textbf{2} [.8 ] [.9 ] ] [.2 [.13 ] ] ]
+\end{tikzpicture}
+\hfill swap $(2,0)$ at root: valid \textbf{min-heap}
+\end{center}
+
+\problempart % 2d
+\begin{center}
+\begin{tikzpicture}
+\Tree [.1 [.3 [.5 ] [.4 ] ] [.6 [.9 ] [.7 ] ] ]
+\end{tikzpicture}
+\end{center}
+Every parent $\le$ its children: \textbf{min-heap}.
+
+\end{problemparts}
+
+%=====================================================================
+\problem  % Problem 3: Gardening Contest
+%=====================================================================
+
+\begin{problemparts}
+
+\problempart % 3a
+Build a max-heap on scores from $A$ in $O(|A|)$ time, then call
+\texttt{delete\_max()} $k$ times, recording each returned
+registration number. Correct since \texttt{delete\_max} always
+removes a current-maximum item; runs in $O(|A| + k\log|A|)$ since
+build is $O(|A|)$ and each of the $k$ deletions is $O(\log|A|)$.
+
+\problempart % 3b
+Since $A$ is a max-heap, all items with score $>x$ form a connected
+subtree containing the root. Recursively search from the root: if a
+node's score is $\le x$, stop (its whole subtree is $\le x$);
+otherwise report it and recurse into both children. This visits only
+the $n_x$ reported nodes plus at most two children each (which turn
+out $\le x$), i.e.\ $O(n_x)$ nodes total, giving $O(n_x)$ time.
+
+\end{problemparts}
+
+\newpage
+%=====================================================================
+\problem  % Problem 4: Solar Supply
+%=====================================================================
+
+\textbf{Data structures:} a priority queue $P$ of farms keyed on
+available capacity $a_i$; a hash table $B$ mapping building name
+$\mapsto (s_i, d_j)$; a hash table $F$ mapping farm address $\mapsto$
+(its own set $B_i$ of connected buildings, a pointer to its location
+in $P$). Cross-pointers let every operation avoid searching.
+
+\begin{itemize}
+\item \texttt{initialize}$(S)$: build $F,P$ directly from $S$ in
+    $O(n)$ time; $B$ starts empty.
+\item \texttt{power\_on}$(b_j,d_j)$: \texttt{delete\_max} the
+    farm of largest available capacity from $P$. If $d_j$ exceeds it,
+    no farm qualifies (reinsert, report failure). Otherwise subtract
+    $d_j$, reinsert into $P$ (relink pointer in $F$), and record
+    $b_j$ in $B$ and in that farm's $B_i$. Cost: $O(\log n)$
+    (dominated by the heap operations).
+\item \texttt{power\_off}$(b_j)$: look up $(s_i,d_j)$ in $B$, remove
+    $b_j$ from $B_i$ (via $F$), then use $F$'s pointer to relocate
+    $s_i$ in $P$, add back $d_j$ capacity, and reinsert. Cost:
+    $O(\log n)$.
+\item \texttt{customers}$(s_i)$: look up $B_i$ via $F$ and return its
+    contents in $O(k)$ time.
+\end{itemize}
+
+\textbf{Implementation:} $B,F$ as hash tables ($O(n)$ build,
+\emph{expected} $O(1)$ lookup, so \texttt{power\_on}/\texttt{off}
+are expected/amortized); each $B_i$ as a Set AVL tree or hash table;
+$P$ as a max-heap or augmented Sequence AVL tree (supports $O(n)$
+build, $O(\log n)$ insert/delete-max/delete-by-pointer, deleting an
+arbitrary heap item by pointer uses the same swap-to-last-leaf
+technique as deleting the root).
+
+%=====================================================================
+\problem  % Problem 5: Robot Wrangling
+%=====================================================================
+
+Store the matrices as leaves (in order) of a Sequence AVL tree $T$;
+augment each node $v$ with $v.P$, the ordered product of all matrices
+in its subtree. Since matrix multiplication is associative,
+\[
+    v.P = P_L \cdot v.M \cdot P_R,
+\]
+computable in $O(1)$ from children's $P$ (identity matrix for a
+missing child), so this augmentation is maintained under all normal
+Sequence AVL operations at no extra asymptotic cost.
+
+\begin{itemize}
+\item \texttt{initialize}$(M)$: build $T$ from $M$ in order in $O(n)$,
+    computing $P$ bottom-up.
+\item \texttt{update\_joint}$(k,M)$: \texttt{get\_at}$(k)$ finds the
+    node in $O(\log n)$; update its matrix, then recompute $P$ for its
+    $O(\log n)$ ancestors.
+\item \texttt{full\_transformation}$()$: return $T.\mathrm{root}.P$
+    in $O(1)$; by construction, it's exactly the full ordered
+    product.
+\end{itemize}
+
+(Since the set/order of matrices never changes, only their values,
+self-balancing isn't strictly needed; a static or array-based
+complete tree works too.)
+
+\newpage
+%=====================================================================
+\problem  % Problem 6: $\pi z^2 a$ Optimization
+%=====================================================================
+
+\begin{problemparts}
+
+\problempart % 6a
+If $(x_0,y_0)$ gives tastiness $t \ne 0$, let $x_i$ be the largest
+topping $x$-coordinate $\le x_0$ and $y_j$ the largest topping
+$y$-coordinate $\le y_0$ (both exist since the slice is nonempty).
+Since no topping has $x$- or $y$-coordinate strictly between these
+values and $x_0,y_0$, the slice at $(x_i,y_j)$ contains exactly the
+same toppings as the slice at $(x_0,y_0)$, hence the same tastiness
+$t$. So an optimal slice can always be assumed topping-aligned on
+both axes.
+
+\problempart % 6b
+Augment a Set AVL tree with, at each node $v$:
+\begin{itemize}
+\item $v.\mathrm{sum} = v.\mathrm{left}.\mathrm{sum} +
+    v.\mathrm{item}.\mathrm{val} + v.\mathrm{right}.\mathrm{sum}$;
+\item $v.\mathrm{max\_prefix}$: the best prefix sum ending in $v$'s
+    subtree. By BST order, a prefix ending in the subtree either ends
+    in the left subtree, ends exactly at $v$, or ends in the right
+    subtree (which then also includes all of the left subtree and
+    $v$):
+    \[
+    v.\mathrm{max\_prefix} = \max\Big(
+        \begin{array}[t]{l}
+            v.\mathrm{left}.\mathrm{max\_prefix},\\
+            v.\mathrm{left}.\mathrm{sum}+v.\mathrm{item}.\mathrm{val},\\
+            v.\mathrm{left}.\mathrm{sum}+v.\mathrm{item}.\mathrm{val}+v.\mathrm{right}.\mathrm{max\_prefix}
+        \end{array}
+    \Big);
+    \]
+\item $v.\mathrm{max\_prefix\_key}$: the key achieving that max, read
+    off whichever of the three cases won.
+\end{itemize}
+All three are $O(1)$ local recomputations, so they're maintained
+through every Set AVL operation at no extra cost. Then
+\texttt{max\_prefix()} just returns
+$$(T.\mathrm{root}.\mathrm{max\_prefix\_key},\,T.\mathrm{root}.\mathrm{max\_prefix})$$
+in $O(1)$.
+
+\problempart % 6c
+Sort toppings by $x$ ($O(n\log n)$). Sweep left to right, inserting
+each topping's $(y_i,t_i)$ into the part-(b) structure and querying
+\texttt{max\_prefix()} after each insertion; this gives, at each
+$x_i$, the best achievable tastiness with the $x$-cut at $x_i$ (since
+the structure exactly holds the toppings with $x \le x_i$, keyed by
+$y$). Track the best $(x_i,y^*,t^*)$ over the sweep. By part (a), an
+optimal slice occurs at some such $x_i$, so this is correct; each of
+the $n$ steps costs $O(\log n)$ (insert) $+ O(1)$ (query), for
+$O(n\log n)$ total.
+
+\end{problemparts}
+
+\end{problems}
+
+\end{document}
