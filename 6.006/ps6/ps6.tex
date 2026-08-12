@@ -1,0 +1,172 @@
+%
+% 6.006 problem set 6 solutions template
+%
+\documentclass[12pt,twoside]{article}
+
+\input{macros-sp20}
+\newcommand{\theproblemsetnum}{6}
+
+\title{6.006 Problem Set \theproblemsetnum}
+
+\begin{document}
+
+\handout{Problem Set \theproblemsetnum}
+
+\setlength{\parindent}{0pt}
+\medskip\hrulefill\medskip
+
+{\bf Name:} Nicolas Iskandar
+
+\medskip
+
+{\bf Collaborators:} None
+
+\medskip\hrulefill
+
+\begin{problems}
+
+\problem  % Problem 1: Dijkstra Practice
+
+\begin{problemparts}
+
+\problempart % Problem 1a
+Relaxation order is unique for both algorithms.
+
+\medskip
+
+\textbf{DAG Relaxation:} $(a,b),\ (a,d),\ (d,b),\ (d,e),\ (b,c),\ (b,e),\ (b,f),\ (e,f),\ (f,c)$
+
+\medskip
+\textbf{Dijkstra:} $(a,b),\ (a,d),\ (b,c),\ (b,e),\ (b,f),\ (f,c),\ (e,f),\ (d,b),\ (d,e)$
+
+\problempart % Problem 1b
+\begin{center}
+\begin{tabular}{c|cccccc}
+$v$ & $a$ & $b$ & $c$ & $d$ & $e$ & $f$ \\
+\hline
+$\delta(a,v)$ & 0 & 2 & 3 & 6 & 5 & 4
+\end{tabular}
+\end{center}
+
+\end{problemparts}
+
+\problem  % Problem 2: Short Circuits
+\textbf{Idea.} Standard Bellman--Ford needs $|V|-1$ rounds of relaxing every
+edge, because a shortest simple path can use up to $|V|-1$ edges. Here we are
+guaranteed every vertex has some shortest path using at most $k$ edges, so we
+only need $k$ rounds instead of $|V|-1$.
+
+\textbf{Key fact.} After round $i$ of Bellman--Ford (relaxing every edge $i$
+times), the distance array holds the correct shortest-path distance to each
+vertex \emph{restricted to paths of at most $i$ edges}. Round $1$ gives the
+best 1-edge paths, round $2$ the best 2-edge paths, etc. (Formally this
+corresponds to layer $i$ of the duplicated DAG used to prove Bellman--Ford's
+correctness; a shared distance array updated in place implements this without
+building the layers explicitly.)
+
+\textbf{Algorithm.}
+\begin{enumerate}
+  \item Initialize $\delta(s)=0$, $\delta(v)=\infty$ for all other $v$. \quad $O(V)$
+  \item Repeat $k$ times: relax every edge once (one pass over $E$). \quad $O(kE)$
+  \item Return the distance array.
+\end{enumerate}
+
+\textbf{Correctness.} Each round extends "best path using $\le i$ edges" to
+"best path using $\le i+1$ edges." Since every vertex has an optimal path with
+$\le k$ edges by hypothesis, round $k$ is guaranteed to have found it; further
+rounds cannot improve anything.
+
+\textbf{Running time.} $O(V)$ for initialization plus $k$ rounds each costing
+$O(E)$ gives $O(V+kE)$ total.
+
+\newpage
+
+\problem  % Problem 3: Dynamite Detonation
+\textbf{Why elevation changes break a single DAG.} Detonation lowers the
+elevation of every clearing in $C_D$, which can \emph{flip} which direction is downhill on any slope touching one of those clearings. A single graph cannot represent both directions of the same edge simultaneously, so a plain shortest-path computation over one graph is
+insufficient.
+
+\textbf{Construction.} Build two copies of the clearing graph:
+\begin{itemize}
+  \item $G_1$: one node per clearing using original elevations $e_i$; a
+  directed edge for each slope pointing toward the lower clearing, weighted by
+  slope length (drop non-monotonic/flat slopes).
+  \item $G_2$: identical construction, but using post-detonation elevations
+  $e_i'$ for $c_i \in C_D$.
+  \item One zero-weight edge $D_1 \to D_2$ (detonating: instantaneous, costs
+  no distance). No edge goes from $G_2$ back to $G_1$, detonation is
+  permanent, so this keeps the combined graph acyclic.
+  \item A supernode $T$ with zero-weight edges in from $S_1$ and $S_2$,
+  merging "reach $S$ without detonating" and "reach $S$ after detonating"
+  into a single target.
+\end{itemize}
+
+Run DAG Relaxation from $L_1$ to $T$ on the combined graph $G$; the shortest
+path automatically chooses whichever strategy (detonate or not) is cheaper.
+
+\textbf{Running time.} $G_1,G_2$ each have $O(n)$ vertices/edges, so $G$ has
+$O(n)$ vertices and edges total. DAG Relaxation runs in $O(V+E)=O(n)$.
+
+\problem  % Problem 4: Conservative Cycles
+\textbf{Reframing.} Build a directed weighted graph $G$: one vertex per
+location, one edge per transition weighted by its work $w_{ij}$. The field is
+conservative iff every cycle in $G$ has total weight exactly $0$.
+
+\textbf{Key idea.} Bellman--Ford detects negative-weight cycles as a
+byproduct of computing shortest paths. Repurpose this as the actual
+detection tool:
+\begin{itemize}
+  \item Run Bellman--Ford once on the original weights, catches any
+  \emph{negative}-weight cycle.
+  \item Negate every edge weight and run Bellman--Ford again, a
+  positive-weight cycle in the original graph becomes negative-weight in the
+  negated graph (weights, and hence cycle totals, flip sign under negation;
+  zero-weight cycles stay zero), so this run catches any \emph{positive}-weight
+  cycle.
+\end{itemize}
+If either run reports a negative cycle, the field is not conservative;
+otherwise every cycle has weight $0$ and the field is conservative.
+
+\textbf{Supernode.} Add vertex $s$ with a zero-weight edge to every other
+vertex (one-directional, out of $s$ only, adds no new cycles). This
+guarantees every vertex, and hence every cycle, is reachable from $s$, so a
+single Bellman--Ford run from $s$ suffices to catch a negative cycle anywhere
+in the graph.
+
+\textbf{Running time.} $V=O(n)$, $E=O(n)$ after adding $s$ and its edges.
+Each Bellman--Ford run costs $O(VE)=O(n^2)$; two runs are still $O(n^2)$.
+
+\newpage
+
+\problem  % Problem 5: SparkPlug Derby
+\textbf{Why plain Dijkstra fails.} Whether a road is usable depends on
+current gas level (uphill travel costs gas and the tank must stay strictly
+positive), so a single vertex per intersection cannot capture enough state:
+"at $A$ with 5 gas" and "at $A$ with 1 gas" allow different future moves.
+
+\textbf{State-space construction.} Make one vertex $v_i$ per (intersection
+$v$, gas level $i$), for $i=1,\dots,g$. For each road $\{u,v\}$ with driving
+time $t(u,v)$ and $e(u)\le e(v)$:
+\begin{itemize}
+  \item \emph{Downhill/flat} $(v_i \to u_i)$ for every $i$, weight $t(u,v)$
+  (free in gas).
+  \item \emph{Uphill}, costing $\ell=e(v)-e(u)$ gas: edge $(u_i \to v_{i-\ell})$
+  only for $i>\ell$, weight $t(u,v)$, this is exactly how "tank stays
+  strictly positive" is enforced, by omitting edges that would violate it.
+  \item \emph{Refuel} at a station $v$: edge $(v_i \to v_{i+1})$, weight
+  $t_G$, for $i<g$. Refueling by $k$ units in one action costs $k\cdot t_G$,
+  identical to taking $k$ such edges in a row, so no information is lost by
+  only modeling unit refills.
+\end{itemize}
+All weights are non-negative, and the graph may contain cycles, so run
+Dijkstra (not DAG Relaxation) once from $s_g$ (start full). The answer is
+$\min_{i} \delta(s_g, t_i)$.
+
+\textbf{Running time.} Average degree $<5 \Rightarrow r=O(n)$; since $g<n$,
+the blown-up graph has $O(n^2)$ vertices and edges, built in $O(n^2)$ time.
+Dijkstra with a binary heap costs $O(E\log V)=O(n^2\log n)$, dominating the
+final $O(n)$-time scan over the $t_i$. Total: $O(n^2\log n)$.
+
+\end{problems}
+
+\end{document}
