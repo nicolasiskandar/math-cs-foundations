@@ -1,0 +1,140 @@
+%
+% 6.006 problem set 8 solutions template
+%
+\documentclass[12pt,twoside]{article}
+
+\input{macros-sp20}
+\newcommand{\theproblemsetnum}{8}
+
+\title{6.006 Problem Set 8}
+
+\begin{document}
+
+\handout{Problem Set \theproblemsetnum}
+
+\setlength{\parindent}{0pt}
+\medskip\hrulefill\medskip
+
+{\bf Name:} Nicolas Iskandar
+
+\medskip
+
+{\bf Collaborators:} None
+
+\medskip\hrulefill
+
+\begin{problems}
+
+\problem  % Problem 8-1
+\\
+\textbf{Subproblems:} $x(i,j)$: maximum possible profit by selling $j$ barrels to the suffix of buyers $i$ through $n$, for $i \in \{1,\dots,n+1\}$, $j \in \{0,\dots,m\}$
+
+\textbf{Relate:}
+\[
+x(i,j) = \max\left\{\,
+\begin{aligned}
+&p_i + x(i+1,\ j - a_i) &&\text{if } j \geq a_i \\
+&x(i+1,\ j) &&\text{always}
+\end{aligned}
+\right.
+\]
+
+\textbf{Topological Order:} $i = n+1, n, \dots, 2, 1$ ($x(i,j)$ only depends on subproblems with strictly larger $i$, so acyclic)
+
+\textbf{Base Cases:} $x(n+1,j) = -sj$ for all $j \in \{0,\dots,m\}$
+
+\textbf{Original Problem:} $x(1,m)$; store parent pointers to reconstruct which orders are filled
+
+\textbf{Time:} $(n+1)(m+1) = O(nm)$ subproblems $\times\ O(1) \implies O(nm)$, which is \emph{pseudopolynomial}
+
+
+\problem  % Problem 8-2
+\\
+\textbf{Subproblems:} $x(i,j,c)$: maximum possible score playing Split Bowling on substring of pins $V[i:j]$ (zero-indexed), where all pins in range must be knocked down if $c=1$, unconstrained if $c=0$, for $i \in \{0,\dots,n\}$, $j \in \{i,\dots,n\}$, $c \in \{0,1\}$
+
+\textbf{Relate:}
+\[
+x(i,j,c) = \max\left\{\,
+\begin{aligned}
+&x(i+1,\ j,\ c) &&\text{if } c = 0 \\
+&v_i + x(i+1,\ j,\ c) &&\text{if } i < j \\
+&\max_{k \,\in\, \{i+1,\dots,j-1\}} \big\{\, v_i \cdot v_k + x(i+1,\ k-1,\ 1) + x(k+1,\ j,\ c) \,\big\} &&\text{if } i+1 < j
+\end{aligned}
+\right.
+\]
+
+\textbf{Topological Order:} increasing order of $j - i$ ($x(i,j,c)$ only depends on subproblems with strictly smaller $j-i$, so acyclic)
+
+\textbf{Base Cases:} $x(i,i,c) = 0$ for $i \in \{0,\dots,n\}$, $c \in \{0,1\}$
+
+\textbf{Original Problem:} $x(0,n,0)$; store parent pointers to reconstruct which pins are knocked down together
+
+\textbf{Time:} $O(n^2)$ subproblems $\times\ O(n) \implies O(n^3)$, which is \emph{polynomial}
+
+
+\problem  % Problem 8-3
+\\
+\textbf{Subproblems:} $x(k,s_1,s_2,s_3)$: True if it is possible to partition the suffix of items $A[k:]$ into four subsets $A_1, A_2, A_3, A_4$ such that $\sum_{a_i \in A_j} a_i = s_j$ for all $j \in \{1,2,3\}$, and False otherwise, for $k \in \{0,\dots,n\}$, $s_1, s_2, s_3 \in \{0,\dots,m\}$
+
+\textbf{Relate:}
+\[
+x(k,s_1,s_2,s_3) = \mathrm{OR}\left\{\,
+\begin{aligned}
+&x(k+1,\ s_1 - a_k,\ s_2,\ s_3) &&\text{if } a_k \leq s_1 \\
+&x(k+1,\ s_1,\ s_2 - a_k,\ s_3) &&\text{if } a_k \leq s_2 \\
+&x(k+1,\ s_1,\ s_2,\ s_3 - a_k) &&\text{if } a_k \leq s_3 \\
+&x(k+1,\ s_1,\ s_2,\ s_3) &&\text{always}
+\end{aligned}
+\right.
+\]
+
+\textbf{Topological Order:} $k = n, n-1, \dots, 1, 0$ ($x(k,s_1,s_2,s_3)$ only depends on subproblems with strictly larger $k$, so acyclic)
+
+\textbf{Base Cases:} $x(n,0,0,0) = \text{True}$; $x(n,s_1,s_2,s_3) = \text{False}$ for any $s_1, s_2, s_3 > 0$
+
+\textbf{Original Problem:}
+Let
+\[
+m(0,s_1,s_2,s_3) = \left\{\,
+\begin{aligned}
+&\max\{s_1,\ s_2,\ s_3,\ m - s_1 - s_2 - s_3\} &&\text{if } x(0,s_1,s_2,s_3) = \text{True} \\
+&\infty &&\text{otherwise}
+\end{aligned}
+\right.
+\]
+Answer is $\displaystyle\min_{s_1,s_2,s_3 \,\in\, \{0,\dots,m\}} m(0,s_1,s_2,s_3)$; store parent pointers to reconstruct each subset
+
+\textbf{Time:} $O(m^3 n)$ subproblems $\times\ O(1)$, plus $O(m^3)$ to compute the original answer $\implies O(m^3 n)$, which is \emph{pseudopolynomial}
+
+\newpage
+
+\problem  % Problem 8-4
+\\
+\textbf{Preprocessing:} Scan the $O(m^2 n)$ characters across all uncorrupted logs in $L_u$, inserting each word $w$ encountered into a hash table $H$ mapping to its frequency $f(w)$, in expected $O(m^2 n)$ time.
+
+\textbf{Subproblems:} $x(j)$: maximum $\sum_{w \in R_{i,j}} f(w)$ over any restoration $R_{i,j}$ of the suffix $\ell_i[j:]$ of corrupted log $\ell_i$, for $j \in \{0,\dots,|\ell_i| \leq m\}$
+
+\textbf{Relate:}
+\[
+x(j) = \max_{k \,\in\, \{j+1,\dots,|\ell_i|\}} \big\{\, f(\ell_i[j:k]) + x(k) \,\big\}
+\]
+\[
+f(w) = \left\{\,
+\begin{aligned}
+&H(w) &&\text{if } w \in H \\
+&0 &&\text{otherwise}
+\end{aligned}
+\right.
+\]
+
+\textbf{Topological Order:} $j = |\ell_i|, |\ell_i|-1, \dots, 1, 0$ ($x(j)$ only depends on subproblems with strictly larger $j$, so acyclic)
+
+\textbf{Base Cases:} $x(|\ell_i|) = 0$
+
+\textbf{Original Problem:} $x(0)$, computed for each of the $n$ corrupted logs; store parent pointers to reconstruct a restoration achieving value $x(0)$
+
+\textbf{Time:} $O(m)$ subproblems $\times\ O(m^2)$ work each (expected, due to hashing substrings) $\implies$ expected $O(m^3)$ per log, $O(m^3 n)$ total across all logs (plus $O(m^2 n)$ preprocessing), which is \emph{polynomial}
+
+\end{problems}
+
+\end{document}
