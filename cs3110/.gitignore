@@ -1,0 +1,22 @@
+# Dune / OCaml build artifacts
+_build/
+*.install
+
+# Bytecode/native compilation artifacts
+*.cmi
+*.cmo
+*.cmx
+*.cma
+*.cmxa
+*.cmxs
+*.o
+*.a
+*.exe
+
+# Merlin
+.merlin
+
+# Editor/OS
+*.swp
+*~
+.DS_Store
