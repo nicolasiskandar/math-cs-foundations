@@ -3,3 +3,7 @@
 
 (executable
  (name expressions))
+
+(executable
+ (name functions)
+ (libraries zarith))
