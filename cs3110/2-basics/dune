@@ -7,3 +7,6 @@
 (executable
  (name functions)
  (libraries zarith))
+
+(executable
+ (name printing))
