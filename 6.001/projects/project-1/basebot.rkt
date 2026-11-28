@@ -260,24 +260,39 @@
 
 (define integrate
   (lambda (x0 y0 u0 v0 dt g m beta)
-    YOUR-CODE-HERE))
+    (define speed (sqrt (+ (square u0) (square v0))))
+    (if (< y0 0)
+      x0
+      (integrate (+ x0 (* u0 dt))
+                 (+ y0 (* v0 dt))
+                 (- u0 (* (/ (* beta speed u0) m) dt))
+                 (- v0 (* (+ (/ (* beta speed v0) m) g) dt))
+                 dt g m beta))))
 
 (define travel-distance
-  YOUR-CODE-HERE)
+  (lambda (elevation velocity angle)
+    (define alpha (degree2radian angle))
+    (integrate 0
+               elevation
+               (* velocity (cos alpha))
+               (* velocity (sin alpha))
+               0.01
+               gravity mass beta)))
 
+(travel-distance 1 45 45)
+(travel-distance 1 40 45)
+(travel-distance 1 35 45)
 
 ;; RUN SOME TEST CASES
 
 ;; what about Denver?
 
-#|
 ;; Problem 7
  
 ;; now let's turn this around.  Suppose we want to throw the ball.  The same
 ;; equations basically hold, except now we would like to know what angle to 
 ;; use, given a velocity, in order to reach a given height (receiver) at a 
 ;; given distance
-
 
 ;; a cather trying to throw someone out at second has to get it roughly 36 m
 ;; (or 120 ft) how quickly does the ball get there, if he throws at 55m/s,
@@ -286,7 +301,128 @@
 ;; try out some times for distances (30, 60, 90 m) or (100, 200, 300 ft) 
 ;; using 45m/s
 
+(define tolerance 1)
+
+(define integrate-both
+  (lambda (x0 y0 u0 v0 t dt g m beta)
+    (define speed (sqrt (+ (square u0) (square v0))))
+    (if (< y0 0)
+      (cons x0 t)
+      (integrate-both (+ x0 (* u0 dt))
+                      (+ y0 (* v0 dt))
+                      (- u0 (* (/ (* beta speed u0) m) dt))
+                      (- v0 (* (+ (/ (* beta speed v0) m) g) dt))
+                      (+ t dt)
+                      dt g m beta))))
+
+(define flight
+  (lambda (velocity angle elevation)
+    (define alpha (degree2radian angle))
+    (integrate-both 0
+                    elevation
+                    (* velocity (cos alpha))
+                    (* velocity (sin alpha))
+                    0 0.01 gravity mass beta)))
+
+(define throw-time
+  (lambda (velocity distance elevation)
+    (define (iter angle best-time)
+      (if (> angle 90)
+          best-time
+          (let* ((result (flight velocity angle elevation))
+                 (landing (car result))
+                 (flight-time (cdr result)))
+            (if (and (<= (abs (- landing distance)) tolerance)
+                     (or (= best-time 0) (< flight-time best-time)))
+                (iter (+ angle 1) flight-time)
+                (iter (+ angle 1) best-time)))))
+    (iter -90 0)))
+
+(throw-time 45 36 1.5)
+(throw-time 35 36 1.5)
+(throw-time 55 36 1.5)
+(throw-time 45 30 1.5)
+(throw-time 45 60 1.5)
+(throw-time 45 80 1.5)
+(throw-time 35 90 1.5)
+
 ;; Problem 8
 
+(define travel-distance-bounces
+  (lambda (velocity angle elevation bounces)
+    (if (= bounces 0)
+      (travel-distance elevation velocity angle)
+      (+ (travel-distance elevation velocity angle)
+         (travel-distance-bounces (/ velocity 2) angle 0 (- bounces 1))))))
+
+(travel-distance-bounces 35 20 1.5 0)
+(travel-distance-bounces 35 20 1.5 1)
+(travel-distance-bounces 35 20 1.5 2)
+(travel-distance-bounces 35 20 1.5 3)
+
+(define travel-distance-until-stop
+  (lambda (velocity angle elevation)
+    (if (< velocity 1)
+        0
+        (+ (travel-distance elevation velocity angle)
+           (travel-distance-until-stop (/ velocity 2) angle 0)))))
+
+(travel-distance-until-stop 35 20 1.5)
+(travel-distance-until-stop 45 20 1.5)
+(travel-distance-until-stop 55 20 1.5)
+
 ;; Problem 9
-|#
+
+(define integrate-impact
+  (lambda (x0 y0 u0 v0 dt g m beta)
+    (define speed (sqrt (+ (square u0) (square v0))))
+    (if (< y0 0)
+        (list x0 u0 v0)
+        (integrate-impact (+ x0 (* u0 dt))
+                          (+ y0 (* v0 dt))
+                          (- u0 (* (/ (* beta speed u0) m) dt))
+                          (- v0 (* (+ (/ (* beta speed v0) m) g) dt))
+                          dt g m beta))))
+
+(define flight-impact
+  (lambda (elevation velocity angle)
+    (define alpha (degree2radian angle))
+    (integrate-impact 0
+                      elevation
+                      (* velocity (cos alpha))
+                      (* velocity (sin alpha))
+                      0.01
+                      gravity mass beta)))
+
+(define travel-distance-bounces2
+  (lambda (velocity angle elevation bounces)
+    (let* ((result (flight-impact elevation velocity angle))
+           (x (car result))
+           (u (cadr result))
+           (v (caddr result))
+           (impact-speed (sqrt (+ (square u) (square v)))))
+      (if (= bounces 0)
+          x
+          (+ x (travel-distance-bounces2 (/ impact-speed 2)
+                                         angle
+                                         0
+                                         (- bounces 1)))))))
+
+(travel-distance-bounces2 35 20 1.5 0)
+(travel-distance-bounces2 35 20 1.5 1)
+(travel-distance-bounces2 35 20 1.5 2)
+
+(define travel-distance-until-stop2
+  (lambda (velocity angle elevation)
+    (if (< velocity 1)
+        0
+        (let* ((result (flight-impact elevation velocity angle))
+               (x (car result))
+               (u (cadr result))
+               (v (caddr result))
+               (impact-speed (sqrt (+ (square u) (square v)))))
+          (+ x (travel-distance-until-stop2 (/ impact-speed 2) angle 0))))))
+
+(travel-distance-until-stop2 35 20 1.5)
+(travel-distance-until-stop2 45 20 1.5)
+(travel-distance-until-stop2 55 20 1.5)
